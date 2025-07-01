@@ -1,0 +1,39 @@
+name: Build Flutter APK for arm64-v8a
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies for Flutter
+        run: sudo apt-get update && sudo apt-get install -y curl unzip xz-utils zip libglu1-mesa
+
+      - name: Download Flutter SDK
+        run: |
+          curl -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.13.5-stable.tar.xz
+          tar -xf flutter.tar.xz
+          echo "$PWD/flutter/bin" >> $GITHUB_PATH
+
+      - name: Verify Flutter installation
+        run: flutter doctor
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build APK (arm64-v8a)
+        run: flutter build apk --release --target-platform=android-arm64
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk-arm64-v8a
+          path: build/app/outputs/flutter-apk/app-release.apk
