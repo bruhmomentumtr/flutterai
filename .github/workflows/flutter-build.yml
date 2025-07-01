@@ -21,7 +21,6 @@ jobs:
           curl -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.13.6-stable.tar.xz
           tar -xf flutter.tar.xz
           echo "$PWD/flutter/bin" >> $GITHUB_PATH
-
       - name: Verify Flutter installation
         run: |
           flutter channel stable
@@ -35,30 +34,6 @@ jobs:
 
       - name: Build APK (arm64-v8a)
         run: flutter build apk --release --target-platform=android-arm64
-
-  create-tag:
-    needs: build-apk
-    runs-on: ubuntu-latest
-
-    steps:
-      # 1. Depoyu Klonlama
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      # 2. APK Artifact'ini İndirme
-      - name: Download APK Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-release-apk
-
-      # 3. Yeni Git Tag'i Oluşturma
-      - name: Create Git Tag
-        run: |
-          TAG_NAME="v1.0.${{ github.run_number }}"
-          git tag $TAG_NAME
-          git push origin $TAG_NAME
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # 2. Tag Oluşturma ve APK'yı İlişkilendirme Job'ı
   create-tag:
