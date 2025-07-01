@@ -29,7 +29,10 @@ jobs:
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: Build APK
+      - name: Install Flutter project
+        run: flutter create .
+
+      - name: Build APK (all platform)
         run: flutter build apk --release
 
       - name: Create Release
