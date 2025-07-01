@@ -1,4 +1,4 @@
-name: Build Flutter APK for arm64-v8a
+name: Build and Release Flutter APK for arm64-v8a
 
 on:
   push:
@@ -7,42 +7,66 @@ on:
     branches: [ main ]
 
 jobs:
-  build-apk:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. Depoyu Klonlama
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Flutter Gereksinimlerini Yükleme
       - name: Install dependencies for Flutter
         run: sudo apt-get update && sudo apt-get install -y curl unzip xz-utils zip libglu1-mesa
 
+      # 3. Flutter SDK'yı İndirme
       - name: Download Flutter SDK
         run: |
           curl -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.13.6-stable.tar.xz
           tar -xf flutter.tar.xz
           echo "$PWD/flutter/bin" >> $GITHUB_PATH
 
+      # 4. Flutter Kurulumunu Doğrulama
       - name: Verify Flutter installation
         run: |
           flutter channel stable
           flutter upgrade
           flutter --version
 
+      # 5. Flutter Bağımlılıklarını Yükleme
       - name: Install Flutter dependencies
         run: flutter pub get
 
-      - name: build the project
+      # 6. Projeyi Oluşturma
+      - name: Build the project
         run: flutter create .
 
+      # 7. APK Dosyasını Oluşturma
       - name: Build APK (arm64-v8a)
         run: flutter build apk --release --target-platform=android-arm64
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
+      # 8. GitHub Release Oluşturma
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
         with:
-          name: app-release-apk-arm64-v8a
-          path: build/app/outputs/flutter-apk/app-release.apk
-          
-      - name: clean flutter build cache 
+          tag_name: "v1.0.${{ github.run_number }}"
+          release_name: "Flutter APK Release v1.0.${{ github.run_number }}"
+          body: "Flutter arm64-v8a için oluşturulmuş APK."
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 9. APK Dosyasını Release'e Yükleme
+      - name: Upload APK to Release
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: build/app/outputs/flutter-apk/app-release.apk
+          asset_name: app-release-arm64-v8a.apk
+          asset_content_type: application/vnd.android.package-archive
+
+      # 10. Build Cache'i Temizleme
+      - name: Clean flutter build cache
         run: flutter clean
