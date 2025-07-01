@@ -28,10 +28,13 @@ jobs:
         run: flutter --version
 
       - name: Install Flutter dependencies
-        run: flutter pub get
+        run: flutter create .
 
       - name: Create Flutter project
-        run: flutter create .
+        run: flutter pub get
+
+      - name: Upgrade Flutter projec
+        run: flutter pub upgrade
 
       - name: Build APK (all platforms)
         run: flutter build apk --release
