@@ -11,6 +11,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 0. Secret'ı Kontrol Etme (Debug İçin)
+      - name: Check and Debug Secret
+        run: |
+          if [ -z "${{ secrets.PERSONAL_ACCESS_TOKEN }}" ]; then
+            echo "Secret 'PERSONAL_ACCESS_TOKEN' is not set or is empty!"
+            exit 1
+          else
+            echo "Secret 'PERSONAL_ACCESS_TOKEN' is set and accessible."
+          fi
+
       # 1. Depoyu Klonlama
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -69,4 +79,4 @@ jobs:
 
       # 10. Build Cache'i Temizleme
       - name: Clean flutter build cache
-        run: flutter --version
+        run: flutter clean
