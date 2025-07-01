@@ -33,16 +33,8 @@ jobs:
       - name: build the project
         run: flutter create .
 
-      - name: Build APK (arm64-v8a)
-        run: flutter build apk --release --target-platform=android-arm64
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Download APK Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: app-release-apk
+      - name: Build APK (all platform)
+        run: flutter build apk --release 
 
       - name: Create Git Tag
         run: |
