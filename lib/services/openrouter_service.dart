@@ -31,7 +31,7 @@ const int _titleMaxLength = 200;
 
 // Request-related constants
 const String _contentType = 'application/json';
-const String _httpReferer = 'https://github.com/bruhmomentumtr/flutteraiapp';
+const String _httpReferer = 'https://github.com/bruhmomentumtr/flutterai';
 const String _appTitle = 'FlutterAI Chat App';
 const String _authorizationPrefix = 'Bearer ';
 
@@ -260,7 +260,7 @@ class OpenRouterService {
         options: Options(validateStatus: (status) => status! < 500, headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $_apiKey',
-          'HTTP-Referer': 'https://github.com/bruhmomentumtr/flutteraiapp',
+          'HTTP-Referer': 'https://github.com/bruhmomentumtr/flutterai',
           'X-Title': 'FlutterAI Chat App',
         }),
       );
