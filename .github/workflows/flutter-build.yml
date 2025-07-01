@@ -15,10 +15,10 @@ jobs:
       - name: Check and Debug Secret
         run: |
           if [ -z "${{ secrets.PERSONAL_ACCESS_TOKEN }}" ]; then
-            echo "Secret 'PERSONAL_ACCESS_TOKEN' is not set or is empty!"
+            echo "Secret '${{ secrets.PERSONAL_ACCESS_TOKEN }}' is not set or is empty!"
             exit 1
           else
-            echo "Secret 'PERSONAL_ACCESS_TOKEN' is set and accessible."
+            echo "Secret '${{ secrets.PERSONAL_ACCESS_TOKEN }}' is set and accessible."
           fi
 
       # 1. Depoyu Klonlama
