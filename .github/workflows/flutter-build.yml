@@ -33,7 +33,7 @@ jobs:
         run: flutter pub get
 
       - name: Clean Flutter build cache
-        run: flutter clean
+        run: flutter create .
 
       - name: Build APK (arm64-v8a)
         run: flutter build apk --release --target-platform=android-arm64
