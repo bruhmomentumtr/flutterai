@@ -1,0 +1,1 @@
+//this file is for the languages of the app
