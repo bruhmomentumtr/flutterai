@@ -31,6 +31,9 @@ jobs:
 
       - name: Install Flutter project
         run: flutter create .
+      - name: Update versionCode
+        run: |
+          sed -i "s/versionCode [0-9]\+/versionCode $GITHUB_RUN_NUMBER/" android/app/build.gradle
 
       - name: Build APK (all platform)
         run: flutter build apk --release
