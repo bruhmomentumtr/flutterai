@@ -62,7 +62,7 @@ jobs:
         with:
           tag_name: "v1.0.${{ github.run_number }}"
           release_name: "Flutter APK Release v1.0.${{ github.run_number }}"
-          body: "Flutter arm64-v8a için oluşturulmuş APK."
+          body: "Android arm64-v8a için oluşturulmuş APK."
           draft: false
           prerelease: false
         env:
