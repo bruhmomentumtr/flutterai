@@ -1,4 +1,4 @@
-name: Build Flutter and then APK ARM-V8A
+name: Build Flutter APK for arm64-v8a
 
 on:
   push:
@@ -19,24 +19,26 @@ jobs:
 
       - name: Download Flutter SDK
         run: |
-          # Download the latest stable Flutter SDK
           curl -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.13.6-stable.tar.xz
           tar -xf flutter.tar.xz
           echo "$PWD/flutter/bin" >> $GITHUB_PATH
 
-      - name: Verify Flutter Installation
+      - name: Verify Flutter installation
         run: |
           flutter channel stable
           flutter upgrade
           flutter --version
 
-      - name: Install Dependencies
+      - name: Install Flutter dependencies
         run: flutter pub get
+
+      - name: Clean Flutter build cache
+        run: flutter clean
 
       - name: Build APK (arm64-v8a)
         run: flutter build apk --release --target-platform=android-arm64
 
-      - name: Upload APK Artifact
+      - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: app-release-apk-arm64-v8a
