@@ -50,3 +50,7 @@ Veya [yayınlanan sürümleri](https://github.com/bruhmomentumtr/flutterai/relea
 
 Her türlü geliştirme, hata bildirimi veya öneri için PR gönderebilir veya (Issues) üzerinde tartışma başlatabilirsiniz.
 
+## eklenecek veya düzeltilecek özellikler
+- botları kolayca aratma
+- ilk kurulum sonrası sohbetin listede gözükmeme durumu
+- material you renk desteği
