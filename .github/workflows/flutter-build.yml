@@ -69,4 +69,4 @@ jobs:
 
       # 10. Build Cache'i Temizleme
       - name: Clean flutter build cache
-        run: flutter clean
+        run: flutter --version
