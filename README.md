@@ -38,13 +38,13 @@ flutter pub get
 flutter build apk
 ```
 2) veya projeyi fork'layarak actions üzerinden
-2.1) keystore oluşturup base kodunu elde edin (NOT: güvenlik için sonradan bu oluşan kodu farklı yere kaydedip, workflow geçmişinden sil)
-2.2) ayarlar > secrets and variables > actions > repository secrets'a gelin
-2.3) ANDROID_KEYSTORE: base64 kodunu gir
-2.4) ANDROID_KEYSTORE_ALIAS: kafana göre değer oluştur :D
-2.5) ANDROID_KEYSTORE_PASSWORD: kafana göre değer oluştur :D
-2.6) ANDROID_KEY_PASSWORD: kafana göre değer oluştur :D
-2.7) bu değerlerin hepsini farklı bir yere not et sonradan başka yerde devam edersen imza çakışmasından uygulamanı güncelleyemezsin
+- keystore oluşturup base kodunu elde edin (NOT: güvenlik için sonradan bu oluşan kodu farklı yere kaydedip, workflow geçmişinden sil)
+- ayarlar > secrets and variables > actions > repository secrets'a gelin
+- ANDROID_KEYSTORE: base64 kodunu gir
+- ANDROID_KEYSTORE_ALIAS: kafana göre değer oluştur :D
+- ANDROID_KEYSTORE_PASSWORD: kafana göre değer oluştur :D
+- ANDROID_KEY_PASSWORD: kafana göre değer oluştur :D
+- bu değerlerin hepsini farklı bir yere not et sonradan başka yerde devam edersen imza çakışmasından uygulamanı güncelleyemezsin
 
 3) Veya [yayınlanan sürümleri](https://github.com/bruhmomentumtr/flutterai/releases) kullanarak hızlıca başlayabilirsiniz.
 
