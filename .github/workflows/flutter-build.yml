@@ -11,7 +11,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependencies for Flutter
-        run: sudo apt-get update && sudo apt-get install -y curl unzip xz-utils zip libglu1-mesa
+        run: sudo apt-get update && sudo apt-get install -y curl unzip xz-utils zip libglu1-mesa apksigner
 
       - name: Download Flutter SDK
         run: |
@@ -43,6 +43,18 @@ jobs:
 
       - name: Build APK (all platform)
         run: flutter build apk --release
+
+      - name: Build release APK
+        run: flutter build apk --release
+
+      - name: APK imza sertifika bilgilerini göster
+        run: |
+          echo "----------- APK İMZA DETAYLARI -----------"
+          apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
+          echo " "
+          echo "----------- RSA .dname BİLGİSİ -----------"
+          unzip -p build/app/outputs/flutter-apk/app-release.apk META-INF/*.RSA > CERT.RSA
+          keytool -printcert -file CERT.RSA
 
       - name: Create Release
         id: create_release
