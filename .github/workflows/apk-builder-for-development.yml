@@ -1,4 +1,4 @@
-name: Build APK
+name: Build APK for development
 
 on:
   workflow_dispatch:
@@ -13,17 +13,30 @@ jobs:
       - name: Install dependencies for Flutter
         run: sudo apt-get update && sudo apt-get install -y curl unzip xz-utils zip libglu1-mesa apksigner
 
-      - name: Download Flutter SDK
+      - name: Download and install latest stable Flutter SDK
         run: |
-          curl -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.22.0-stable.tar.xz
+          RELEASES_URL="https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json"
+          echo "Fetching release info from $RELEASES_URL"
+          BASE_URL=$(curl -s $RELEASES_URL | jq -r '.base_url')
+          STABLE_HASH=$(curl -s $RELEASES_URL | jq -r '.current_release.stable')
+          ARCHIVE_PATH=$(curl -s $RELEASES_URL | jq -r --arg HASH "$STABLE_HASH" '.releases[] | select(.hash == $HASH) | .archive')
+          DOWNLOAD_URL="$BASE_URL/$ARCHIVE_PATH"
+          echo "Latest stable Flutter SDK download URL: $DOWNLOAD_URL"
+          curl -o flutter.tar.xz "$DOWNLOAD_URL"
+          echo "Extracting Flutter SDK..."
           tar -xf flutter.tar.xz
           echo "$PWD/flutter/bin" >> $GITHUB_PATH
+          echo "Flutter SDK installed successfully."
 
       - name: Verify Flutter installation
         run: |
-          flutter channel stable
-          flutter upgrade
           flutter --version
+          flutter doctor
+
+      # --- YENİ EKLENEN ADIM ---
+      # flutter doctor'daki lisans uyarısını çözmek için lisansları otomatik olarak kabul et
+      - name: Accept Android Licenses
+        run: yes | flutter doctor --android-licenses
 
       - name: Install Flutter dependencies
         run: flutter pub get
@@ -51,7 +64,7 @@ jobs:
           cat android/key.properties # Secrets will be masked in logs
 
       - name: Build APK (all platform)
-        run: flutter build apk --release
+        run: flutter build apk --split-per-abi --release
 
       - name: APK imza sertifika bilgilerini göster
         run: |
