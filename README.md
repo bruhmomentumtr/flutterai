@@ -4,7 +4,7 @@ Kendi OpenRouter veya OpenAI API anahtarınızı kullanarak çeşitli yapay zeka
 
 ## 🚀 Projenin Amacı
 
-Bu proje, aslında ben 20 dolar gibi bir fiyatı ödememek için alternatif ararken keşfettim "kullandığın kadar öde" (pay-as-you-go) olarak geçen api sistemiyle tanıştım ancak biraz araştırmayla baktığımda çok fazla uygulama yoktu, bende kullanıcıların [OpenRouter](https://openrouter.ai/) veya (kodlarda değişiklik yaparak) [OpenAI](https://openai.com/) entegrasyonu ile API anahtarlarını girerek diledikleri AI botu ile güvenli ve hızlı şekilde sohbet edebilmelerini sağlayan. Fotopraf yükleyebildiğiniz ve hatta kodlama için bile rahatça mesaj kopyalamayı sağlayan bir program tasarladım
+Bu proje, aslında 20 dolar gibi bir fiyatı ödememek için alternatif ararken "kullandığın kadar öde" (pay-as-you-go) olarak geçen api sistemiyle tanıştım, ancak biraz araştırmayla baktığımda çok fazla hepsi bir arada uygulama yoktu, (open webui hariç) bende kullanıcıların [OpenRouter](https://openrouter.ai/) veya (kodlarda değişiklik yaparak) [OpenAI](https://openai.com/) entegrasyonu ile API anahtarlarını girerek diledikleri AI botu ile güvenli ve hızlı şekilde sohbet edebilmelerini sağlayan. Fotoğraf yükleyebildiğiniz ve hatta kodlama için bile rahatça mesaj kopyalamayı sağlayan bir program tasarladım. İsterseniz diğer işletim sistemleri içinde geliştirebilirsiniz.
 
 ## 🎯 Temel Özellikler
 
