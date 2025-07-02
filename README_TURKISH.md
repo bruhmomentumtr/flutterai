@@ -4,7 +4,7 @@ Kendi OpenRouter veya OpenAI API anahtarlarınızı kullanarak çeşitli yapay z
 
 ## 🚀 Projenin Amacı
 
-Bu projeyi, mevcut çözümler için yaklaşık 20$ ödeme yapmak yerine bir alternatif ararken oluşturdum. "Kullandıkça öde" API sistemini keşfettim fakat Open WebUI dışında hepsi bir arada uygulamaların sayısı çok azdı. Bu proje, kullanıcıların [OpenRouter model listesini](https://openrouter.ai/models) (veya küçük kod değişiklikleriyle [OpenAI fiyatlandırma](https://platform.openai.com/docs/pricing)) API anahtarlarını girerek istedikleri herhangi bir yapay zeka botu ile güvenli ve verimli bir şekilde sohbet etmelerini sağlıyor. Uygulama ayrıca resim yüklemeyi, kod veya mesaj kopyalamayı kolaylaştırıyor ve kodlama/sohbet deneyiminizi hızlandırıyor. İsterseniz uygulamayı başka işletim sistemlerine de genişletebilirsiniz.
+Bu projeyi, mevcuttaki platformlar için yaklaşık 20$ ödeme yapmak yerine bir alternatif ararken oluşturdum. "Kullandıkça öde" API sistemini keşfettim fakat Open WebUI dışında hepsi bir arada uygulamaların sayısı çok azdı. Bu proje, kullanıcıların [OpenRouter (model listesi linki)](https://openrouter.ai/models) (veya küçük kod değişiklikleriyle [OpenAI (fiyatlandırma linki)](https://platform.openai.com/docs/pricing)) API anahtarlarını girerek istedikleri herhangi bir yapay zeka botu ile güvenli ve verimli bir şekilde sohbet etmelerini sağlıyor. Uygulama ayrıca resim yüklemeyi, kod veya mesaj kopyalamayı kolaylaştırıyor ve kodlama/sohbet deneyiminizi hızlandırıyor. İsterseniz uygulamayı başka işletim sistemlerine de genişletebilirsiniz.
 
 ## 🎯 Ana Özellikler
 
@@ -12,7 +12,7 @@ Bu projeyi, mevcut çözümler için yaklaşık 20$ ödeme yapmak yerine bir alt
   OpenRouter veya (küçük değişiklikler ile) OpenAI API anahtarınız ile farklı LLM botları arasında kolayca geçiş yapabilirsiniz.
 
 - **LaTeX Desteği**  
-  Matematiksel formülleri yazabilir ve çıktıları düzgün görüntüleyebilirsiniz.
+  Matematiksel formülleri yazabilir ve çıktıları düzgün görüntüleyebilirsiniz. (genellikle :D)
 
 - **Kod ve Yanıt Kopyalama**  
   Tek tıkla tüm mesajları veya kod bloklarını (kod bloğu kopyalama kısmi; tüm mesaj kopyalama tam olarak uygulanmıştır) kopyalayabilirsiniz.
