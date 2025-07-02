@@ -33,8 +33,6 @@ jobs:
           flutter --version
           flutter doctor
 
-      # --- YENİ EKLENEN ADIM ---
-      # flutter doctor'daki lisans uyarısını çözmek için lisansları otomatik olarak kabul et
       - name: Accept Android Licenses
         run: yes | flutter doctor --android-licenses
 
@@ -66,14 +64,14 @@ jobs:
       - name: Build APK (all platform)
         run: flutter build apk --release
 
-      - name: APK imza sertifika bilgilerini göster
-        run: |
-          echo "----------- APK İMZA DETAYLARI -----------"
-          apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
-          echo " "
-          echo "----------- RSA .dname BİLGİSİ -----------"
-          unzip -p build/app/outputs/flutter-apk/app-release.apk META-INF/*.RSA > CERT.RSA
-          keytool -printcert -file CERT.RSA
+      #- name: APK imza sertifika bilgilerini göster
+      #  run: |
+      #    echo "------------- APK İMZA DETAYLARI -------------"
+      #    apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
+      #    echo " "
+      #    echo "------------- RSA .dname BİLGİSİ -------------"
+      #    unzip -p build/app/outputs/flutter-apk/app-release.apk META-INF/*.RSA > CERT.RSA
+      #    keytool -printcert -file CERT.RSA
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
