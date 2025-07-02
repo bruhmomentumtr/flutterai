@@ -13,12 +13,34 @@ jobs:
       - name: Install dependencies for Flutter
         run: sudo apt-get update && sudo apt-get install -y curl unzip xz-utils zip libglu1-mesa apksigner
 
-      - name: Download Flutter SDK
+      - name: Download and install latest Flutter SDK
         run: |
-          curl -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.22.0-stable.tar.xz
-          tar -xf flutter.tar.xz
-          echo "$PWD/flutter/bin" >> $GITHUB_PATH
+          # 1. Flutter'ın sürüm bilgilerini içeren JSON dosyasının URL'sini tanımla
+          RELEASES_URL="https://storage.googleapis.com/flutter_infra_release/releases/releases_linux.json"
+          echo "Fetching release info from $RELEASES_URL"
 
+          # 2. JSON'dan en son kararlı (stable) sürümün bilgilerini al
+          #    - 'base_url': İndirme linkinin temel adresi
+          #    - 'stable_hash': En son kararlı sürümün benzersiz kimliği (git hash)
+          #    - 'archive_path': Bu hash'e ait olan sürümün indirme yolu
+          BASE_URL=$(curl -s $RELEASES_URL | jq -r '.base_url')
+          STABLE_HASH=$(curl -s $RELEASES_URL | jq -r '.current_release.stable')
+          ARCHIVE_PATH=$(curl -s $RELEASES_URL | jq -r --arg HASH "$STABLE_HASH" '.releases[] | select(.hash == $HASH) | .archive')
+
+          # 3. Tam indirme URL'sini oluştur
+          DOWNLOAD_URL="$BASE_URL/$ARCHIVE_PATH"
+          echo "Latest stable Flutter SDK download URL: $DOWNLOAD_URL"
+
+          # 4. En son sürümü indir
+          curl -o flutter.tar.xz "$DOWNLOAD_URL"
+
+          # 5. Arşivden çıkar
+          echo "Extracting Flutter SDK..."
+          tar -xf flutter.tar.xz
+
+          # 6. Flutter'ı PATH'e ekle
+          echo "$PWD/flutter/bin" >> $GITHUB_PATH
+          echo "Flutter SDK installed successfully."
       - name: Verify Flutter installation
         run: |
           flutter channel stable
