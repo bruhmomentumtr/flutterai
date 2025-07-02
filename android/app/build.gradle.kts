@@ -1,5 +1,5 @@
-import java.util.Properties // Properties sınıfını kullanmak için import edin
-import java.io.FileInputStream // Dosya okumak için import edin
+import java.util.Properties
+import java.io.FileInputStream
 
 plugins {
     id("com.android.application")
@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.openrouterapp"
+    namespace = "com.example.openrouterapp" // TODO: Kendi benzersiz değerinizle değiştirin!
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,41 +22,50 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.bmtr.openrouterapp" // TODO: Kendi benzersiz değerinizle değiştirin!
+        applicationId = "com.example.openrouterapp" // TODO: Kendi benzersiz değerinizle değiştirin!
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
-    // BURADAN İTİBAREN EKLEYİN VEYA DÜZENLEYİN
-
     // key.properties dosyasını oku
-    val keyPropertiesFile = file("../key.properties") // android/app/build.gradle.kts'den android/key.properties'e göreceli yol
+    val keyPropertiesFile = file("${project.rootDir}/android/key.properties") // Proje kök dizinine göre yol
     val keyProperties = Properties()
 
     if (keyPropertiesFile.exists()) {
         println("Reading signing properties from ${keyPropertiesFile.absolutePath}")
         keyPropertiesFile.inputStream().use { keyProperties.load(it) }
     } else {
-        println("Warning: key.properties not found at ${keyPropertiesFile.absolutePath}. Release build might fail if signingConfig is required.")
         // GitHub Actions ortamında bu dosya oluşturulacağı için burada hata vermeyecek.
         // Lokal debug build'lerde dosya olmayabilir, bu durumda debug signing kullanılır.
+        println("Warning: key.properties not found at ${keyPropertiesFile.absolutePath}. Release build might fail if signingConfig is required.")
     }
 
     signingConfigs {
         create("release") {
-            // key.properties dosyasından okunan değerleri kullan
-            // Güvenlik nedeniyle, bu değerlerin key.properties dosyasında olduğundan emin olun
-            // ve bu dosyayı .gitignore'a ekleyin (GitHub Actions'ta runtime'da oluşturuluyor).
+            // Keystore dosyasının yolunu, build.gradle.kts dosyasının bulunduğu dizine (android/app) göre göreceli olarak belirtin.
+            // Workflow'da dosya android/app/my-release-key.jks olarak decode ediliyor.
+            storeFile = file("my-release-key.jks") // <-- Burayı değiştirdik!
 
-            // storeFile path'i key.properties içinde proje kök dizinine göre verilmiş olmalı
-            // (Sizin Actions adımınızda "storeFile=android/app/my-release-key.jks" olarak ayarlanıyor)
-            // Bu path'i proje kök dizinine göre çözümlememiz gerekiyor.
-            storeFile = file("${project.rootDir}/${keyProperties["storeFile"]}")
-            storePassword = keyProperties["storePassword"] as String
-            keyAlias = keyProperties["keyAlias"] as String
-            keyPassword = keyProperties["keyPassword"] as String
+            // Şifre ve alias'ı key.properties'ten okuyun
+            val storePass = keyProperties.getProperty("storePassword")
+            val keyPass = keyProperties.getProperty("keyPassword")
+            val keyAliasVal = keyProperties.getProperty("keyAlias")
+
+            // Check if properties were read successfully
+            if (storePass != null && keyPass != null && keyAliasVal != null) {
+                storePassword = storePass
+                keyPassword = keyPass
+                keyAlias = keyAliasVal
+            } else {
+                println("Error: Missing signing properties (password, alias) in key.properties!")
+                // Eğer key.properties dosyası varsa ama içindeki değerler eksikse, build'i durdur.
+                if (keyPropertiesFile.exists()) {
+                     throw GradleException("Signing properties are missing in key.properties!")
+                }
+                // Eğer key.properties dosyası yoksa (lokal build gibi), hata fırlatma.
+            }
         }
     }
 
@@ -65,8 +74,7 @@ android {
             // Kendi release imzalama yapılandırmanızı kullanın
             // key.properties dosyası varsa "release" signingConfig'i kullanır.
             // Yoksa (lokal debug gibi), signingConfig varsayılan olarak null kalır veya debug kullanılır.
-            // Flutter'ın varsayılan şablonu debug'ı kullandığı için, key.properties yoksa debug signing devreye girer.
-            // Eğer key.properties yoksa build'in hata vermesini isterseniz, burada bir kontrol ekleyebilirsiniz.
+            // key.properties yoksa ve release build yapılıyorsa, signingConfig eksik kalır ve Gradle hata verir.
             signingConfig = signingConfigs.getByName("release")
 
             // TODO: Add your own signing config for the release build.
@@ -74,7 +82,7 @@ android {
             // signingConfig = signingConfigs.getByName("debug") // <-- Bu satırı silebilirsiniz veya yorum satırı yapabilirsiniz
         }
     }
-    // BURAYA KADAR EKLEYİN VEYA DÜZENLEYİN
+    // ... (diğer ayarlarınız) ...
 }
 
 flutter {
