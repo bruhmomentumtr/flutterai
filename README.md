@@ -1,0 +1,2 @@
+FOR ENGLISH README [HERE](https://github.com/bruhmomentumtr/flutterai/blob/main/README_TURKISH.md)
+FOR TURKISH README [BURASI](https://github.com/bruhmomentumtr/flutterai/blob/main/README_TURKISH.md)
