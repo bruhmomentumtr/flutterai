@@ -1,0 +1,69 @@
+name: Build APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies for Flutter
+        run: sudo apt-get update && sudo apt-get install -y curl unzip xz-utils zip libglu1-mesa apksigner
+
+      - name: Download Flutter SDK
+        run: |
+          curl -o flutter.tar.xz https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.22.0-stable.tar.xz
+          tar -xf flutter.tar.xz
+          echo "$PWD/flutter/bin" >> $GITHUB_PATH
+
+      - name: Verify Flutter installation
+        run: |
+          flutter channel stable
+          flutter upgrade
+          flutter --version
+
+      - name: Install Flutter dependencies
+        run: flutter pub get
+
+      - name: Keystore'u oluştur
+        run: echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > android/app/my-release-key.jks
+
+      - name: Verify Keystore File Exists
+        run: |
+          ls -al android/app/my-release-key.jks
+          ls -al android/app/ # List contents of android/app
+          pwd # Print current working directory
+          echo "Project Root Dir: ${{ github.workspace }}" # Print GitHub workspace (should be project root)
+
+      - name: key.properties oluştur
+        run: |
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEYSTORE_ALIAS }}" >> android/key.properties
+        shell: bash
+
+      - name: Verify key.properties Exists and Content (Secrets Masked)
+        run: |
+          ls -al android/key.properties
+          cat android/key.properties # Secrets will be masked in logs
+
+      - name: Build APK (all platform)
+        run: flutter build apk --release
+
+      - name: APK imza sertifika bilgilerini göster
+        run: |
+          echo "----------- APK İMZA DETAYLARI -----------"
+          apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
+          echo " "
+          echo "----------- RSA .dname BİLGİSİ -----------"
+          unzip -p build/app/outputs/flutter-apk/app-release.apk META-INF/*.RSA > CERT.RSA
+          keytool -printcert -file CERT.RSA
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-release-apk-arm64-v8a
+          path: build/app/outputs/flutter-apk/app-release.apk
