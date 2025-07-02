@@ -62,7 +62,7 @@ jobs:
           cat android/key.properties # Secrets will be masked in logs
 
       - name: Build APK (all platform)
-        run: flutter build apk --release
+        run: flutter build apk --split-per-abi --release
 
       #- name: APK imza sertifika bilgilerini göster
       #  run: |
@@ -76,5 +76,5 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: app-release-apk-per-abi
+          path: build/app/outputs/flutter-apk/
