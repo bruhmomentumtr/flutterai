@@ -48,7 +48,7 @@ Bu projeyi, mevcuttaki platformlar için yaklaşık 20$ ödeme yapmak yerine bir
      ANDROID_KEYSTORE_PASSWORD: İstediğiniz bir değer oluşturun
      ANDROID_KEY_PASSWORD: İstediğiniz bir değer oluşturun
      ```
-   - Bu değerleri bir yere kaydedin; ileride cihaz değiştirirseniz yeniden lazım olacak. Aksi takdirde imza çakışmalarından dolayı uygulamayı güncelleyemezsiniz.
+   - Bu değerleri bir yere kaydedin; ileride local olarak bir cihazda build ederken yeniden lazım olacak. Aksi takdirde imza çakışmalarından dolayı uygulamayı güncelleyemezsiniz.
 
 3. **Veya [bir release üzerinden sürüm indirerek](https://github.com/bruhmomentumtr/flutterai/releases) hızlıca başlayın.**
 
