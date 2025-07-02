@@ -4,7 +4,7 @@ Kendi OpenRouter veya OpenAI API anahtarınızı kullanarak çeşitli yapay zeka
 
 ## 🚀 Projenin Amacı
 
-Bu proje, aslında 20 dolar gibi bir fiyatı ödememek için alternatif ararken "kullandığın kadar öde" (pay-as-you-go) olarak geçen api sistemiyle tanıştım, ancak biraz araştırmayla baktığımda çok fazla hepsi bir arada uygulama yoktu, (open webui hariç) bende kullanıcıların [OpenRouter](https://openrouter.ai/) veya (kodlarda değişiklik yaparak) [OpenAI](https://openai.com/) entegrasyonu ile API anahtarlarını girerek diledikleri AI botu ile güvenli ve hızlı şekilde sohbet edebilmelerini sağlayan. Fotoğraf yükleyebildiğiniz ve hatta kodlama için bile rahatça mesaj kopyalamayı sağlayan bir program tasarladım. İsterseniz diğer işletim sistemleri içinde geliştirebilirsiniz.
+Bu proje, aslında 20 dolar gibi bir fiyatı ödememek için alternatif ararken "kullandığın kadar öde" (pay-as-you-go) olarak geçen api sistemiyle tanıştım, ancak biraz araştırmayla baktığımda çok fazla hepsi bir arada uygulama yoktu, (open webui hariç) bende kullanıcıların [OpenRouter model list](https://openrouter.ai/models) veya (kodlarda değişiklik yaparak) [OpenAI pricing](https://platform.openai.com/docs/pricing) entegrasyonu ile API anahtarlarını girerek diledikleri AI botu ile güvenli ve hızlı şekilde sohbet edebilmelerini sağlayan. Fotoğraf yükleyebildiğiniz ve hatta kodlama için bile rahatça mesaj kopyalamayı sağlayan bir program tasarladım. İsterseniz diğer işletim sistemleri içinde geliştirebilirsiniz.
 
 ## 🎯 Temel Özellikler
 
@@ -70,6 +70,7 @@ iletişim: fatihkartal64@protonmail.com
 - botları kolayca aratma
 - ilk kurulum sonrası sohbetin listede gözükmeme durumu
 - material you renk desteği
+- kullanıcıların iki saat kodlamayla uğraşmasın diye openai için hazırlanmış ama varsayılan olarak kullanmayacağım dart dosyaları (kopyala yapıştır endpoint'le bot listesini ayarla geç :D)
 
 ## virustotal taraması
 https://www.virustotal.com/gui/file-analysis/NGZjZGFhYzI3ODVmNGZkODFmZTg2Y2M0YjE0OTg4ZGU6MTc1MTQ1ODMzMg==
