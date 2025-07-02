@@ -68,3 +68,6 @@ iletişim: fatihkartal64@protonmail.com
 - botları kolayca aratma
 - ilk kurulum sonrası sohbetin listede gözükmeme durumu
 - material you renk desteği
+
+## virustotal taraması
+![virustotal linki](https://www.virustotal.com/gui/file-analysis/NGZjZGFhYzI3ODVmNGZkODFmZTg2Y2M0YjE0OTg4ZGU6MTc1MTQ1ODMzMg==)
