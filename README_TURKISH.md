@@ -48,7 +48,7 @@ Bu projeyi, mevcuttaki platformlar için yaklaşık 20$ ödeme yapmak yerine bir
      ANDROID_KEYSTORE_PASSWORD: İstediğiniz bir değer oluşturun
      ANDROID_KEY_PASSWORD: İstediğiniz bir değer oluşturun
      ```
-   - Bu değerleri bir yere kaydedin; konum değiştirirseniz yeniden lazım olacak. Aksi takdirde imza çakışmalarından dolayı uygulamayı güncelleyemezsiniz.
+   - Bu değerleri bir yere kaydedin; ileride cihaz değiştirirseniz yeniden lazım olacak. Aksi takdirde imza çakışmalarından dolayı uygulamayı güncelleyemezsiniz.
 
 3. **Veya [bir release üzerinden sürüm indirerek](https://github.com/bruhmomentumtr/flutterai/releases) hızlıca başlayın.**
 
@@ -57,7 +57,7 @@ Bu projeyi, mevcuttaki platformlar için yaklaşık 20$ ödeme yapmak yerine bir
 1. API anahtarınızı ilk kurulumda veya sonradan ayarlar bölümünden girin.
 2. Sağ üst köşeden sohbet etmek istediğiniz modeli seçin.
 3. Herhangi bir soru sorabilir veya kodu mesaj olarak gönderebilirsiniz.
-4. Ayarlardan raw formatı etkinleştirerek markdown okuma sorunlarını çözebilirsiniz.
+4. Ayarlardan raw formatı etkinleştirerek (olursa) markdown okuma sorunlarını çözebilirsiniz.
 
 ## 💡 Özelleştirme
 
