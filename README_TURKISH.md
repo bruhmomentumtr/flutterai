@@ -1,76 +1,80 @@
 # flutterai
 
-Kendi OpenRouter veya OpenAI API anahtarınızı kullanarak çeşitli yapay zeka botlarıyla konuşmanızı sağlayan modern bir sohbet uygulaması.
+Kendi OpenRouter veya OpenAI API anahtarlarınızı kullanarak çeşitli yapay zeka botlarıyla sohbet etmenizi sağlayan modern bir sohbet uygulaması.
 
 ## 🚀 Projenin Amacı
 
-Bu proje, aslında 20 dolar gibi bir fiyatı ödememek için alternatif ararken "kullandığın kadar öde" (pay-as-you-go) olarak geçen api sistemiyle tanıştım, ancak biraz araştırmayla baktığımda çok fazla hepsi bir arada uygulama yoktu, (open webui hariç) bende kullanıcıların [OpenRouter model list](https://openrouter.ai/models) veya (kodlarda değişiklik yaparak) [OpenAI pricing](https://platform.openai.com/docs/pricing) entegrasyonu ile API anahtarlarını girerek diledikleri AI botu ile güvenli ve hızlı şekilde sohbet edebilmelerini sağlayan. Fotoğraf yükleyebildiğiniz ve hatta kodlama için bile rahatça mesaj kopyalamayı sağlayan bir program tasarladım. İsterseniz diğer işletim sistemleri içinde geliştirebilirsiniz.
+Bu projeyi, mevcut çözümler için yaklaşık 20$ ödeme yapmak yerine bir alternatif ararken oluşturdum. "Kullandıkça öde" API sistemini keşfettim fakat Open WebUI dışında hepsi bir arada uygulamaların sayısı çok azdı. Bu proje, kullanıcıların [OpenRouter model listesini](https://openrouter.ai/models) (veya küçük kod değişiklikleriyle [OpenAI fiyatlandırma](https://platform.openai.com/docs/pricing)) API anahtarlarını girerek istedikleri herhangi bir yapay zeka botu ile güvenli ve verimli bir şekilde sohbet etmelerini sağlıyor. Uygulama ayrıca resim yüklemeyi, kod veya mesaj kopyalamayı kolaylaştırıyor ve kodlama/sohbet deneyiminizi hızlandırıyor. İsterseniz uygulamayı başka işletim sistemlerine de genişletebilirsiniz.
 
-## 🎯 Temel Özellikler
+## 🎯 Ana Özellikler
 
 - **Çoklu Bot Desteği**  
-  OpenRouter veya (kodlarda değişiklik yaparak) OpenAI API anahtarınızı girerek farklı LLM botları arasında geçiş yapabilirsiniz.
+  OpenRouter veya (küçük değişiklikler ile) OpenAI API anahtarınız ile farklı LLM botları arasında kolayca geçiş yapabilirsiniz.
 
 - **LaTeX Desteği**  
-  Matematiksel formüller yazabilir, çıktıları düzgün şekilde görüntüleyebilirsiniz.
+  Matematiksel formülleri yazabilir ve çıktıları düzgün görüntüleyebilirsiniz.
 
-- **Kod ve Cevap Kopyalama**  
-  Mesajların ve kod bloklarının (kod blokları tamamen olmasa da tüm mesajı birden) tek tıkla kolayca kopyalayın.
+- **Kod ve Yanıt Kopyalama**  
+  Tek tıkla tüm mesajları veya kod bloklarını (kod bloğu kopyalama kısmi; tüm mesaj kopyalama tam olarak uygulanmıştır) kopyalayabilirsiniz.
 
-- **Kolay Kurulum & Kullanım**  
-  Basit arayüz ile dakikalar içinde sohbet etmeye başlayın.
+- **Kolay Kurulum ve Kullanım**  
+  Basit kullanıcı arayüzü ile dakikalar içinde sohbete başlayın.
 
 - **Koyu ve Açık Tema**  
-  Göz yormayan kişiselleştirilebilir tema seçenekleri.
+  Göz dostu tema seçenekleri ile deneyiminizi kişiselleştirin.
 
-## 📸 Ekran Görüntüleri
-![ilk giriş ekranı](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(1).jpg)
-![mesajlaşma arayüzü](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(2).jpg)
-![latex ve markdown desteği](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(3).jpg)
-![sohbet listesi](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(4).jpg)
-![bot seçim listesi](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(6).jpg)
-![ayarlar ekranı](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(5).jpg)
+## 📸 Ekran Görüntüleri (Uygulamanın tam İngilizce arayüz desteği şu an yok)
+![İlk giriş ekranı](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(1).jpg)
+![Sohbet arayüzü](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(2).jpg)
+![LaTeX ve markdown desteği](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(3).jpg)
+![Sohbet listesi](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(4).jpg)
+![Bot seçme listesi](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(6).jpg)
+![Ayarlar ekranı](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(5).jpg)
 
 ## 🛠️ Kurulum
-1) **projeyi zip olarak indirdikten sonra**
-```bash
-flutter pub get
-flutter build apk
-```
-2) **veya projeyi fork'layarak actions üzerinden**
-- keystore oluşturup base kodunu elde edin (NOT: güvenlik için sonradan bu oluşan kodu farklı yere kaydedip, workflow geçmişinden sil)
-- ayarlar > secrets and variables > actions > repository secrets'a gelin
-```bash
-ANDROID_KEYSTORE: base64 kodunu gir
-ANDROID_KEYSTORE_ALIAS: kafana göre değer oluştur :D
-ANDROID_KEYSTORE_PASSWORD: kafana göre değer oluştur :D
-ANDROID_KEY_PASSWORD: kafana göre değer oluştur :D
-```
-bu değerlerin hepsini farklı bir yere not et sonradan başka yerde devam edersen imza çakışmasından uygulamanı **güncelleyemezsin**
 
-3) **Veya [yayınlanan sürümleri](https://github.com/bruhmomentumtr/flutterai/releases) kullanarak hızlıca başlayabilirsiniz.**
+1. **Projeyi ZIP olarak indirdikten sonra:**
+   ```bash
+   flutter pub get
+   flutter build apk
+   ```
+
+2. **Veya projeyi fork'layıp GitHub Actions kullanarak:**
+   - Bir keystore oluşturun ve base64 kodunu alın (**Önemli:** Bu kodu güvenli bir yerde saklayın, workflow geçmişinizden silmeyi unutmayın).
+   - Depo ayarlarından > secrets and variables > actions > repository secrets bölümüne girin ve şunları ekleyin:
+     ```
+     ANDROID_KEYSTORE: Base64 kodunuzu girin
+     ANDROID_KEYSTORE_ALIAS: İstediğiniz bir değer oluşturun
+     ANDROID_KEYSTORE_PASSWORD: İstediğiniz bir değer oluşturun
+     ANDROID_KEY_PASSWORD: İstediğiniz bir değer oluşturun
+     ```
+   - Bu değerleri bir yere kaydedin; konum değiştirirseniz yeniden lazım olacak. Aksi takdirde imza çakışmalarından dolayı uygulamayı güncelleyemezsiniz.
+
+3. **Veya [bir release üzerinden sürüm indirerek](https://github.com/bruhmomentumtr/flutterai/releases) hızlıca başlayın.**
 
 ## ⚙️ Kullanım
 
-1. API anahtarınızı ilk kurulumda direkt olarak veya ayarlar kısmında ekleyin.  
-2. Sohbet etmek istediğiniz modeli sağ-üst köşeden seçin.  
-3. Her türlü soruyu veya kodu yazarak gönderin.
-4. ayarlardan ham formatı açarak oluşan markdown hatalarından okunurluğu düzeltin
+1. API anahtarınızı ilk kurulumda veya sonradan ayarlar bölümünden girin.
+2. Sağ üst köşeden sohbet etmek istediğiniz modeli seçin.
+3. Herhangi bir soru sorabilir veya kodu mesaj olarak gönderebilirsiniz.
+4. Ayarlardan raw formatı etkinleştirerek markdown okuma sorunlarını çözebilirsiniz.
 
 ## 💡 Özelleştirme
 
-- Desteklenen bot veya model sayısını arttırabilirsiniz.
+- Desteklenen bot veya model sayısını istediğiniz gibi artırabilirsiniz.
 
-## 🤝 Katkı
+## 🤝 Katkıda Bulunma
 
-Her türlü geliştirme, hata bildirimi veya öneri için eposta gönderebilir veya (Issues) üzerinde tartışma başlatabilirsiniz.
-iletişim: fatihkartal64@protonmail.com
+Hata bildirmek, özellik talep etmek ya da öneride bulunmak için e-posta gönderebilir veya issue açabilirsiniz.  
+İletişim: fatihkartal64@protonmail.com
 
-## eklenecek veya düzeltilecek özellikler
-- botları kolayca aratma
-- ilk kurulum sonrası sohbetin listede gözükmeme durumu
-- material you renk desteği
-- kullanıcıların iki saat kodlamayla uğraşmasın diye openai için hazırlanmış ama varsayılan olarak kullanmayacağım dart dosyaları (kopyala yapıştır endpoint'le bot listesini ayarla geç :D)
+## Yakında Gelecek Özellikler & Düzeltmeler
 
-## virustotal taraması
+- Bot arama fonksiyonunun kolaylaştırılması
+- İlk kurulumdan sonra sohbetlerin listede görünmeme sorununun çözümü
+- Material You renk desteği
+- Açıkça kodlanmış OpenAI entegrasyon dosyaları (endpoint’i kopyala-yapıştır, bot listesi ayarla ve hazır! :D)
+
+## VirusTotal Taraması
+
 https://www.virustotal.com/gui/file-analysis/NGZjZGFhYzI3ODVmNGZkODFmZTg2Y2M0YjE0OTg4ZGU6MTc1MTQ1ODMzMg==
