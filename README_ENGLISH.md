@@ -23,7 +23,7 @@ I created this project after searching for alternatives to avoid paying around $
 - **Dark and Light Themes**  
   Personalize your experience with eye-friendly theme options.
 
-## 📸 Screenshots
+## 📸 Screenshots (app not suppoorts full english UI for now)
 ![First login screen](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(1).jpg)
 ![Chat interface](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(2).jpg)
 ![LaTeX and markdown support](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(3).jpg)
