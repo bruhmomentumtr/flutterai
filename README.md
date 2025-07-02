@@ -24,8 +24,12 @@ Bu proje, kullanıcıların [OpenRouter](https://openrouter.ai/) veya (kodlarda 
   Göz yormayan kişiselleştirilebilir tema seçenekleri.
 
 ## 📸 Ekran Görüntüleri
-
-
+![ilk giriş ekranı](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(1).jpg)
+![mesajlaşma arayüzü](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(2).jpg)
+![latex ve markdown desteği](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(3).jpg)
+![sohbet listesi](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(4).jpg)
+![bot seçim listesi](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(6).jpg)
+![ayarlar ekranı](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(5).jpg)
 
 ## 🛠️ Kurulum
 1) projeyi zip olarak indirdikten sonra
