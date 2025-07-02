@@ -48,7 +48,7 @@ I created this project after searching for alternatives to avoid paying around $
      ANDROID_KEYSTORE_PASSWORD: Create a value of your choice
      ANDROID_KEY_PASSWORD: Create a value of your choice
      ```
-   - Save these values somewhere; if you change location later, you’ll need them. Otherwise, you won't be able to update the app due to signature conflicts.
+   - Save these values somewhere; if you download and want to build in local pc later, you’ll need them. Otherwise, you won't be able to update the app due to signature conflicts.
 
 3. **Or [download a release](https://github.com/bruhmomentumtr/flutterai/releases) to get started quickly.**
 
