@@ -24,18 +24,18 @@ const int _maxTokens = 5;
 const double _testTemperature = 0.0;
 const int _maxFileSize = 25 * 1024 * 1024; // 25MB in bytes
 
-// Model constants
+// Model constants, this is for testing the connection.
 const String _mistralModel = 'mistralai/ministral-3b';
 const int _titleMaxTokens = 128;
 const int _titleMaxLength = 200;
 
-// Request-related constants
+// Request-related constants this is for openrouter activity panel
 const String _contentType = 'application/json';
 const String _httpReferer = 'https://github.com/bruhmomentumtr/flutterai';
 const String _appTitle = 'FlutterAI Chat App';
 const String _authorizationPrefix = 'Bearer ';
 
-// Default models in case API fails
+// Default models in case API fails (like no internet)
 const List<String> _defaultModels = [
   'openai/gpt-3.5-turbo',
   'openai/gpt-4',
