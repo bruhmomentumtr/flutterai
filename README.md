@@ -53,6 +53,7 @@ flutter build apk
 1. API anahtarınızı ilk kurulumda direkt olarak veya ayarlar kısmında ekleyin.  
 2. Sohbet etmek istediğiniz modeli sağ-üst köşeden seçin.  
 3. Her türlü soruyu veya kodu yazarak gönderin.
+4. ayarlardan ham formatı açarak oluşan markdown hatalarından okunurluğu düzeltin
 
 ## 💡 Özelleştirme
 
