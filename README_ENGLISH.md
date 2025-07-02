@@ -12,7 +12,7 @@ I created this project after searching for alternatives to avoid paying around $
   Easily switch between different LLM bots via your OpenRouter or (with small changes) OpenAI API key.
 
 - **LaTeX Support**  
-  Write mathematical formulas and display outputs correctly.
+  Write mathematical formulas and display outputs correctly. (mostly :D)
 
 - **Copy Code and Answers**  
   Copy entire messages or code blocks with a single click (code block-only copy is partial; full-message copy is implemented).
