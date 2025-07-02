@@ -37,6 +37,7 @@ jobs:
           echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.ANDROID_KEYSTORE_ALIAS }}" >> android/key.properties
           echo "storeFile=android/app/my-release-key.jks" >> android/key.properties
+        shell: bash
 
       - name: Build APK (all platform)
         run: flutter build apk --release
