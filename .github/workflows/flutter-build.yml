@@ -51,7 +51,7 @@ jobs:
           cat android/key.properties # Secrets will be masked in logs
 
       - name: Build APK (all platform)
-        run: flutter build apk --release --stacktrace
+        run: flutter build apk --release
 
       - name: APK imza sertifika bilgilerini göster
         run: |
