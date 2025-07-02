@@ -32,12 +32,12 @@ Bu proje, kullanıcıların [OpenRouter](https://openrouter.ai/) veya (kodlarda 
 ![ayarlar ekranı](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(5).jpg)
 
 ## 🛠️ Kurulum
-1) projeyi zip olarak indirdikten sonra
+1) **projeyi zip olarak indirdikten sonra**
 ```bash
 flutter pub get
 flutter build apk
 ```
-2) veya projeyi fork'layarak actions üzerinden
+2) **veya projeyi fork'layarak actions üzerinden**
 - keystore oluşturup base kodunu elde edin (NOT: güvenlik için sonradan bu oluşan kodu farklı yere kaydedip, workflow geçmişinden sil)
 - ayarlar > secrets and variables > actions > repository secrets'a gelin
 - ANDROID_KEYSTORE: base64 kodunu gir
@@ -46,7 +46,7 @@ flutter build apk
 - ANDROID_KEY_PASSWORD: kafana göre değer oluştur :D
 - bu değerlerin hepsini farklı bir yere not et sonradan başka yerde devam edersen imza çakışmasından uygulamanı güncelleyemezsin
 
-3) Veya [yayınlanan sürümleri](https://github.com/bruhmomentumtr/flutterai/releases) kullanarak hızlıca başlayabilirsiniz.
+3) **Veya [yayınlanan sürümleri](https://github.com/bruhmomentumtr/flutterai/releases) kullanarak hızlıca başlayabilirsiniz.**
 
 ## ⚙️ Kullanım
 
@@ -60,7 +60,8 @@ flutter build apk
 
 ## 🤝 Katkı
 
-Her türlü geliştirme, hata bildirimi veya öneri için PR gönderebilir veya (Issues) üzerinde tartışma başlatabilirsiniz.
+Her türlü geliştirme, hata bildirimi veya öneri için eposta gönderebilir veya (Issues) üzerinde tartışma başlatabilirsiniz.
+iletişim: fatihkartal64@protonmail.com
 
 ## eklenecek veya düzeltilecek özellikler
 - botları kolayca aratma
