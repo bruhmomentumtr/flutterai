@@ -31,6 +31,16 @@ jobs:
       - name: Install Flutter project
         run: flutter create .
 
+      - name: Keystore'u oluştur
+        run: echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > android/app/my-release-key.jks
+
+      - name: key.properties oluştur
+        run: |
+          echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > android/key.properties
+          echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEYSTORE_ALIAS }}" >> android/key.properties
+          echo "storeFile=android/app/my-release-key.jks" >> android/key.properties
+
       - name: Build APK (all platform)
         run: flutter build apk --release
 
