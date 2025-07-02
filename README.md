@@ -72,4 +72,4 @@ iletişim: fatihkartal64@protonmail.com
 - material you renk desteği
 
 ## virustotal taraması
-![virustotal linki](https://www.virustotal.com/gui/file-analysis/NGZjZGFhYzI3ODVmNGZkODFmZTg2Y2M0YjE0OTg4ZGU6MTc1MTQ1ODMzMg==)
+https://www.virustotal.com/gui/file-analysis/NGZjZGFhYzI3ODVmNGZkODFmZTg2Y2M0YjE0OTg4ZGU6MTc1MTQ1ODMzMg==
