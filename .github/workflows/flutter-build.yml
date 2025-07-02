@@ -31,16 +31,27 @@ jobs:
       - name: Keystore'u oluştur
         run: echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > android/app/my-release-key.jks
 
+      - name: Verify Keystore File Exists
+        run: |
+          ls -al android/app/my-release-key.jks
+          ls -al android/app/ # List contents of android/app
+          pwd # Print current working directory
+          echo "Project Root Dir: ${{ github.workspace }}" # Print GitHub workspace (should be project root)
+
       - name: key.properties oluştur
         run: |
           echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" > android/key.properties
           echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
           echo "keyAlias=${{ secrets.ANDROID_KEYSTORE_ALIAS }}" >> android/key.properties
-          echo "storeFile=android/app/my-release-key.jks" >> android/key.properties
         shell: bash
 
+      - name: Verify key.properties Exists and Content (Secrets Masked)
+        run: |
+          ls -al android/key.properties
+          cat android/key.properties # Secrets will be masked in logs
+
       - name: Build APK (all platform)
-        run: flutter build apk --release
+        run: flutter build apk --release --stacktrace
 
       - name: APK imza sertifika bilgilerini göster
         run: |
