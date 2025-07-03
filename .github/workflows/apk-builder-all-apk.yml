@@ -1,4 +1,4 @@
-name: Build APK for development (al platforms)
+name: Build APK for development (all platforms)
 
 on:
   workflow_dispatch:
