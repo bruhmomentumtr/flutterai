@@ -67,9 +67,9 @@ class BotProvider extends ChangeNotifier {
     _bots = [
       Bot(
         id: const Uuid().v4(),
-        name: 'Llama 3.2 11b vision free',
-        model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
-        iconName: 'smart_toy',
+        name: 'openrouter auto',
+        model: 'openrouter/auto',
+        iconName: 'chat',
       ),
       Bot(
         id: const Uuid().v4(),
@@ -94,12 +94,12 @@ class BotProvider extends ChangeNotifier {
         name: 'gemma 3 27b',
         model: 'google/gemma-3-27b-it',
         iconName: 'chat',
-      ),
+      )
       Bot(
         id: const Uuid().v4(),
-        name: 'openrouter auto',
-        model: 'openrouter/auto',
-        iconName: 'chat',
+        name: 'Llama 3.2 11b vision free',
+        model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
+        iconName: 'smart_toy',
       ),
       Bot(
         id: const Uuid().v4(),
