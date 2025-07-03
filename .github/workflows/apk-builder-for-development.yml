@@ -1,10 +1,10 @@
-name: Build APK for development
+name: Build APK for development (split per abi)
 
 on:
   workflow_dispatch:
 
 jobs:
-  build-apk:
+  build-apk-per-abi:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
