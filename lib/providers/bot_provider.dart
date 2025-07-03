@@ -67,14 +67,14 @@ class BotProvider extends ChangeNotifier {
     _bots = [
       Bot(
         id: const Uuid().v4(),
-        name: 'Llama 3.2 11 b vision free',
+        name: 'Llama 3.2 11b vision free',
         model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
         iconName: 'smart_toy',
       ),
       Bot(
         id: const Uuid().v4(),
-        name: 'gemini 2.5 flash thinking',
-        model: 'google/gemini-2.5-flash-preview:thinking',
+        name: 'gemini 2.5 flash',
+        model: 'google/gemini-2.5-flash',
         iconName: 'chat',
       ),
       Bot(
@@ -86,13 +86,13 @@ class BotProvider extends ChangeNotifier {
       Bot(
         id: const Uuid().v4(),
         name: 'Qwen 3.0 14b',
-        model: 'qwen/qwen3-14b:free',
+        model: 'qwen/qwen3-14b',
         iconName: 'chat',
       ),
       Bot(
         id: const Uuid().v4(),
-        name: 'gemma 3 27b free',
-        model: 'google/gemma-3-27b-it:free',
+        name: 'gemma 3 27b',
+        model: 'google/gemma-3-27b-it',
         iconName: 'chat',
       ),
       Bot(
@@ -106,6 +106,12 @@ class BotProvider extends ChangeNotifier {
         name: 'ministral 8b',
         model: 'mistralai/ministral-8b',
         iconName: 'chat',
+      ),
+      Bot(
+        id: const Uuid().v4(),
+        name: 'claude sonnet 4',
+        model: 'anthropic/claude-sonnet-4',
+        iconName: 'smart_toy',
       ),
     ];
     
