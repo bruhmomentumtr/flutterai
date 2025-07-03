@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.bmtr.openrouterapp" // TODO: Kendi benzersiz değerinizle değiştirin!
+    namespace = "com.example.openrouterapp" // TODO: Kendi benzersiz değerinizle değiştirin!
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -23,7 +23,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.bmtr.openrouterapp" // TODO: Kendi benzersiz değerinizle değiştirin!
+        applicationId = "com.example.openrouterapp" // TODO: Kendi benzersiz değerinizle değiştirin!
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
