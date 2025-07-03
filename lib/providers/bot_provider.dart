@@ -94,7 +94,7 @@ class BotProvider extends ChangeNotifier {
         name: 'gemma 3 27b',
         model: 'google/gemma-3-27b-it',
         iconName: 'chat',
-      )
+      ),
       Bot(
         id: const Uuid().v4(),
         name: 'Llama 3.2 11b vision free',
