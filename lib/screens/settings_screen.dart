@@ -7,7 +7,7 @@ import '../providers/settings_provider.dart';
 
 // Default settings values
 const double _defaultTemperature = 0.7;
-const int _defaultMaxTokens = 1024;
+const int _defaultMaxTokens = 2048;
 const String _defaultSystemPrompt = """You are a helpful assistant that formats responses clearly. 
 
 When writing mathematical expressions or equations, you MUST use LaTeX syntax in your responses.
