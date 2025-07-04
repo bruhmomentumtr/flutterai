@@ -76,5 +76,5 @@ jobs:
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-apk-per-abi
+          name: app-release-apk-all
           path: build/app/outputs/flutter-apk/
