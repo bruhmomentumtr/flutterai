@@ -28,7 +28,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
   
   String _selectedModel = 'openai/gpt-3.5-turbo';
   double _temperature = 0.7;
-  int _maxTokens = 1024;
+  int _maxTokens = 2048;
   String _selectedIcon = 'chat';
 
   final List<MapEntry<String, IconData>> _iconOptions = [
@@ -171,8 +171,8 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                         Slider(
                           value: _temperature,
                           min: 0.0,
-                          max: 1.0,
-                          divisions: 10,
+                          max: 2.0,
+                          divisions: 20,
                           label: _temperature.toStringAsFixed(1),
                           onChanged: (value) {
                             setState(() {
