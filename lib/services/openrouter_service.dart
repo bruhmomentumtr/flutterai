@@ -20,7 +20,7 @@ const Duration _receiveTimeout = Duration(seconds: 60);
 const Duration _sendTimeout = Duration(seconds: 30);
 const Duration _requestTimeout = Duration(seconds: 10);
 const Duration _testTimeout = Duration(seconds: 8);
-const int _maxTokens = 5;
+const int _maxTokensForCheck = 5;
 const double _testTemperature = 0.0;
 const int _maxFileSize = 25 * 1024 * 1024; // 25MB in bytes
 
@@ -157,6 +157,9 @@ class OpenRouterService {
         // Get all available models
         final availableModels =
             models.map((model) => model['id'].toString()).toList();
+
+        // Sort the models alphabetically
+        availableModels.sort(); // <-- DEĞİŞİKLİK BURADA
 
         // Ensure at least one model is returned
         if (availableModels.isEmpty) {
@@ -402,7 +405,7 @@ class OpenRouterService {
         'messages': [
           {'role': 'user', 'content': 'Say "OK" if you can read this.'}
         ],
-        'max_tokens': _maxTokens,
+        'max_tokens': _maxTokensForCheck,
         'temperature': _testTemperature,
       };
 
