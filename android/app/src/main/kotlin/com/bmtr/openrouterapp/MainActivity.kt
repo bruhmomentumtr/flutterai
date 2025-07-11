@@ -1,4 +1,4 @@
-package com.example.openrouterapp
+package com.bmtr.openrouterapp
 
 import io.flutter.embedding.android.FlutterActivity
 
