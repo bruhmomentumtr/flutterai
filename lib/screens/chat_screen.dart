@@ -9,11 +9,15 @@ import '../providers/settings_provider.dart';
 import '../providers/bot_provider.dart';
 import '../models/bot.dart';
 import '../services/openrouter_service.dart';
+import '../services/network_service.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/message_input.dart';
 import '../widgets/bot_editor_dialog.dart';
 import 'settings_screen.dart';
 import 'session_list_screen.dart';
+
+// İnternet bağlantısı uyarısı için sabit
+const String _textNoInternet = 'İnternet bağlantısı yok. Mesaj göndermek için bağlantı gereklidir.';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
