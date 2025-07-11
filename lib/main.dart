@@ -108,15 +108,7 @@ class _MyAppState extends State<MyApp> {
             useMaterial3: true,
           ),
           themeMode: settings.themeMode,
-          home: _isCheckingConnection
-              ? _buildLoadingScreen()
-              : _hasConnection
-                  ? settings.hasApiKey ? const ChatScreen() : const WelcomeScreen()
-                  : NetworkErrorScreen(onRetry: () {
-                      setState(() {
-                        _hasConnection = true;
-                      });
-                    }),
+          home: settings.hasApiKey ? const ChatScreen() : const WelcomeScreen(),
         );
       },
     );

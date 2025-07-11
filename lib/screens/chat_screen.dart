@@ -23,6 +23,8 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  bool _hasConnection = true;
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +32,7 @@ class _ChatScreenState extends State<ChatScreen> {
     
     // API servisi kontrolü
     _checkApiService();
+    _checkConnection(); // <-- ekle
   }
   
   // Bot seçimi yoksa ilk botu seç
@@ -72,6 +75,15 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         );
       }
+    }
+  }
+
+  Future<void> _checkConnection() async {
+    final isConnected = await NetworkService.isConnected();
+    if (mounted) {
+      setState(() {
+        _hasConnection = isConnected;
+      });
     }
   }
 
@@ -233,6 +245,19 @@ class _ChatScreenState extends State<ChatScreen> {
           return SafeArea(
             child: Column(
               children: [
+                // İnternet yoksa üstte uyarı göster
+                if (!_hasConnection)
+                  MaterialBanner(
+                    content: Text(_textNoInternet),
+                    leading: const Icon(Icons.wifi_off, color: Colors.red),
+                    backgroundColor: Colors.yellow[100],
+                    actions: [
+                      TextButton(
+                        onPressed: _checkConnection,
+                        child: const Text('Tekrar Dene'),
+                      ),
+                    ],
+                  ),
                 // Error message display
                 if (chatProvider.error != null)
                   Container(
