@@ -77,4 +77,4 @@ Hata bildirmek, özellik talep etmek ya da öneride bulunmak için e-posta gönd
 
 ## VirusTotal Taraması
 
-https://www.virustotal.com/gui/file-analysis/NGZjZGFhYzI3ODVmNGZkODFmZTg2Y2M0YjE0OTg4ZGU6MTc1MTQ1ODMzMg==
+https://www.virustotal.com/gui/file/44479ce7741c3f865f4bc9d3894677c17f4944d616224de3ac173fd693e57dfa/details
