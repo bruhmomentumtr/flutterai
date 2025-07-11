@@ -252,13 +252,19 @@ class _ChatScreenState extends State<ChatScreen> {
                 // İnternet yoksa üstte uyarı göster
                 if (!_hasConnection)
                   MaterialBanner(
-                    content: Text(_textNoInternet),
+                    content: Text(
+                      _textNoInternet,
+                      style: const TextStyle(color: Colors.black),
+                    ),
                     leading: const Icon(Icons.wifi_off, color: Colors.red),
-                    backgroundColor: Colors.yellow[100],
+                    backgroundColor: Colors.amber[200],
                     actions: [
                       TextButton(
                         onPressed: _checkConnection,
                         child: const Text('Tekrar Dene'),
+                        style: TextButton.styleFrom(
+                          foregroundColor: Colors.blue,
+                        ),
                       ),
                     ],
                   ),
