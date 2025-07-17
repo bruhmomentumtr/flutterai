@@ -224,3 +224,8 @@ const String msgErrorInitializingBots = 'Error initializing bots:';
 const String msgErrorSavingBots = 'Error saving bots:';
 const String msgBotNotFound = 'Bot not found';
 const String msgBotName = 'Bots';
+
+// main.dart user-visible string constants
+const String msgCheckingConnection = 'Bağlantı kontrol ediliyor...';
+const String msgConnectionErrorDebug = 'Bağlantı kontrol hatası: ';
+const String appTitle = 'OpenRouter Chat';

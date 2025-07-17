@@ -11,6 +11,7 @@ import 'services/network_service.dart';
 import 'screens/chat_screen.dart';
 import 'screens/welcome_screen.dart';
 import 'screens/network_error_screen.dart';
+import 'languages/languages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -79,7 +80,7 @@ class _MyAppState extends State<MyApp> {
         _hasConnection = isConnected;
       });
     } catch (e) {
-      debugPrint("Bağlantı kontrol hatası: $e");
+      debugPrint(msgConnectionErrorDebug + e.toString());
       // Hata durumunda varsayılan olarak bağlantı olduğunu kabul edelim
       // Böylece uygulama başlangıçta takılıp kalmaz
       setState(() {
@@ -94,7 +95,7 @@ class _MyAppState extends State<MyApp> {
     return Consumer<SettingsProvider>(
       builder: (context, settings, _) {
         return MaterialApp(
-          title: 'OpenRouter Chat',
+          title: appTitle,
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
@@ -123,7 +124,7 @@ class _MyAppState extends State<MyApp> {
             CircularProgressIndicator(),
             SizedBox(height: 24),
             Text(
-              'Bağlantı kontrol ediliyor...',
+              msgCheckingConnection,
               style: TextStyle(fontSize: 16),
             ),
           ],
