@@ -890,7 +890,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           children: [
             Icon(Icons.image_not_supported, color: Colors.red, size: 40),
             SizedBox(height: 8),
-            Text(Languages.textimageFormatError, 
+            Text(Languages.textImageFormatError, 
               style: TextStyle(color: Colors.red),
             ),
           ],
