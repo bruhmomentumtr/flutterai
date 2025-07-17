@@ -340,7 +340,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           final scaffold = ScaffoldMessenger.of(context);
           scaffold.showSnackBar(
             const SnackBar(
-              content: Text(Languages.copyToClipboard),
+              content: Text(Languages.textCopyToClipboard),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -736,7 +736,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       if (widget.message.content.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(Languages.messageEmpty),
+            content: Text(Languages.textMessageEmpty),
             duration: Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
             width: 250,
@@ -751,7 +751,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(Languages.messageCopied),
+              content: Text(Languages.textMessageCopied),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -763,7 +763,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(Languages.messageCopyError),
+              content: Text(Languages.textMessageCopyError),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -791,7 +791,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       if (widget.message.content.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(Languages.rawTextEmpty),
+            content: Text(Languages.textRawTextEmpty),
             duration: Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
             width: 250,
@@ -808,7 +808,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           // Show a snackbar to confirm copy
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(Languages.rawTextCopied),
+              content: Text(Languages.textRawTextCopied),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -819,7 +819,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           debugPrint('Panoya ham metin kopyalama hatası: $error');
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(Languages.rawTextCopyError),
+              content: Text(Languages.textRawTextCopyError),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -937,19 +937,19 @@ class _MessageBubbleState extends State<MessageBubble> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(Languages.deleteMessageTitle),
-        content: const Text(Languages.deleteMessageConfirm),
+        title: const Text(Languages.textDeleteMessageTitle),
+        content: const Text(Languages.textDeleteMessageConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(Languages.cancel),
+            child: const Text(Languages.textCancel),
           ),
           FilledButton(
             onPressed: () {
               chatProvider.deleteMessage(widget.message.id);
               Navigator.of(context).pop();
             },
-            child: const Text(Languages.delete),
+            child: const Text(Languages.textDelete),
           ),
         ],
       ),

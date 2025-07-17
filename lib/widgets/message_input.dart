@@ -257,14 +257,14 @@ class _MessageInputState extends State<MessageInput> {
               IconButton(
                 icon: const Icon(Icons.photo),
                 onPressed: widget.isLoading ? null : _pickImage,
-                tooltip: tooltipAddImage,
+                tooltip: Languages.tooltipAddImage, // Languages sınıfından çağrıldı
               ),
 
               // Camera button
               IconButton(
                 icon: const Icon(Icons.camera_alt),
                 onPressed: widget.isLoading ? null : _takePhoto,
-                tooltip: tooltipTakePhoto,
+                tooltip: Languages.tooltipTakePhoto, // Languages sınıfından çağrıldı
               ),
 
               // Text field
@@ -273,7 +273,7 @@ class _MessageInputState extends State<MessageInput> {
                   controller: _textController,
                   focusNode: _focusNode,
                   decoration: InputDecoration(
-                    hintText: hintTextMessage,
+                    hintText: Languages.hintTextMessage, // Languages sınıfından çağrıldı
                     border: InputBorder.none,
                     enabled: !widget.isLoading,
                   ),

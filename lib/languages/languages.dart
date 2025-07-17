@@ -223,4 +223,18 @@ class Languages {
   static const String msgCheckingConnection = 'Bağlantı kontrol ediliyor...';
   static const String msgConnectionErrorDebug = 'Bağlantı kontrol hatası: ';
   static const String appTitleMain = 'OpenRouter Chat';
+
+  // openrouter_service.dart
+  static const String errorNoInternetRetryCancelled = 'No internet connection, retry cancelled.';
+  static const String errorMaxRetriesReached = 'Max retries reached. Giving up.';
+  static const String usingSelectedModel = 'Using selected model:';
+  static const String sendingApiRequest = 'Sending API request with model:';
+  static const String requestPayload = 'Request payload:';
+  static const String chatTitle = 'Sohbet'; // or 'Chat' if you want English
+  static const String generateShortDescriptiveTitle = 'Generate a short and descriptive title for the following content.';
+  static const String titleShouldBeMaximum5Words = 'Title should be maximum 5 words';
+  static const String sayOkIfYouCanReadThis = 'Say "OK" if you can read this';
+  static const String imageConvertedToBase64WithMimeType = 'Image converted to base64 with MIME type:';
+
+
 }
