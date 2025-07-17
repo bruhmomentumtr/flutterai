@@ -62,7 +62,7 @@ const String defaultSystemPrompt = """You are a helpful assistant that formats r
 
 When writing mathematical expressions or equations, you MUST use LaTeX syntax in your responses.
 
-For inline equations, use: \\$\$equation here\$\$
+For inline equations, use: \\$\\$equation here\\$\\$
 For block equations, use: [equation here]
 
 When writing code, always use code blocks with language specification:

@@ -80,7 +80,7 @@ class _MyAppState extends State<MyApp> {
         _hasConnection = isConnected;
       });
     } catch (e) {
-      debugPrint(msgConnectionErrorDebug + e.toString());
+      debugPrint(Languages.msgConnectionErrorDebug + e.toString());
       // Hata durumunda varsayılan olarak bağlantı olduğunu kabul edelim
       // Böylece uygulama başlangıçta takılıp kalmaz
       setState(() {
@@ -95,7 +95,7 @@ class _MyAppState extends State<MyApp> {
     return Consumer<SettingsProvider>(
       builder: (context, settings, _) {
         return MaterialApp(
-          title: appTitle,
+          title: Languages.appTitleMain,
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
@@ -124,7 +124,7 @@ class _MyAppState extends State<MyApp> {
             CircularProgressIndicator(),
             SizedBox(height: 24),
             Text(
-              msgCheckingConnection,
+              Languages.msgCheckingConnection,
               style: TextStyle(fontSize: 16),
             ),
           ],
