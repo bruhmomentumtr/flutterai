@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/bot.dart';
 import '../providers/settings_provider.dart';
+import '../languages/languages.dart';
 
 class BotSelection extends StatelessWidget {
   final List<Bot> bots;
@@ -30,7 +31,7 @@ class BotSelection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Select a Bot',
+            labelSelectBot,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 16.0),
@@ -39,7 +40,7 @@ class BotSelection extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onAddBot,
             icon: const Icon(Icons.add),
-            label: const Text('Add New Bot'),
+            label: Text(labelAddNewBot),
           ),
         ],
       ),
@@ -106,12 +107,12 @@ class BotSelection extends StatelessWidget {
                           children: [
                             _buildPropertyChip(
                               context, 
-                              'Temp: ${settings.temperature.toStringAsFixed(1)}',
+                              labelTemp + settings.temperature.toStringAsFixed(1),
                             ),
                             const SizedBox(width: 8.0),
                             _buildPropertyChip(
                               context, 
-                              'Max: ${settings.maxTokens}',
+                              labelMax + settings.maxTokens,
                             ),
                           ],
                         ),
@@ -121,7 +122,7 @@ class BotSelection extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () => onEditBot(bot),
-                    tooltip: 'Edit Bot',
+                    tooltip: tooltipEditBot,
                   ),
                 ],
               ),

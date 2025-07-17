@@ -10,6 +10,7 @@ import '../models/message.dart';
 import '../models/bot.dart';
 import '../services/openrouter_service.dart';
 import '../providers/settings_provider.dart';
+import '../languages/languages.dart';
 
 class ChatProvider extends ChangeNotifier {
   final OpenRouterService _openRouterService;
@@ -98,7 +99,7 @@ class ChatProvider extends ChangeNotifier {
       
       notifyListeners();
     } catch (e) {
-      debugPrint('Error loading sessions: $e');
+      debugPrint(Languages.msgErrorLoadingSessions + e.toString());
     }
   }
   
@@ -125,7 +126,7 @@ class ChatProvider extends ChangeNotifier {
         await prefs.setString('session_$id', messagesJson);
       }
     } catch (e) {
-      debugPrint('Error saving sessions: $e');
+      debugPrint(Languages.msgErrorSavingSessions + e.toString());
     }
   }
   
@@ -191,7 +192,7 @@ class ChatProvider extends ChangeNotifier {
   Future<void> sendMessage(String content, {File? imageFile}) async {
     if (content.isEmpty && imageFile == null) return;
     if (_selectedBot == null) {
-      _error = 'Please select a bot first';
+      _error = Languages.msgPleaseSelectBot;
       notifyListeners();
       return;
     }
@@ -225,7 +226,7 @@ class ChatProvider extends ChangeNotifier {
         }
         
         if (imageUrl == null) {
-          _error = 'Görsel yükleme başarısız oldu';
+          _error = Languages.msgImageUploadFailed;
           _isLoading = false;
           notifyListeners();
           return;
@@ -256,8 +257,8 @@ class ChatProvider extends ChangeNotifier {
         return _generateResponse();
       });
     } catch (e) {
-      debugPrint('Error sending message: $e');
-      _error = 'Mesaj gönderilirken bir hata oluştu';
+      debugPrint(Languages.msgErrorSendingMessage + e.toString());
+      _error = Languages.msgErrorWhileSending;
       _isLoading = false;
       notifyListeners();
     }
@@ -278,7 +279,7 @@ class ChatProvider extends ChangeNotifier {
       final tempMessage = Message(
         id: responseId,
         role: MessageRole.assistant,
-        content: "Düşünüyor...",
+        content: Languages.msgThinking,
         timestamp: DateTime.now(),
         sessionId: _currentSessionId,
       );
@@ -306,11 +307,11 @@ class ChatProvider extends ChangeNotifier {
         _sessionMessages[_currentSessionId] = _messages;
         await _saveSessions();
       } else {
-        _error = 'Failed to generate response';
+        _error = Languages.msgFailedToGenerateResponse;
       }
     } catch (e) {
-      _error = 'Error generating response: $e';
-      debugPrint('Error generating response: $e');
+      _error = Languages.msgErrorGeneratingResponse + e.toString();
+      debugPrint(Languages.msgErrorGeneratingResponse + e.toString());
     } finally {
       _isLoading = false;
       // notifyListeners bazen render sırasında çağrılınca soruna neden olabilir

@@ -5,13 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:markdown/markdown.dart' as md;
+import '../languages/languages.dart';
+
+// LaTeX ve Markdown ile ilgili regex sabitleri
+final RegExp latexBlockPattern = RegExp(r'^\s*\[\s*latex\s*\]([\s\S]*?)\[\s*\/\s*latex\s*\]');
+final RegExp doubleDollarLatexBlockPattern = RegExp(r'^\s*\$\$([\s\S]*?)\$\$\s*$', multiLine: true);
+final RegExp inlineLatexPattern = RegExp(r'\$\$([\s\S]*?)\$\$', multiLine: true);
 
 // Custom syntax for LaTeX blocks
 class LatexBlockSyntax extends md.BlockSyntax {
-  static final _latexPattern = RegExp(r'^\s*\[\s*latex\s*\]([\s\S]*?)\[\s*\/\s*latex\s*\]');
-
   @override
-  RegExp get pattern => _latexPattern;
+  RegExp get pattern => latexBlockPattern;
 
   const LatexBlockSyntax();
 
@@ -32,10 +36,8 @@ class LatexBlockSyntax extends md.BlockSyntax {
 
 // Custom syntax for LaTeX blocks with $$ delimiters
 class DoubleDollarLatexBlockSyntax extends md.BlockSyntax {
-  static final _doubleDollarPattern = RegExp(r'^\s*\$\$([\s\S]*?)\$\$\s*$', multiLine: true);
-
   @override
-  RegExp get pattern => _doubleDollarPattern;
+  RegExp get pattern => doubleDollarLatexBlockPattern;
 
   const DoubleDollarLatexBlockSyntax();
 
@@ -126,9 +128,9 @@ class LatexElementBuilder extends MarkdownElementBuilder {
             textStyle: textStyle,
             mathStyle: MathStyle.display,
             onErrorFallback: (error) {
-              debugPrint('LaTeX Error: $error');
+              debugPrint(' [31m$latexErrorDebug $error [0m');
               return Text(
-                'Error rendering LaTeX: ${error.message}',
+                ' [31m$errorRenderingLatex ${error.message} [0m',
                 style: TextStyle(color: Colors.red),
               );
             },
@@ -144,9 +146,7 @@ class LatexElementBuilder extends MarkdownElementBuilder {
 
 // Custom syntax for inline LaTeX
 class InlineLatexSyntax extends md.InlineSyntax {
-  static final _inlineLatexPattern = RegExp(r'\$\$([\s\S]*?)\$\$', multiLine: true);
-
-  InlineLatexSyntax() : super(_inlineLatexPattern.pattern);
+  InlineLatexSyntax() : super(inlineLatexPattern.pattern);
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
@@ -194,18 +194,18 @@ class InlineLatexElementBuilder extends MarkdownElementBuilder {
             textStyle: textStyle,
             mathStyle: mathStyle,
             onErrorFallback: (error) {
-              debugPrint('Inline LaTeX Error: $error');
+              debugPrint(' [31m$inlineLatexErrorDebug $error [0m');
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'LaTeX Error: ${error.message}',
+                    ' [31m$latexErrorWidget ${error.message} [0m',
                     style: TextStyle(color: Colors.red, fontSize: 12),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     // Display the original LaTeX code when there's an error
-                    '\$\$$textContent\$\$',
+                    '\$\$' + textContent + '\$\$',
                     style: const TextStyle(
                       fontFamily: 'monospace', 
                       fontSize: 12,

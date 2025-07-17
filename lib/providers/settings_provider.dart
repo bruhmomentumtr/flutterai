@@ -3,23 +3,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-// Default settings values
-const double _defaultTemperature = 0.7;
-const int _defaultMaxTokens = 2048;
-const String _defaultSystemPrompt = """You are a helpful assistant that formats responses clearly. 
-
-When writing mathematical expressions or equations, you MUST use LaTeX syntax in your responses.
-
-For inline equations, use: \$\$equation here\$\$
-For block equations, use: [equation here]
-
-When writing code, always use code blocks with language specification:
-```python
-print("Hello World")
-```
-
-Format all your responses with proper markdown.""";
+import '../settingsvariables/default_settings_variables.dart';
+import '../languages/languages.dart';
 
 // SharedPreferences keys
 const String _themeModeKey = 'themeMode';
@@ -38,9 +23,9 @@ class SettingsProvider extends ChangeNotifier {
   bool _showRawFormat = false;
   
   // Common chat settings
-  double _temperature = _defaultTemperature;
-  int _maxTokens = _defaultMaxTokens;
-  String _systemPrompt = _defaultSystemPrompt;
+  double _temperature = defaultTemperature;
+  int _maxTokens = defaultMaxTokens;
+  String _systemPrompt = defaultSystemPrompt;
   
   // Getters
   ThemeMode get themeMode => _themeMode;
@@ -70,13 +55,13 @@ class SettingsProvider extends ChangeNotifier {
       _showRawFormat = prefs.getBool(_showRawFormatKey) ?? false;
       
       // Load chat settings
-      _temperature = prefs.getDouble(_temperatureKey) ?? _defaultTemperature;
-      _maxTokens = prefs.getInt(_maxTokensKey) ?? _defaultMaxTokens;
-      _systemPrompt = prefs.getString(_systemPromptKey) ?? _defaultSystemPrompt;
+      _temperature = prefs.getDouble(_temperatureKey) ?? defaultTemperature;
+      _maxTokens = prefs.getInt(_maxTokensKey) ?? defaultMaxTokens;
+      _systemPrompt = prefs.getString(_systemPromptKey) ?? defaultSystemPrompt;
       
       notifyListeners();
     } catch (e) {
-      debugPrint('Error loading settings: $e');
+      debugPrint('${Languages.msgErrorLoadingSettings} $e');
     }
   }
 
@@ -99,7 +84,7 @@ class SettingsProvider extends ChangeNotifier {
       await prefs.setInt(_maxTokensKey, _maxTokens);
       await prefs.setString(_systemPromptKey, _systemPrompt);
     } catch (e) {
-      debugPrint('Error saving settings: $e');
+      debugPrint('${Languages.msgErrorSavingSettings} $e');
     }
   }
 

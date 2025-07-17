@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import '../languages/languages.dart';
 
 // Network test configuration
 const Duration _dnsLookupTimeout = Duration(seconds: 3);
@@ -21,7 +22,7 @@ class NetworkService {
       // First check connectivity
       final connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult == ConnectivityResult.none) {
-        debugPrint('No connectivity: $connectivityResult');
+        debugPrint('$msgNoConnectivity $connectivityResult');
         return false;
       }
       
@@ -30,34 +31,34 @@ class NetworkService {
         try {
           final result = await InternetAddress.lookup(domain)
               .timeout(_dnsLookupTimeout, onTimeout: () {
-            debugPrint('$domain lookup timeout');
+            debugPrint(' [33m$domain$msgLookupTimeout [0m');
             throw TimeoutException('DNS lookup timeout');
           });
           
           if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-            debugPrint('Successfully connected to $domain');
+            debugPrint('$msgSuccessfullyConnected$domain');
             return true;
           }
         } on SocketException catch (e) {
-          debugPrint('Failed to connect to $domain: $e');
+          debugPrint('$msgFailedToConnect$domain: $e');
           continue;
         } on TimeoutException catch (e) {
-          debugPrint('Timeout connecting to $domain: $e');
+          debugPrint('$msgTimeoutConnecting$domain: $e');
           continue;
         }
       }
       
       // If we get here, all domains failed
-      debugPrint('All connectivity tests failed');
+      debugPrint(msgAllConnectivityTestsFailed);
       return false;
     } on SocketException catch (e) {
-      debugPrint('Internet connection error: $e');
+      debugPrint('$msgInternetConnectionError $e');
       return false;
     } on TimeoutException catch (e) {
-      debugPrint('Timeout error: $e');
+      debugPrint('$msgTimeoutError $e');
       return false;
     } catch (e) {
-      debugPrint('General internet connection error: $e');
+      debugPrint('$msgGeneralInternetConnectionError $e');
       return false;
     }
   }

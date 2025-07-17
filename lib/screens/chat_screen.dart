@@ -15,9 +15,7 @@ import '../widgets/message_input.dart';
 import '../widgets/bot_editor_dialog.dart';
 import 'settings_screen.dart';
 import 'session_list_screen.dart';
-
-// İnternet bağlantısı uyarısı için sabit
-const String _textNoInternet = 'İnternet bağlantısı yok. Mesaj göndermek için bağlantı gereklidir.';
+import '../languages/languages.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -65,7 +63,7 @@ class _ChatScreenState extends State<ChatScreen> {
         // API servisine erişilemiyorsa kullanıcıya bildir
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('API servisine erişilemiyor. Lütfen internet bağlantınızı ve API anahtarınızı kontrol edin.'),
+            content: Text(Languages.textApiServiceUnavailable),
             duration: Duration(seconds: 5),
           ),
         );
@@ -74,7 +72,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('API servisi kontrolü sırasında hata: $e'),
+            content: Text('${Languages.textApiServiceError} $e'),
             duration: const Duration(seconds: 3),
           ),
         );
@@ -107,7 +105,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   size: 24,
                 ),
                 const SizedBox(width: 8),
-                Text(bot?.name ?? 'OpenRouter Chat'),
+                Text(bot?.name ?? Languages.textOpenRouterChat),
               ],
             );
           },
@@ -115,7 +113,7 @@ class _ChatScreenState extends State<ChatScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.list),
-            tooltip: 'Sohbet Listesi',
+            tooltip: Languages.textSessionList,
             onPressed: () {
               Navigator.push(
                 context,
@@ -125,25 +123,25 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.delete_sweep),
-            tooltip: 'Sohbeti Temizle',
+            tooltip: Languages.textClearChat,
             onPressed: () {
               final chatProvider = context.read<ChatProvider>();
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text('Sohbeti Temizle'),
-                  content: const Text('Tüm mesajlaşma geçmişini silmek istediğinizden emin misiniz?'),
+                  title: const Text(Languages.textClearChat),
+                  content: const Text(Languages.textClearChatConfirm),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('İptal'),
+                      child: const Text(Languages.textCancel),
                     ),
                     FilledButton(
                       onPressed: () {
                         chatProvider.clearChat();
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Temizle'),
+                      child: const Text(Languages.textClear),
                     ),
                   ],
                 ),
@@ -152,7 +150,7 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.settings),
-            tooltip: 'Settings',
+            tooltip: Languages.textSettings,
             onPressed: () {
               Navigator.push(
                 context,
@@ -179,7 +177,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(height: 16.0),
                   const Text(
-                    'API Anahtarı Gerekli',
+                    Languages.textApiKeyRequired,
                     style: TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
@@ -187,13 +185,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(height: 8.0),
                   const Text(
-                    'Lütfen ayarlardan OpenRouter API anahtarınızı tanımlayın',
+                    Languages.textApiKeyRequiredDesc,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16.0),
                   FilledButton.icon(
                     icon: const Icon(Icons.settings),
-                    label: const Text('Ayarlar'),
+                    label: const Text(Languages.textSettingsButton),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -221,7 +219,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(height: 16.0),
                   const Text(
-                    'Bot Seçilmedi',
+                    Languages.textBotNotSelected,
                     style: TextStyle(
                       fontSize: 20.0,
                       fontWeight: FontWeight.bold,
@@ -229,13 +227,13 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                   const SizedBox(height: 8.0),
                   const Text(
-                    'Sohbete başlamak için bir bot seçin',
+                    Languages.textSelectBotToStart,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16.0),
                   FilledButton.icon(
                     icon: const Icon(Icons.science),
-                    label: const Text('Bot Seç'),
+                    label: const Text(Languages.textSelectBot),
                     onPressed: () {
                       // Open drawer to select a bot
                       Scaffold.of(context).openDrawer();
@@ -253,7 +251,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (!_hasConnection)
                   MaterialBanner(
                     content: Text(
-                      _textNoInternet,
+                      Languages.textNoInternet,
                       style: const TextStyle(color: Colors.black),
                     ),
                     leading: const Icon(Icons.wifi_off, color: Colors.red),
@@ -261,7 +259,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     actions: [
                       TextButton(
                         onPressed: _checkConnection,
-                        child: const Text('Tekrar Dene'),
+                        child: Text(Languages.textRetry),
                         style: TextButton.styleFrom(
                           foregroundColor: Colors.blue,
                         ),
@@ -374,7 +372,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                     const SizedBox(height: 16),
                     const Text(
-                      'Henüz mesaj yok',
+                      Languages.textNoMessages,
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -385,7 +383,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 32.0),
                       child: Text(
-                        'Konuşmaya başlamak için aşağıdan mesaj gönderin',
+                        Languages.textSendMessageToStart,
                         textAlign: TextAlign.center,
                         style: TextStyle(color: Colors.grey),
                       ),
@@ -439,7 +437,7 @@ class BotSelectionDrawer extends StatelessWidget {
                   const Icon(Icons.smart_toy),
                   const SizedBox(width: 16.0),
                   const Text(
-                    'Your Bots',
+                    Languages.textYourBots,
                     style: TextStyle(
                       fontSize: 22.0,
                       fontWeight: FontWeight.bold,
@@ -448,7 +446,7 @@ class BotSelectionDrawer extends StatelessWidget {
                   const Spacer(),
                   IconButton(
                     icon: const Icon(Icons.add),
-                    tooltip: 'Add New Bot',
+                    tooltip: Languages.textAddNewBot,
                     onPressed: () {
                       // Show dialog to add a new bot
                       _showBotEditorDialog(context);
@@ -488,12 +486,12 @@ class BotSelectionDrawer extends StatelessWidget {
             ),
             SizedBox(height: 16.0),
             Text(
-              'No bots configured yet',
+              Languages.textNoBotsConfigured,
               style: TextStyle(color: Colors.grey),
             ),
             SizedBox(height: 8.0),
             Text(
-              'Add a new bot to start chatting',
+              Languages.textAddBotToStart,
               style: TextStyle(color: Colors.grey, fontSize: 12.0),
             ),
           ],
@@ -570,19 +568,19 @@ class BotSelectionDrawer extends StatelessWidget {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Delete Bot'),
-                        content: Text('Are you sure you want to delete ${bot.name}?'),
+                        title: const Text(Languages.textDeleteBot),
+                        content: Text('${Languages.textDeleteBotConfirm} ${bot.name}?'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Cancel'),
+                            child: const Text(Languages.textBotEditCancel),
                           ),
                           FilledButton(
                             onPressed: () {
                               botProvider.deleteBot(bot.id);
                               Navigator.of(context).pop();
                             },
-                            child: const Text('Delete'),
+                            child: const Text(Languages.textDelete),
                           ),
                         ],
                       ),
@@ -629,9 +627,9 @@ class BotSelectionDrawer extends StatelessWidget {
     // Check if API key is set before proceeding
     if (!settingsProvider.hasApiKey) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please set an API key in settings before creating or editing bots.'),
-          duration: Duration(seconds: 3),
+        SnackBar(
+          content: Text(Languages.textSetApiKeyForBots),
+          duration: const Duration(seconds: 3),
         ),
       );
       return;
@@ -640,7 +638,7 @@ class BotSelectionDrawer extends StatelessWidget {
     // Get available models or use defaults if API isn't ready
     final Future<List<String>> modelsFuture = openRouterService.isInitialized 
         ? openRouterService.getAvailableModels() 
-        : Future.value(['openai/gpt-3.5-turbo', 'openai/gpt-4', 'anthropic/claude-2']);
+        : Future.value(['openai/gpt-4o-mini', 'openai/gpt-4', 'anthropic/claude-2']);
     
     // Show loading indicator while fetching models
     showDialog(
@@ -652,7 +650,7 @@ class BotSelectionDrawer extends StatelessWidget {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16.0),
-            Text('Loading available models...'),
+            Text(Languages.textLoadingModels),
           ],
         ),
       ),
@@ -688,7 +686,7 @@ class BotSelectionDrawer extends StatelessWidget {
         Navigator.of(context).pop(); // Close loading dialog
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading models: $error'),
+            content: Text('${Languages.textErrorLoadingModels} $error'),
             duration: const Duration(seconds: 3),
           ),
         );

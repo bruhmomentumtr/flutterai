@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/chat_provider.dart';
 import '../models/message.dart';
+import '../languages/languages.dart';
 
 class SessionListScreen extends StatefulWidget {
   const SessionListScreen({Key? key}) : super(key: key);
@@ -43,12 +44,14 @@ class _SessionListScreenState extends State<SessionListScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Sohbetleri Sil'),
-        content: Text('${_selectedSessions.length} sohbeti silmek istediğinizden emin misiniz?'),
+        title: Text(Languages.titleDeleteSessions),
+        content: Text(
+          '${_selectedSessions.length} ${Languages.confirmDeleteSessions}',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('İptal'),
+            child: Text(Languages.labelCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -61,7 +64,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
               });
               Navigator.of(context).pop();
             },
-            child: const Text('Sil'),
+            child: Text(Languages.labelDelete),
           ),
         ],
       ),
@@ -73,13 +76,13 @@ class _SessionListScreenState extends State<SessionListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: _isSelectionMode
-            ? Text('${_selectedSessions.length} sohbet seçildi')
-            : const Text('Sohbet Listesi'),
+            ? Text('${_selectedSessions.length} ${Languages.labelSelectedSessions}')
+            : Text(Languages.titleSessionList),
         actions: [
           if (_isSelectionMode) ...[
             IconButton(
               icon: const Icon(Icons.select_all),
-              tooltip: 'Tümünü Seç',
+              tooltip: Languages.tooltipSelectAll,
               onPressed: () {
                 final chatProvider = Provider.of<ChatProvider>(context, listen: false);
                 setState(() {
@@ -90,7 +93,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
             ),
             IconButton(
               icon: const Icon(Icons.delete),
-              tooltip: 'Seçilenleri Sil',
+              tooltip: Languages.tooltipDeleteSelected,
               onPressed: _selectedSessions.isEmpty
                   ? null
                   : () => _deleteSelectedSessions(context),
@@ -98,12 +101,12 @@ class _SessionListScreenState extends State<SessionListScreen> {
           ] else ...[
             IconButton(
               icon: const Icon(Icons.delete_sweep),
-              tooltip: 'Sohbetleri Sil',
+              tooltip: Languages.tooltipDeleteSessions,
               onPressed: () => _toggleSelectionMode(),
             ),
             IconButton(
               icon: const Icon(Icons.add),
-              tooltip: 'Yeni Sohbet',
+              tooltip: Languages.tooltipNewSession,
               onPressed: () {
                 Provider.of<ChatProvider>(context, listen: false)
                     .createNewSession();
@@ -127,7 +130,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
           
           if (sessionIds.isEmpty) {
             return const Center(
-              child: Text('Henüz hiç sohbet yok. Yeni bir sohbet oluşturun.'),
+              child: Text(Languages.labelNoSessions),
             );
           }
           
@@ -139,7 +142,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
               final isSelected = _selectedSessions.contains(sessionId);
               
               // Get the first message title or use a default
-              String sessionTitle = 'Yeni Sohbet';
+              String sessionTitle = Languages.labelNewSession;
               String sessionPreview = '';
               String formattedDate = '';
               
@@ -202,7 +205,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                           child: Text(
-                            'Aktif',
+                            Languages.labelActive,
                             style: TextStyle(
                               color: Theme.of(context).colorScheme.onPrimary,
                               fontSize: 10.0,
@@ -231,16 +234,16 @@ class _SessionListScreenState extends State<SessionListScreen> {
                     return await showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Sohbeti Sil'),
-                        content: const Text('Bu sohbeti silmek istediğinizden emin misiniz?'),
+                        title: Text(Languages.titleDeleteSession),
+                        content: Text(Languages.confirmDeleteSession),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(false),
-                            child: const Text('İptal'),
+                            child: Text(Languages.labelCancel),
                           ),
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(true),
-                            child: const Text('Sil'),
+                            child: Text(Languages.labelDelete),
                           ),
                         ],
                       ),
@@ -283,7 +286,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
                               borderRadius: BorderRadius.circular(8.0),
                             ),
                             child: Text(
-                              'Aktif',
+                              Languages.labelActive,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.onPrimary,
                                 fontSize: 10.0,
@@ -316,7 +319,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
       return DateFormat.Hm().format(date);
     } else if (difference.inDays == 1) {
       // Yesterday
-      return 'Dün';
+      return Languages.labelYesterday;
     } else if (difference.inDays < 7) {
       // This week - show day name
       return DateFormat.E('tr').format(date);

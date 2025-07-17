@@ -10,27 +10,7 @@ import '../models/message.dart';
 import '../providers/settings_provider.dart';
 import '../providers/chat_provider.dart';
 import 'dart:convert';
-
-// User-facing text messages
-const String _textCopyToClipboard = 'Metni kopyalamak için menüyü açın';
-const String _textMessageCopied = 'Mesaj panoya kopyalandı';
-const String _textMessageCopyError = 'Mesaj kopyalanırken hata oluştu';
-const String _textMessageEmpty = 'Kopyalanacak mesaj içeriği boş';
-const String _textRawTextCopied = 'Ham metin panoya kopyalandı';
-const String _textRawTextCopyError = 'Ham metin kopyalanırken hata oluştu';
-const String _textRawTextEmpty = 'Kopyalanacak ham metin boş';
-const String _textImageLoadError = 'Görsel yüklenemedi';
-const String _textImageFormatError = 'Görsel formatı desteklenmiyor';
-const String _textDeleteMessageTitle = 'Mesajı Sil';
-const String _textDeleteMessageConfirm = 'Bu mesajı silmek istediğinizden emin misiniz?';
-const String _textCancel = 'İptal';
-const String _textDelete = 'Sil';
-const String _textShowProcessed = 'İşlenmiş içeriği göster';
-const String _textShowRaw = 'Ham içeriği göster';
-const String _textMoreOptions = 'Daha fazla seçenek';
-const String _textCopyMessage = 'Mesajı kopyala';
-const String _textCopyRawText = 'Ham metni kopyala';
-const String _textDeleteMessage = 'Mesajı sil';
+import '../languages/languages.dart';
 
 // LaTeX regex patterns
 final Map<String, RegExp> _latexPatterns = {
@@ -157,7 +137,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           ? theme.colorScheme.onPrimary.withAlpha(179)
                           : theme.colorScheme.onSurface.withAlpha(153),
                     ),
-                    tooltip: _showRawContent ? _textShowProcessed : _textShowRaw,
+                    tooltip: _showRawContent ? Languages.showProcessed : Languages.showRaw,
                     onPressed: () {
                       setState(() {
                         _showRawContent = !_showRawContent;
@@ -179,42 +159,42 @@ class _MessageBubbleState extends State<MessageBubble> {
                         ? theme.colorScheme.onPrimary.withAlpha(179)
                         : theme.colorScheme.onSurface.withAlpha(153),
                   ),
-                  tooltip: _textMoreOptions,
+                  tooltip: Languages.moreOptions,
                   onSelected: (value) {
-                    if (value == _textCopyMessage) {
+                    if (value == Languages.copyMessage) {
                       _copyMessageToClipboard(context);
-                    } else if (value == _textCopyRawText) {
+                    } else if (value == Languages.copyRawText) {
                       _copyRawMessageToClipboard(context);
-                    } else if (value == _textDeleteMessage) {
+                    } else if (value == Languages.deleteMessage) {
                       _deleteMessage(context);
                     }
                   },
                   itemBuilder: (context) => [
                     const PopupMenuItem<String>(
-                      value: _textCopyMessage,
+                      value: Languages.copyMessage,
                       child: ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(Icons.copy, size: 18),
-                        title: Text(_textCopyMessage),
+                        title: Text(Languages.copyMessage),
                       ),
                     ),
                     const PopupMenuItem<String>(
-                      value: _textCopyRawText,
+                      value: Languages.copyRawText,
                       child: ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(Icons.code, size: 18),
-                        title: Text(_textCopyRawText),
+                        title: Text(Languages.copyRawText),
                       ),
                     ),
                     const PopupMenuItem<String>(
-                      value: _textDeleteMessage,
+                      value: Languages.deleteMessage,
                       child: ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(Icons.delete_outline, size: 18),
-                        title: Text(_textDeleteMessage),
+                        title: Text(Languages.deleteMessage),
                       ),
                     ),
                   ],
@@ -360,7 +340,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           final scaffold = ScaffoldMessenger.of(context);
           scaffold.showSnackBar(
             const SnackBar(
-              content: Text(_textCopyToClipboard),
+              content: Text(Languages.copyToClipboard),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -756,7 +736,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       if (widget.message.content.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(_textMessageEmpty),
+            content: Text(Languages.messageEmpty),
             duration: Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
             width: 250,
@@ -771,7 +751,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(_textMessageCopied),
+              content: Text(Languages.messageCopied),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -783,7 +763,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(_textMessageCopyError),
+              content: Text(Languages.messageCopyError),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -811,7 +791,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       if (widget.message.content.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(_textRawTextEmpty),
+            content: Text(Languages.rawTextEmpty),
             duration: Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
             width: 250,
@@ -828,7 +808,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           // Show a snackbar to confirm copy
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(_textRawTextCopied),
+              content: Text(Languages.rawTextCopied),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -839,7 +819,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           debugPrint('Panoya ham metin kopyalama hatası: $error');
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(_textRawTextCopyError),
+              content: Text(Languages.rawTextCopyError),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -887,7 +867,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                   children: [
                     Icon(Icons.error_outline, color: Colors.red, size: 40),
                     SizedBox(height: 8),
-                    Text(_textImageLoadError, 
+                    Text(Languages.imageLoadError, 
                       style: TextStyle(color: Colors.red),
                     ),
                   ],
@@ -910,7 +890,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           children: [
             Icon(Icons.image_not_supported, color: Colors.red, size: 40),
             SizedBox(height: 8),
-            Text(_textImageFormatError, 
+            Text(Languages.imageFormatError, 
               style: TextStyle(color: Colors.red),
             ),
           ],
@@ -939,7 +919,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.error, color: Colors.red),
-                Text(_textImageLoadError, 
+                Text(Languages.imageLoadError, 
                   style: TextStyle(color: Colors.red),
                 ),
               ],
@@ -957,19 +937,19 @@ class _MessageBubbleState extends State<MessageBubble> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(_textDeleteMessageTitle),
-        content: const Text(_textDeleteMessageConfirm),
+        title: const Text(Languages.deleteMessageTitle),
+        content: const Text(Languages.deleteMessageConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(_textCancel),
+            child: const Text(Languages.cancel),
           ),
           FilledButton(
             onPressed: () {
               chatProvider.deleteMessage(widget.message.id);
               Navigator.of(context).pop();
             },
-            child: const Text(_textDelete),
+            child: const Text(Languages.delete),
           ),
         ],
       ),

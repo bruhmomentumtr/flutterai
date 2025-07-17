@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/chat_provider.dart';
+import '../languages/languages.dart';
 
 class MessageInput extends StatefulWidget {
   final Function(String, File?) onSendMessage;
@@ -118,12 +119,12 @@ class _MessageInputState extends State<MessageInput> {
           // Görsel seçildikten sonra input alanına fokus et
           _focusNode.requestFocus();
         } else {
-          _showErrorSnackbar('Seçilen görsel bulunamadı.');
+          _showErrorSnackbar(msgSelectedImageNotFound);
         }
       }
     } catch (e) {
-      debugPrint('Error picking image: $e');
-      _showErrorSnackbar('Görsel seçilirken bir hata oluştu.');
+      debugPrint('$msgImageLoadError $e');
+      _showErrorSnackbar(msgErrorPickingImage);
     }
   }
 
@@ -148,12 +149,12 @@ class _MessageInputState extends State<MessageInput> {
           // Fotoğraf çekildikten sonra input alanına fokus et
           _focusNode.requestFocus();
         } else {
-          _showErrorSnackbar('Çekilen fotoğraf kaydedilemedi.');
+          _showErrorSnackbar(msgTakenPhotoNotSaved);
         }
       }
     } catch (e) {
-      debugPrint('Error taking photo: $e');
-      _showErrorSnackbar('Fotoğraf çekilirken bir hata oluştu.');
+      debugPrint('$msgImageLoadError $e');
+      _showErrorSnackbar(msgErrorTakingPhoto);
     }
   }
 
@@ -208,7 +209,7 @@ class _MessageInputState extends State<MessageInput> {
                       width: double.infinity,
                       height: 120,
                       errorBuilder: (context, error, stackTrace) {
-                        debugPrint('Görsel yükleme hatası: $error');
+                        debugPrint('$msgImageLoadError $error');
                         return Container(
                           width: double.infinity,
                           height: 120,
@@ -218,7 +219,7 @@ class _MessageInputState extends State<MessageInput> {
                             children: [
                               Icon(Icons.error_outline, color: Colors.red),
                               SizedBox(height: 4),
-                              Text('Görsel yüklenemedi',
+                              Text(msgImageNotLoaded,
                                   style: TextStyle(
                                       color: Colors.red, fontSize: 12)),
                             ],
@@ -256,14 +257,14 @@ class _MessageInputState extends State<MessageInput> {
               IconButton(
                 icon: const Icon(Icons.photo),
                 onPressed: widget.isLoading ? null : _pickImage,
-                tooltip: 'Görsel Ekle',
+                tooltip: tooltipAddImage,
               ),
 
               // Camera button
               IconButton(
                 icon: const Icon(Icons.camera_alt),
                 onPressed: widget.isLoading ? null : _takePhoto,
-                tooltip: 'Fotoğraf Çek',
+                tooltip: tooltipTakePhoto,
               ),
 
               // Text field
@@ -272,7 +273,7 @@ class _MessageInputState extends State<MessageInput> {
                   controller: _textController,
                   focusNode: _focusNode,
                   decoration: InputDecoration(
-                    hintText: 'Mesaj yazın...',
+                    hintText: hintTextMessage,
                     border: InputBorder.none,
                     enabled: !widget.isLoading,
                   ),

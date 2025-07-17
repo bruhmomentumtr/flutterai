@@ -6,6 +6,8 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import '../models/bot.dart';
+import '../settingsvariables/default_settings_variables.dart';
+import '../languages/languages.dart';
 
 class BotProvider extends ChangeNotifier {
   List<Bot> _bots = [];
@@ -32,7 +34,7 @@ class BotProvider extends ChangeNotifier {
         _createDefaultBots();
       }
     } catch (e) {
-      _error = 'Error initializing bots: $e';
+      _error = msgErrorInitializingBots + e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -42,7 +44,7 @@ class BotProvider extends ChangeNotifier {
   // Load bots from SharedPreferences
   Future<void> _loadBotsFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    final botsJson = prefs.getString('bots');
+    final botsJson = prefs.getString(msgBotName);
     
     if (botsJson != null) {
       final List<dynamic> decodedList = jsonDecode(botsJson);
@@ -55,66 +57,17 @@ class BotProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final botsJson = jsonEncode(_bots.map((bot) => bot.toJson()).toList());
-      await prefs.setString('bots', botsJson);
+      await prefs.setString(msgBotName, botsJson);
     } catch (e) {
-      _error = 'Error saving bots: $e';
+      _error = msgErrorSavingBots + e.toString();
       notifyListeners();
     }
   }
 
   // Create default bot configurations
   void _createDefaultBots() {
-    _bots = [
-      Bot(
-        id: const Uuid().v4(),
-        name: 'openrouter auto',
-        model: 'openrouter/auto',
-        iconName: 'chat',
-      ),
-      Bot(
-        id: const Uuid().v4(),
-        name: 'gemini 2.5 flash',
-        model: 'google/gemini-2.5-flash',
-        iconName: 'chat',
-      ),
-      Bot(
-        id: const Uuid().v4(),
-        name: 'GPT-4.1 nano',
-        model: 'openai/gpt-4.1-nano',
-        iconName: 'edit',
-      ),
-      Bot(
-        id: const Uuid().v4(),
-        name: 'Qwen 3.0 14b',
-        model: 'qwen/qwen3-14b',
-        iconName: 'chat',
-      ),
-      Bot(
-        id: const Uuid().v4(),
-        name: 'gemma 3 27b',
-        model: 'google/gemma-3-27b-it',
-        iconName: 'chat',
-      ),
-      Bot(
-        id: const Uuid().v4(),
-        name: 'Llama 3.2 11b vision free',
-        model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
-        iconName: 'smart_toy',
-      ),
-      Bot(
-        id: const Uuid().v4(),
-        name: 'ministral 8b',
-        model: 'mistralai/ministral-8b',
-        iconName: 'chat',
-      ),
-      Bot(
-        id: const Uuid().v4(),
-        name: 'claude sonnet 4',
-        model: 'anthropic/claude-sonnet-4',
-        iconName: 'smart_toy',
-      ),
-    ];
-    
+    // Use the defaultBots list from default_settings_variables.dart
+    _bots = defaultBots;
     _saveBots();
   }
 
@@ -134,7 +87,7 @@ class BotProvider extends ChangeNotifier {
       await _saveBots();
       notifyListeners();
     } else {
-      _error = 'Bot not found';
+      _error = msgBotNotFound;
       notifyListeners();
     }
   }
@@ -149,6 +102,6 @@ class BotProvider extends ChangeNotifier {
   // Clear error message
   void clearError() {
     _error = null;
-    notifyListeners();
+    notifyListeners(); 
   }
 } 

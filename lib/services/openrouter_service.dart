@@ -10,6 +10,7 @@ import 'package:path/path.dart' as path;
 import '../models/message.dart';
 import '../models/bot.dart';
 import '../services/network_service.dart';
+import '../languages/languages.dart';
 
 // Constants for API configuration
 const String _baseUrl = 'https://openrouter.ai/api/v1';
@@ -37,9 +38,7 @@ const String _authorizationPrefix = 'Bearer ';
 
 // Default models in case API fails (like no internet)
 const List<String> _defaultModels = [
-  'openai/gpt-3.5-turbo',
-  'openai/gpt-4',
-  'anthropic/claude-2'
+  defaultModelsMessage,
 ];
 
 class OpenRouterService {
@@ -55,8 +54,7 @@ class OpenRouterService {
   // Initialize with API key
   void initialize(String apiKey) {
     if (apiKey.isEmpty) {
-      debugPrint(
-          'Warning: Attempted to initialize OpenRouterService with an empty API key');
+      debugPrint(warningEmptyApiKey);
       return;
     }
 
@@ -135,14 +133,14 @@ class OpenRouterService {
   // Get available models from OpenRouter
   Future<List<String>> getAvailableModels() async {
     if (!isInitialized) {
-      debugPrint('Error: API key not initialized, returning default models');
+      debugPrint(errorApiKeyNotInitializedFetchingModels);
       return _defaultModels;
     }
 
     // Check network connection
     final isConnected = await NetworkService.isConnected();
     if (!isConnected) {
-      debugPrint('Error: No internet connection when fetching models');
+      debugPrint(errorNoInternetFetchingModels);
       return _defaultModels;
     }
 
@@ -163,23 +161,23 @@ class OpenRouterService {
 
         // Ensure at least one model is returned
         if (availableModels.isEmpty) {
-          debugPrint('Warning: No models found, returning defaults');
+          debugPrint(warningNoModelsFound);
           return _defaultModels;
         }
 
         return availableModels;
       } else {
-        debugPrint('Error fetching models: Status code ${response.statusCode}');
+        debugPrint('$apiErrorPrefix ${response.statusCode}');
         return _defaultModels;
       }
     } on DioException catch (e) {
-      debugPrint('DioException fetching models: ${e.type} - ${e.message}');
+      debugPrint('$dioExceptionFetchingModels ${e.type} - ${e.message}');
       return _defaultModels;
     } on TimeoutException catch (e) {
-      debugPrint('Timeout fetching models: $e');
+      debugPrint('$timeoutFetchingModels $e');
       return _defaultModels;
     } catch (e) {
-      debugPrint('Error fetching models: $e');
+      debugPrint('$errorFetchingModels $e');
       return _defaultModels;
     }
   }
@@ -194,7 +192,7 @@ class OpenRouterService {
     required String sessionId,
   }) async {
     if (!isInitialized) {
-      debugPrint('Error: API key not initialized');
+      debugPrint(errorApiKeyNotInitialized);
       return null;
     }
 
@@ -235,7 +233,7 @@ class OpenRouterService {
             messagesJson.add(message.toJson());
           }
         } catch (e) {
-          debugPrint('Message formatting error: $e - ${message.id}');
+          debugPrint('$errorMessageFormatting $e - ${message.id}');
           continue;
         }
       }
@@ -286,29 +284,29 @@ class OpenRouterService {
           sessionId: sessionId,
         );
       } else {
-        debugPrint('API Error: ${response.statusCode} - ${response.data}');
+        debugPrint('$apiErrorPrefix ${response.statusCode} - ${response.data}');
         // Check for rate limit error
         if (response.statusCode == 429) {
           final errorMessage = response.data.toString();
           return Message(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
             role: MessageRole.assistant,
-            content: 'Üzgünüm, günlük kullanım limitine ulaştınız. Lütfen daha sonra tekrar deneyin. ($errorMessage)',
+            content: '$errorRateLimitReached ($errorMessage)',
             timestamp: DateTime.now(),
             title: 'Sohbet ${_chatCounter}',
             sessionId: sessionId,
           );
         }
-        throw Exception('API Error: ${response.statusCode} - ${response.data}');
+        throw Exception('$apiErrorPrefix ${response.statusCode} - ${response.data}');
       }
     } catch (e) {
-      debugPrint('Error generating chat response: $e');
+      debugPrint('$errorGeneratingChatResponse $e');
       // Check if it's a rate limit error in the exception
       if (e.toString().contains('Rate limit exceeded')) {
         return Message(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           role: MessageRole.assistant,
-          content: 'Üzgünüm, günlük kullanım limitine ulaştınız. Lütfen daha sonra tekrar deneyin. ($e)',
+          content: '$errorRateLimitReached ($e)',
           timestamp: DateTime.now(),
           title: 'Sohbet ${_chatCounter}',
           sessionId: sessionId,
@@ -322,15 +320,15 @@ class OpenRouterService {
   Future<String?> generateTitleForMessage(
       String messageContent, String model, double temperature) async {
     if (!isInitialized) {
-      debugPrint('Error: API key not initialized');
+      debugPrint(errorApiKeyNotInitialized);
       return null;
     }
 
     // Check network connection
     final isConnected = await NetworkService.isConnected();
     if (!isConnected) {
-      debugPrint('Error: No internet connection when generating title');
-      return 'Connection Error';
+      debugPrint(errorNoInternetGeneratingTitle);
+      return connectionErrorTitle;
     }
 
     try {
@@ -385,7 +383,7 @@ class OpenRouterService {
       }
       return null;
     } catch (e) {
-      debugPrint('Error generating title: $e');
+      debugPrint('$errorGeneratingTitle $e');
       // Generate a numbered title when bot fails
       return 'Sohbet ${_chatCounter}';
     }
@@ -394,7 +392,7 @@ class OpenRouterService {
   // Test API connection
   Future<bool> testApiConnection() async {
     if (!isInitialized) {
-      debugPrint('Error: API key not initialized for test');
+      debugPrint(errorApiKeyNotInitializedForTest);
       return false;
     }
 
@@ -419,13 +417,13 @@ class OpenRouterService {
 
       return response.statusCode == 200;
     } on DioException catch (e) {
-      debugPrint('API test failed (DioException): ${e.type} - ${e.message}');
+      debugPrint('$errorApiTestFailedDio ${e.type} - ${e.message}');
       return false;
     } on TimeoutException catch (e) {
-      debugPrint('API test failed (Timeout): $e');
+      debugPrint('$errorApiTestFailedTimeout $e');
       return false;
     } catch (e) {
-      debugPrint('API test failed: $e');
+      debugPrint('$errorApiTestFailed $e');
       return false;
     }
   }
@@ -433,30 +431,29 @@ class OpenRouterService {
   // Upload an image and return its data URL
   Future<String?> uploadImage(File imageFile) async {
     if (!isInitialized) {
-      debugPrint('Error: API key not initialized');
+      debugPrint(errorApiKeyNotInitialized);
       return null;
     }
 
     // Check network connection
     final isConnected = await NetworkService.isConnected();
     if (!isConnected) {
-      debugPrint('Error: No internet connection for image upload');
-      throw Exception(
-          'No internet connection. Please check your connection and try again.');
+      debugPrint(errorNoInternetImageUpload);
+      throw Exception(exceptionNoInternetImageUpload);
     }
 
     // Check if file exists and is readable
     if (!await imageFile.exists()) {
-      debugPrint('Error: Image file does not exist: ${imageFile.path}');
-      throw Exception('Image file not found: ${path.basename(imageFile.path)}');
+      debugPrint('$errorImageFileNotExist ${imageFile.path}');
+      throw Exception('$exceptionImageFileNotFound ${path.basename(imageFile.path)}');
     }
 
     try {
       // Check file size (25MB maximum)
       final fileSize = await imageFile.length();
       if (fileSize > _maxFileSize) {
-        debugPrint('Error: Image size exceeds 25MB limit');
-        throw Exception('Image size too large (maximum 25MB).');
+        debugPrint(errorImageSizeTooLarge);
+        throw Exception(exceptionImageSizeTooLarge);
       }
 
       // Convert image to base64
@@ -491,11 +488,11 @@ class OpenRouterService {
       debugPrint('Image converted to base64 with MIME type: $mimeType');
       return dataUrl;
     } catch (e) {
-      debugPrint('Error in uploadImage: $e');
+      debugPrint('$errorInUploadImage $e');
       if (e is Exception) {
         rethrow;
       }
-      throw Exception('Unexpected error while uploading image: $e');
+      throw Exception('$unexpectedErrorUploadingImage $e');
     }
   }
 }

@@ -3,13 +3,7 @@
 
 import 'package:flutter/material.dart';
 import '../services/network_service.dart';
-
-// User-facing text messages
-const String _textConnectionError = 'Bağlantı Hatası';
-const String _textNoInternet = 'İnternet bağlantısı bulunamadı';
-const String _textCheckConnection = 'Uygulamanın çalışması için internet bağlantısı gereklidir. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.';
-const String _textChecking = 'Kontrol ediliyor...';
-const String _textRetry = 'Tekrar Dene';
+import '../languages/languages.dart';
 
 class NetworkErrorScreen extends StatefulWidget {
   final VoidCallback onRetry;
@@ -49,7 +43,7 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text(_textConnectionError),
+        title: Text(Languages.textConnectionError),
       ),
       body: Center(
         child: Padding(
@@ -63,17 +57,17 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
                 color: Colors.red,
               ),
               const SizedBox(height: 24),
-              const Text(
-                _textNoInternet,
-                style: TextStyle(
+              Text(
+                Languages.textNoInternet,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
-              const Text(
-                _textCheckConnection,
+              Text(
+                Languages.textCheckConnection,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -90,7 +84,7 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
                         ),
                       )
                     : const Icon(Icons.refresh),
-                label: Text(_isLoading ? _textChecking : _textRetry),
+                label: Text(_isLoading ? Languages.textChecking : Languages.textRetry),
               ),
               if (_diagnostics.isNotEmpty) ...[
                 const SizedBox(height: 40),
