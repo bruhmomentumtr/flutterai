@@ -63,6 +63,7 @@ class ChatProvider extends ChangeNotifier {
   }
 
   // Load sessions from storage
+  // Eğer hiç session yoksa otomatik olarak yeni bir session oluşturur
   Future<void> _loadSessions() async {
     try {
       final prefs = await SharedPreferences.getInstance();
@@ -88,9 +89,14 @@ class ChatProvider extends ChangeNotifier {
         }
       }
       
-      // Set current messages
-      if (_currentSessionId.isNotEmpty) {
-        _messages = _sessionMessages[_currentSessionId] ?? [];
+      // Eğer hiç session yoksa otomatik olarak yeni bir session oluştur
+      if (_sessionIds.isEmpty) {
+        _createNewSession();
+      } else {
+        // Set current messages
+        if (_currentSessionId.isNotEmpty) {
+          _messages = _sessionMessages[_currentSessionId] ?? [];
+        }
       }
       
       // Update chat counter based on number of sessions

@@ -39,14 +39,8 @@ final List<Bot> defaultBots = [
   Bot(
     id: const Uuid().v4(),
     name: 'Llama 3.2 11b vision free',
-    model: 'meta-llama/llama-3.2-11b-vision-instruct:free',
+    model: 'meta-llama/llama-3.2-11b-vision-instruct',
     iconName: 'smart_toy',
-  ),
-  Bot(
-    id: const Uuid().v4(),
-    name: 'ministral 8b',
-    model: 'mistralai/ministral-8b',
-    iconName: 'chat',
   ),
   Bot(
     id: const Uuid().v4(),
