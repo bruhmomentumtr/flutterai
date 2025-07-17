@@ -67,8 +67,8 @@ class Languages {
   static const String textImageFormatError = 'Görsel formatı desteklenmiyor';
   static const String textDeleteMessageTitle = 'Mesajı Sil';
   static const String textDeleteMessageConfirm = 'Bu mesajı silmek istediğinizden emin misiniz?';
-  static const String textCancel = 'İptal';
-  static const String textDelete = 'Sil';
+  static const String textCancel = 'İptal'; // Use this everywhere for cancel
+  static const String textDelete = 'Sil'; // Use this everywhere for delete
   static const String textShowProcessed = 'İşlenmiş içeriği göster';
   static const String textShowRaw = 'Ham içeriği göster';
   static const String textMoreOptions = 'Daha fazla seçenek';
@@ -120,7 +120,7 @@ class Languages {
   static const String successApiKeySaved = 'API anahtarı başarıyla kaydedildi';
 
   // screens/settings_screen.dart debug and user text messages
-  static const String textSettings = 'Ayarlar';
+  static const String textSettings = 'Ayarlar'; // Use this everywhere for settings
   static const String textApiKey = 'API Anahtarı';
   static const String textApiKeyHint = 'OpenRouter API anahtarınızı girin';
   static const String textApiKeyError = 'API anahtarı boş olamaz';
@@ -133,7 +133,6 @@ class Languages {
   static const String textSystemPrompt = 'Sistem Promptu';
   static const String textSystemPromptDesc = 'AI asistanı için sistem promptu';
   static const String textSave = 'Kaydet';
-  static const String textCancel = 'İptal';
   static const String textReset = 'Sıfırla';
   static const String textResetConfirm = 'Tüm ayarlar varsayılan değerlerine sıfırlanacak. Devam etmek istiyor musunuz?';
   static const String textYes = 'Evet';
@@ -163,22 +162,20 @@ class Languages {
 
   // screens/network_error_screen.dart debug and user text messages
   static const String textConnectionError = 'Bağlantı Hatası';
-  static const String textNoInternet = 'İnternet bağlantısı bulunamadı';
+  static const String textNoInternet = 'İnternet bağlantısı bulunamadı'; // Use this everywhere for no internet
   static const String textCheckConnection = 'Uygulamanın çalışması için internet bağlantısı gereklidir. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.';
   static const String textChecking = 'Kontrol ediliyor...';
-  static const String textRetry = 'Tekrar Dene';
+  static const String textRetry = 'Tekrar Dene'; // Use this everywhere for retry
   static const String textDiagnostics = 'Tanı Bilgileri:';
 
   // screens/chat_screen.dart debug and user text messages
-  static const String textNoInternet = 'İnternet bağlantısı yok. Mesaj göndermek için bağlantı gereklidir.';
+  // Only keep one textNoInternet, textCancel, textDelete, textSettings, textRetry
   static const String textApiServiceUnavailable = 'API servisine erişilemiyor. Lütfen internet bağlantınızı ve API anahtarınızı kontrol edin.';
   static const String textApiServiceError = 'API servisi kontrolü sırasında hata:';
   static const String textSessionList = 'Sohbet Listesi';
   static const String textClearChat = 'Sohbeti Temizle';
   static const String textClearChatConfirm = 'Tüm mesajlaşma geçmişini silmek istediğinizden emin misiniz?';
-  static const String textCancel = 'İptal';
   static const String textClear = 'Temizle';
-  static const String textSettings = 'Settings';
   static const String textApiKeyRequired = 'API Anahtarı Gerekli';
   static const String textApiKeyRequiredDesc = 'Lütfen ayarlardan OpenRouter API anahtarınızı tanımlayın';
   static const String textSettingsButton = 'Ayarlar';
@@ -193,12 +190,10 @@ class Languages {
   static const String textAddBotToStart = 'Add a new bot to start chatting';
   static const String textDeleteBot = 'Delete Bot';
   static const String textDeleteBotConfirm = 'Are you sure you want to delete';
-  static const String textDelete = 'Delete';
   static const String textLoadingModels = 'Loading available models...';
   static const String textErrorLoadingModels = 'Error loading models:';
   static const String textBotEditCancel = 'Cancel';
   static const String textOpenRouterChat = 'OpenRouter Chat';
-  static const String textRetry = 'Tekrar Dene';
   static const String textSetApiKeyForBots = 'Please set an API key in settings before creating or editing bots.';
 
   // providers/settings_provider.dart debug and user text messages
