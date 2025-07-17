@@ -867,7 +867,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                   children: [
                     Icon(Icons.error_outline, color: Colors.red, size: 40),
                     SizedBox(height: 8),
-                    Text(Languages.imageLoadError, 
+                    Text(Languages.textImageLoadError, 
                       style: TextStyle(color: Colors.red),
                     ),
                   ],
@@ -890,7 +890,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           children: [
             Icon(Icons.image_not_supported, color: Colors.red, size: 40),
             SizedBox(height: 8),
-            Text(Languages.imageFormatError, 
+            Text(Languages.textimageFormatError, 
               style: TextStyle(color: Colors.red),
             ),
           ],
@@ -919,7 +919,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.error, color: Colors.red),
-                Text(Languages.imageLoadError, 
+                Text(Languages.textImageLoadError, 
                   style: TextStyle(color: Colors.red),
                 ),
               ],
