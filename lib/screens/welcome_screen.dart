@@ -43,7 +43,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
               const SizedBox(height: 16.0),
               Text(
-                appTitle,
+                Languages.appTitle,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -51,7 +51,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
               const SizedBox(height: 8.0),
               Text(
-                appSubtitle,
+                Languages.appSubtitle,
                 style: Theme.of(context).textTheme.bodyLarge,
                 textAlign: TextAlign.center,
               ),
@@ -61,8 +61,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               TextField(
                 controller: _apiKeyController,
                 decoration: InputDecoration(
-                  labelText: labelApiKey,
-                  hintText: hintApiKey,
+                  labelText: Languages.labelApiKey,
+                  hintText: Languages.hintApiKey,
                   border: const OutlineInputBorder(),
                   prefixIcon: const Icon(Icons.key),
                   suffixIcon: IconButton(
@@ -88,7 +88,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               ),
               const SizedBox(height: 8.0),
               Text(
-                apiKeyInfo,
+                Languages.apiKeyInfo,
                 style: Theme.of(context).textTheme.bodySmall,
                 textAlign: TextAlign.center,
               ),
@@ -102,7 +102,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 12.0),
                     child: Text(
-                      buttonContinue,
+                      Languages.buttonContinue,
                       style: const TextStyle(fontSize: 16.0),
                     ),
                   ),
@@ -117,7 +117,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     MaterialPageRoute(builder: (_) => const ChatScreen()),
                   );
                 },
-                child: Text(buttonSkip),
+                child: Text(Languages.buttonSkip),
               ),
             ],
           ),
@@ -132,7 +132,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if (apiKey.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(errorEnterApiKey),
+          content: Text(Languages.errorEnterApiKey),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -143,7 +143,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     if (!apiKey.startsWith('sk-')) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(errorInvalidApiKey),
+          content: Text(Languages.errorInvalidApiKey),
           duration: const Duration(seconds: 3),
         ),
       );
@@ -161,7 +161,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     // Başarı mesajı göster
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(successApiKeySaved),
+        content: Text(Languages.successApiKeySaved),
         duration: const Duration(seconds: 2),
       ),
     );

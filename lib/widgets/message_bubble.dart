@@ -137,7 +137,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           ? theme.colorScheme.onPrimary.withAlpha(179)
                           : theme.colorScheme.onSurface.withAlpha(153),
                     ),
-                    tooltip: _showRawContent ? Languages.showProcessed : Languages.showRaw,
+                    tooltip: _showRawContent ? Languages.textShowProcessed : Languages.textShowRaw,
                     onPressed: () {
                       setState(() {
                         _showRawContent = !_showRawContent;
@@ -159,42 +159,42 @@ class _MessageBubbleState extends State<MessageBubble> {
                         ? theme.colorScheme.onPrimary.withAlpha(179)
                         : theme.colorScheme.onSurface.withAlpha(153),
                   ),
-                  tooltip: Languages.moreOptions,
+                  tooltip: Languages.textMoreOptions,
                   onSelected: (value) {
-                    if (value == Languages.copyMessage) {
+                    if (value == Languages.textCopyMessage) {
                       _copyMessageToClipboard(context);
-                    } else if (value == Languages.copyRawText) {
+                    } else if (value == Languages.textCopyRawText) {
                       _copyRawMessageToClipboard(context);
-                    } else if (value == Languages.deleteMessage) {
+                    } else if (value == Languages.textDeleteMessage) {
                       _deleteMessage(context);
                     }
                   },
                   itemBuilder: (context) => [
                     const PopupMenuItem<String>(
-                      value: Languages.copyMessage,
+                        value: Languages.textCopyMessage,
                       child: ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(Icons.copy, size: 18),
-                        title: Text(Languages.copyMessage),
+                        title: Text(Languages.textCopyMessage),
                       ),
                     ),
                     const PopupMenuItem<String>(
-                      value: Languages.copyRawText,
+                      value: Languages.textCopyRawText,
                       child: ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(Icons.code, size: 18),
-                        title: Text(Languages.copyRawText),
+                        title: Text(Languages.textCopyRawText),
                       ),
                     ),
                     const PopupMenuItem<String>(
-                      value: Languages.deleteMessage,
+                      value: Languages.textDeleteMessage,
                       child: ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(Icons.delete_outline, size: 18),
-                        title: Text(Languages.deleteMessage),
+                        title: Text(Languages.textDeleteMessage),
                       ),
                     ),
                   ],
