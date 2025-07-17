@@ -38,7 +38,7 @@ const String _authorizationPrefix = 'Bearer ';
 
 // Default models in case API fails (like no internet)
 const List<String> _defaultModels = [
-  defaultModelsMessage,
+  Languages.defaultModelsMessage,
 ];
 
 class OpenRouterService {
@@ -54,7 +54,7 @@ class OpenRouterService {
   // Initialize with API key
   void initialize(String apiKey) {
     if (apiKey.isEmpty) {
-      debugPrint(warningEmptyApiKey);
+      debugPrint(Languages.warningEmptyApiKey);
       return;
     }
 
@@ -91,7 +91,7 @@ class OpenRouterService {
               // Check internet connection
               final isConnected = await NetworkService.isConnected();
               if (!isConnected) {
-                debugPrint('No internet connection, retry cancelled.');
+                debugPrint(Languages.errorNoInternetRetryCancelled);
                 return handler.next(error);
               }
 
@@ -118,7 +118,7 @@ class OpenRouterService {
                 return handler.next(error);
               }
             } else {
-              debugPrint('Max retries ($_maxRetries) reached. Giving up.');
+              debugPrint(Languages.errorMaxRetriesReached);
             }
           }
           return handler.next(error);
@@ -133,14 +133,14 @@ class OpenRouterService {
   // Get available models from OpenRouter
   Future<List<String>> getAvailableModels() async {
     if (!isInitialized) {
-      debugPrint(errorApiKeyNotInitializedFetchingModels);
+      debugPrint(Languages.errorApiKeyNotInitializedFetchingModels);
       return _defaultModels;
     }
 
     // Check network connection
     final isConnected = await NetworkService.isConnected();
     if (!isConnected) {
-      debugPrint(errorNoInternetFetchingModels);
+      debugPrint(Languages.errorNoInternetFetchingModels);
       return _defaultModels;
     }
 
@@ -161,23 +161,23 @@ class OpenRouterService {
 
         // Ensure at least one model is returned
         if (availableModels.isEmpty) {
-          debugPrint(warningNoModelsFound);
+          debugPrint(Languages.warningNoModelsFound);
           return _defaultModels;
         }
 
         return availableModels;
       } else {
-        debugPrint('$apiErrorPrefix ${response.statusCode}');
+        debugPrint('${Languages.apiErrorPrefix} ${response.statusCode}');
         return _defaultModels;
       }
     } on DioException catch (e) {
-      debugPrint('$dioExceptionFetchingModels ${e.type} - ${e.message}');
+      debugPrint('${Languages.dioExceptionFetchingModels} ${e.type} - ${e.message}');
       return _defaultModels;
     } on TimeoutException catch (e) {
-      debugPrint('$timeoutFetchingModels $e');
+      debugPrint('${Languages.timeoutFetchingModels} $e');
       return _defaultModels;
     } catch (e) {
-      debugPrint('$errorFetchingModels $e');
+      debugPrint('${Languages.errorFetchingModels} $e');
       return _defaultModels;
     }
   }
@@ -192,7 +192,7 @@ class OpenRouterService {
     required String sessionId,
   }) async {
     if (!isInitialized) {
-      debugPrint(errorApiKeyNotInitialized);
+      debugPrint(Languages.errorApiKeyNotInitialized);
       return null;
     }
 
@@ -233,14 +233,14 @@ class OpenRouterService {
             messagesJson.add(message.toJson());
           }
         } catch (e) {
-          debugPrint('$errorMessageFormatting $e - ${message.id}');
+          debugPrint('${Languages.errorMessageFormatting} $e - ${message.id}');
           continue;
         }
       }
 
       // Use the selected bot's model
       String useModel = bot.model;
-      debugPrint('Using selected model: $useModel');
+      debugPrint('${Languages.usingSelectedModel} $useModel');
 
       // Prepare the request payload
       final Map<String, dynamic> payload = {
@@ -251,8 +251,8 @@ class OpenRouterService {
         'stream': false
       };
 
-      debugPrint('Sending API request with model: $useModel');
-      debugPrint('Request payload: ${jsonEncode(payload)}');
+      debugPrint('${Languages.sendingApiRequest} $useModel');
+      debugPrint('${Languages.requestPayload} ${jsonEncode(payload)}');
 
       // Send the request
       final response = await _dio.post(
@@ -284,31 +284,31 @@ class OpenRouterService {
           sessionId: sessionId,
         );
       } else {
-        debugPrint('$apiErrorPrefix ${response.statusCode} - ${response.data}');
+        debugPrint('${Languages.apiErrorPrefix} ${response.statusCode} - ${response.data}');
         // Check for rate limit error
         if (response.statusCode == 429) {
           final errorMessage = response.data.toString();
           return Message(
             id: DateTime.now().millisecondsSinceEpoch.toString(),
             role: MessageRole.assistant,
-            content: '$errorRateLimitReached ($errorMessage)',
+            content: '${Languages.errorRateLimitReached} ($errorMessage)',
             timestamp: DateTime.now(),
-            title: 'Sohbet ${_chatCounter}',
+            title: '${Languages.chatTitle} ${_chatCounter}',
             sessionId: sessionId,
           );
         }
-        throw Exception('$apiErrorPrefix ${response.statusCode} - ${response.data}');
+        throw Exception('${Languages.apiErrorPrefix} ${response.statusCode} - ${response.data}');
       }
     } catch (e) {
-      debugPrint('$errorGeneratingChatResponse $e');
+      debugPrint('${Languages.errorGeneratingChatResponse} $e');
       // Check if it's a rate limit error in the exception
       if (e.toString().contains('Rate limit exceeded')) {
         return Message(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           role: MessageRole.assistant,
-          content: '$errorRateLimitReached ($e)',
+          content: '${Languages.errorRateLimitReached} ($e)',
           timestamp: DateTime.now(),
-          title: 'Sohbet ${_chatCounter}',
+          title: '${Languages.chatTitle} ${_chatCounter}',
           sessionId: sessionId,
         );
       }
@@ -320,15 +320,15 @@ class OpenRouterService {
   Future<String?> generateTitleForMessage(
       String messageContent, String model, double temperature) async {
     if (!isInitialized) {
-      debugPrint(errorApiKeyNotInitialized);
+      debugPrint(Languages.errorApiKeyNotInitialized);
       return null;
     }
 
     // Check network connection
     final isConnected = await NetworkService.isConnected();
     if (!isConnected) {
-      debugPrint(errorNoInternetGeneratingTitle);
-      return connectionErrorTitle;
+      debugPrint(Languages.errorNoInternetGeneratingTitle);
+      return Languages.connectionErrorTitle;
     }
 
     try {
@@ -342,7 +342,7 @@ class OpenRouterService {
         {
           'role': 'system',
           'content':
-              'Generate a short and descriptive title for the following content. Title should be maximum 5 words.',
+              '${Languages.generateShortDescriptiveTitle} ${Languages.titleShouldBeMaximum5Words}.',
         },
         {
           'role': 'user',
@@ -376,23 +376,23 @@ class OpenRouterService {
 
         // If title is empty or only contains whitespace, generate numbered title
         if (title.isEmpty || title.trim().isEmpty) {
-          return 'Sohbet ${_chatCounter}';
+          return '${Languages.chatTitle} ${_chatCounter}';
         }
 
         return title;
       }
       return null;
     } catch (e) {
-      debugPrint('$errorGeneratingTitle $e');
+      debugPrint('${Languages.errorGeneratingTitle} $e');
       // Generate a numbered title when bot fails
-      return 'Sohbet ${_chatCounter}';
+      return '${Languages.chatTitle} ${_chatCounter}';
     }
   }
 
   // Test API connection
   Future<bool> testApiConnection() async {
     if (!isInitialized) {
-      debugPrint(errorApiKeyNotInitializedForTest);
+      debugPrint(Languages.errorApiKeyNotInitializedForTest);
       return false;
     }
 
@@ -401,7 +401,7 @@ class OpenRouterService {
       final Map<String, dynamic> payload = {
         'model': _mistralModel,
         'messages': [
-          {'role': 'user', 'content': 'Say "OK" if you can read this.'}
+          {'role': 'user', 'content': '${Languages.sayOkIfYouCanReadThis}.'}
         ],
         'max_tokens': _maxTokensForCheck,
         'temperature': _testTemperature,
@@ -417,13 +417,13 @@ class OpenRouterService {
 
       return response.statusCode == 200;
     } on DioException catch (e) {
-      debugPrint('$errorApiTestFailedDio ${e.type} - ${e.message}');
+      debugPrint('${Languages.errorApiTestFailedDio} ${e.type} - ${e.message}');
       return false;
     } on TimeoutException catch (e) {
-      debugPrint('$errorApiTestFailedTimeout $e');
+      debugPrint('${Languages.errorApiTestFailedTimeout} $e');
       return false;
     } catch (e) {
-      debugPrint('$errorApiTestFailed $e');
+      debugPrint('${Languages.errorApiTestFailed} $e');
       return false;
     }
   }
@@ -431,29 +431,29 @@ class OpenRouterService {
   // Upload an image and return its data URL
   Future<String?> uploadImage(File imageFile) async {
     if (!isInitialized) {
-      debugPrint(errorApiKeyNotInitialized);
+      debugPrint(Languages.errorApiKeyNotInitialized);
       return null;
     }
 
     // Check network connection
     final isConnected = await NetworkService.isConnected();
     if (!isConnected) {
-      debugPrint(errorNoInternetImageUpload);
-      throw Exception(exceptionNoInternetImageUpload);
+      debugPrint(Languages.errorNoInternetImageUpload);
+      throw Exception(Languages.exceptionNoInternetImageUpload);
     }
 
     // Check if file exists and is readable
     if (!await imageFile.exists()) {
-      debugPrint('$errorImageFileNotExist ${imageFile.path}');
-      throw Exception('$exceptionImageFileNotFound ${path.basename(imageFile.path)}');
+      debugPrint('${Languages.errorImageFileNotExist} ${imageFile.path}');
+      throw Exception('${Languages.exceptionImageFileNotFound} ${path.basename(imageFile.path)}');
     }
 
     try {
       // Check file size (25MB maximum)
       final fileSize = await imageFile.length();
       if (fileSize > _maxFileSize) {
-        debugPrint(errorImageSizeTooLarge);
-        throw Exception(exceptionImageSizeTooLarge);
+        debugPrint(Languages.errorImageSizeTooLarge);
+        throw Exception(Languages.exceptionImageSizeTooLarge);
       }
 
       // Convert image to base64
@@ -485,14 +485,14 @@ class OpenRouterService {
 
       // Create base64 data URL with proper formatting
       final dataUrl = 'data:$mimeType;base64,$base64Image';
-      debugPrint('Image converted to base64 with MIME type: $mimeType');
+      debugPrint('${Languages.imageConvertedToBase64WithMimeType} $mimeType');
       return dataUrl;
     } catch (e) {
-      debugPrint('$errorInUploadImage $e');
+      debugPrint('${Languages.errorInUploadImage} $e');
       if (e is Exception) {
         rethrow;
       }
-      throw Exception('$unexpectedErrorUploadingImage $e');
+      throw Exception('${Languages.unexpectedErrorUploadingImage} $e');
     }
   }
 }

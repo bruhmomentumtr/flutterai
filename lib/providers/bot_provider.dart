@@ -34,7 +34,7 @@ class BotProvider extends ChangeNotifier {
         _createDefaultBots();
       }
     } catch (e) {
-      _error = msgErrorInitializingBots + e.toString();
+      _error = Languages.msgErrorInitializingBots + e.toString();
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -44,7 +44,7 @@ class BotProvider extends ChangeNotifier {
   // Load bots from SharedPreferences
   Future<void> _loadBotsFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    final botsJson = prefs.getString(msgBotName);
+    final botsJson = prefs.getString(Languages.msgBotName);
     
     if (botsJson != null) {
       final List<dynamic> decodedList = jsonDecode(botsJson);
@@ -57,9 +57,9 @@ class BotProvider extends ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final botsJson = jsonEncode(_bots.map((bot) => bot.toJson()).toList());
-      await prefs.setString(msgBotName, botsJson);
+      await prefs.setString(Languages.msgBotName, botsJson);
     } catch (e) {
-      _error = msgErrorSavingBots + e.toString();
+      _error = Languages.msgErrorSavingBots + e.toString();
       notifyListeners();
     }
   }
@@ -87,7 +87,7 @@ class BotProvider extends ChangeNotifier {
       await _saveBots();
       notifyListeners();
     } else {
-      _error = msgBotNotFound;
+      _error = Languages.msgBotNotFound;
       notifyListeners();
     }
   }

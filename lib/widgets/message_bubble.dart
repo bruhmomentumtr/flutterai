@@ -137,7 +137,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                           ? theme.colorScheme.onPrimary.withAlpha(179)
                           : theme.colorScheme.onSurface.withAlpha(153),
                     ),
-                    tooltip: _showRawContent ? Languages.showProcessed : Languages.showRaw,
+                    tooltip: _showRawContent ? Languages.textShowProcessed : Languages.textShowRaw,
                     onPressed: () {
                       setState(() {
                         _showRawContent = !_showRawContent;
@@ -159,42 +159,42 @@ class _MessageBubbleState extends State<MessageBubble> {
                         ? theme.colorScheme.onPrimary.withAlpha(179)
                         : theme.colorScheme.onSurface.withAlpha(153),
                   ),
-                  tooltip: Languages.moreOptions,
+                  tooltip: Languages.textMoreOptions,
                   onSelected: (value) {
-                    if (value == Languages.copyMessage) {
+                    if (value == Languages.textCopyMessage) {
                       _copyMessageToClipboard(context);
-                    } else if (value == Languages.copyRawText) {
+                    } else if (value == Languages.textCopyRawText) {
                       _copyRawMessageToClipboard(context);
-                    } else if (value == Languages.deleteMessage) {
+                    } else if (value == Languages.textDeleteMessage) {
                       _deleteMessage(context);
                     }
                   },
                   itemBuilder: (context) => [
                     const PopupMenuItem<String>(
-                      value: Languages.copyMessage,
+                        value: Languages.textCopyMessage,
                       child: ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(Icons.copy, size: 18),
-                        title: Text(Languages.copyMessage),
+                        title: Text(Languages.textCopyMessage),
                       ),
                     ),
                     const PopupMenuItem<String>(
-                      value: Languages.copyRawText,
+                      value: Languages.textCopyRawText,
                       child: ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(Icons.code, size: 18),
-                        title: Text(Languages.copyRawText),
+                        title: Text(Languages.textCopyRawText),
                       ),
                     ),
                     const PopupMenuItem<String>(
-                      value: Languages.deleteMessage,
+                      value: Languages.textDeleteMessage,
                       child: ListTile(
                         dense: true,
                         contentPadding: EdgeInsets.zero,
                         leading: Icon(Icons.delete_outline, size: 18),
-                        title: Text(Languages.deleteMessage),
+                        title: Text(Languages.textDeleteMessage),
                       ),
                     ),
                   ],
@@ -340,7 +340,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           final scaffold = ScaffoldMessenger.of(context);
           scaffold.showSnackBar(
             const SnackBar(
-              content: Text(Languages.copyToClipboard),
+              content: Text(Languages.textCopyToClipboard),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -736,7 +736,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       if (widget.message.content.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(Languages.messageEmpty),
+            content: Text(Languages.textMessageEmpty),
             duration: Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
             width: 250,
@@ -751,7 +751,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(Languages.messageCopied),
+              content: Text(Languages.textMessageCopied),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -763,7 +763,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(Languages.messageCopyError),
+              content: Text(Languages.textMessageCopyError),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -791,7 +791,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       if (widget.message.content.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text(Languages.rawTextEmpty),
+            content: Text(Languages.textRawTextEmpty),
             duration: Duration(seconds: 2),
             behavior: SnackBarBehavior.floating,
             width: 250,
@@ -808,7 +808,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           // Show a snackbar to confirm copy
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(Languages.rawTextCopied),
+              content: Text(Languages.textRawTextCopied),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -819,7 +819,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           debugPrint('Panoya ham metin kopyalama hatası: $error');
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text(Languages.rawTextCopyError),
+              content: Text(Languages.textRawTextCopyError),
               duration: Duration(seconds: 2),
               behavior: SnackBarBehavior.floating,
               width: 250,
@@ -867,7 +867,7 @@ class _MessageBubbleState extends State<MessageBubble> {
                   children: [
                     Icon(Icons.error_outline, color: Colors.red, size: 40),
                     SizedBox(height: 8),
-                    Text(Languages.imageLoadError, 
+                    Text(Languages.textImageLoadError, 
                       style: TextStyle(color: Colors.red),
                     ),
                   ],
@@ -890,7 +890,7 @@ class _MessageBubbleState extends State<MessageBubble> {
           children: [
             Icon(Icons.image_not_supported, color: Colors.red, size: 40),
             SizedBox(height: 8),
-            Text(Languages.imageFormatError, 
+            Text(Languages.textImageFormatError, 
               style: TextStyle(color: Colors.red),
             ),
           ],
@@ -919,7 +919,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(Icons.error, color: Colors.red),
-                Text(Languages.imageLoadError, 
+                Text(Languages.textImageLoadError, 
                   style: TextStyle(color: Colors.red),
                 ),
               ],
@@ -937,19 +937,19 @@ class _MessageBubbleState extends State<MessageBubble> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text(Languages.deleteMessageTitle),
-        content: const Text(Languages.deleteMessageConfirm),
+        title: const Text(Languages.textDeleteMessageTitle),
+        content: const Text(Languages.textDeleteMessageConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text(Languages.cancel),
+            child: const Text(Languages.textCancel),
           ),
           FilledButton(
             onPressed: () {
               chatProvider.deleteMessage(widget.message.id);
               Navigator.of(context).pop();
             },
-            child: const Text(Languages.delete),
+            child: const Text(Languages.textDelete),
           ),
         ],
       ),

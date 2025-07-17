@@ -119,12 +119,12 @@ class _MessageInputState extends State<MessageInput> {
           // Görsel seçildikten sonra input alanına fokus et
           _focusNode.requestFocus();
         } else {
-          _showErrorSnackbar(msgSelectedImageNotFound);
+          _showErrorSnackbar(Languages.msgSelectedImageNotFound);
         }
       }
     } catch (e) {
-      debugPrint('$msgImageLoadError $e');
-      _showErrorSnackbar(msgErrorPickingImage);
+      debugPrint('$Languages.msgImageLoadError $e');
+      _showErrorSnackbar(Languages.msgErrorPickingImage);
     }
   }
 
@@ -149,12 +149,12 @@ class _MessageInputState extends State<MessageInput> {
           // Fotoğraf çekildikten sonra input alanına fokus et
           _focusNode.requestFocus();
         } else {
-          _showErrorSnackbar(msgTakenPhotoNotSaved);
+          _showErrorSnackbar(Languages.msgTakenPhotoNotSaved);
         }
       }
     } catch (e) {
-      debugPrint('$msgImageLoadError $e');
-      _showErrorSnackbar(msgErrorTakingPhoto);
+      debugPrint('$Languages.msgImageLoadError $e');
+      _showErrorSnackbar(Languages.msgErrorTakingPhoto);
     }
   }
 
@@ -209,7 +209,7 @@ class _MessageInputState extends State<MessageInput> {
                       width: double.infinity,
                       height: 120,
                       errorBuilder: (context, error, stackTrace) {
-                        debugPrint('$msgImageLoadError $error');
+                        debugPrint('$Languages.msgImageLoadError $error');
                         return Container(
                           width: double.infinity,
                           height: 120,
@@ -219,7 +219,7 @@ class _MessageInputState extends State<MessageInput> {
                             children: [
                               Icon(Icons.error_outline, color: Colors.red),
                               SizedBox(height: 4),
-                              Text(msgImageNotLoaded,
+                              Text(Languages.msgImageNotLoaded,
                                   style: TextStyle(
                                       color: Colors.red, fontSize: 12)),
                             ],
@@ -257,14 +257,14 @@ class _MessageInputState extends State<MessageInput> {
               IconButton(
                 icon: const Icon(Icons.photo),
                 onPressed: widget.isLoading ? null : _pickImage,
-                tooltip: tooltipAddImage,
+                tooltip: Languages.tooltipAddImage, // Languages sınıfından çağrıldı
               ),
 
               // Camera button
               IconButton(
                 icon: const Icon(Icons.camera_alt),
                 onPressed: widget.isLoading ? null : _takePhoto,
-                tooltip: tooltipTakePhoto,
+                tooltip: Languages.tooltipTakePhoto, // Languages sınıfından çağrıldı
               ),
 
               // Text field
@@ -273,7 +273,7 @@ class _MessageInputState extends State<MessageInput> {
                   controller: _textController,
                   focusNode: _focusNode,
                   decoration: InputDecoration(
-                    hintText: hintTextMessage,
+                    hintText: Languages.hintTextMessage, // Languages sınıfından çağrıldı
                     border: InputBorder.none,
                     enabled: !widget.isLoading,
                   ),

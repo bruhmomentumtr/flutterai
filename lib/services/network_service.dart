@@ -22,7 +22,7 @@ class NetworkService {
       // First check connectivity
       final connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult == ConnectivityResult.none) {
-        debugPrint('$msgNoConnectivity $connectivityResult');
+        debugPrint('$Languages.msgNoConnectivity $connectivityResult');
         return false;
       }
       
@@ -31,34 +31,34 @@ class NetworkService {
         try {
           final result = await InternetAddress.lookup(domain)
               .timeout(_dnsLookupTimeout, onTimeout: () {
-            debugPrint(' [33m$domain$msgLookupTimeout [0m');
+            debugPrint(' [33m$domain$Languages.msgLookupTimeout [0m');
             throw TimeoutException('DNS lookup timeout');
           });
           
           if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
-            debugPrint('$msgSuccessfullyConnected$domain');
+            debugPrint('$Languages.msgSuccessfullyConnected$domain');
             return true;
           }
         } on SocketException catch (e) {
-          debugPrint('$msgFailedToConnect$domain: $e');
+          debugPrint('$Languages.msgFailedToConnect$domain: $e');
           continue;
         } on TimeoutException catch (e) {
-          debugPrint('$msgTimeoutConnecting$domain: $e');
+          debugPrint('$Languages.msgTimeoutConnecting$domain: $e');
           continue;
         }
       }
       
       // If we get here, all domains failed
-      debugPrint(msgAllConnectivityTestsFailed);
+      debugPrint(Languages.msgAllConnectivityTestsFailed);
       return false;
     } on SocketException catch (e) {
-      debugPrint('$msgInternetConnectionError $e');
+      debugPrint('$Languages.msgInternetConnectionError $e');
       return false;
     } on TimeoutException catch (e) {
-      debugPrint('$msgTimeoutError $e');
+      debugPrint('$Languages.msgTimeoutError $e');
       return false;
     } catch (e) {
-      debugPrint('$msgGeneralInternetConnectionError $e');
+      debugPrint('$Languages.msgGeneralInternetConnectionError $e');
       return false;
     }
   }
