@@ -233,7 +233,7 @@ class Languages {
   static const String chatTitle = 'Chat';
   static const String generateShortDescriptiveTitle = 'Generate a short and descriptive title for the following content.';
   static const String titleShouldBeMaximum5Words = 'Title should be maximum 5 words';
-  static const String sayOkIfYouCanReadThis = 'Say "OK" if you can read this';
+  static const String sayOkIfYouCanReadThis = 'Say "OK" if you can read this'; // this is for the bot connection test message
   static const String imageConvertedToBase64WithMimeType = 'Image converted to base64 with MIME type:';
 
 }

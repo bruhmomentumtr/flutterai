@@ -11,9 +11,9 @@ import '../models/message.dart';
 import '../models/bot.dart';
 import '../services/network_service.dart';
 import '../languages/languages.dart';
+import '../settingsvariables/default_settings_variables.dart' as default_settings_variables;
 
 // Constants for API configuration
-const String _baseUrl = 'https://openrouter.ai/api/v1';
 const int _maxRetries = 3;
 const Duration _retryDelay = Duration(seconds: 2);
 const Duration _connectTimeout = Duration(seconds: 15);
@@ -26,7 +26,6 @@ const double _testTemperature = 0.0;
 const int _maxFileSize = 25 * 1024 * 1024; // 25MB in bytes
 
 // Model constants, this is for testing the connection.
-const String _mistralModel = 'mistralai/ministral-3b';
 const int _titleMaxTokens = 128;
 const int _titleMaxLength = 200;
 
@@ -43,7 +42,6 @@ const List<String> _defaultModels = [
 
 class OpenRouterService {
   late Dio _dio;
-  String _apiKey = '';
   int _chatCounter = 0;
 
   // Set chat counter
@@ -58,17 +56,17 @@ class OpenRouterService {
       return;
     }
 
-    _apiKey = apiKey;
+    default_settings_variables.apikey = apiKey;
 
     // Dio configuration
     _dio = Dio(BaseOptions(
-        baseUrl: _baseUrl,
+        baseUrl: default_settings_variables.baseUrl,
         connectTimeout: _connectTimeout,
         receiveTimeout: _receiveTimeout,
         sendTimeout: _sendTimeout,
         headers: {
           'Content-Type': _contentType,
-          'Authorization': '$_authorizationPrefix$_apiKey',
+          'Authorization': '$_authorizationPrefix$default_settings_variables.apikey',
           'HTTP-Referer': _httpReferer,
           'X-Title': _appTitle,
         }));
@@ -128,7 +126,7 @@ class OpenRouterService {
   }
 
   // Check if API key is set
-  bool get isInitialized => _apiKey.isNotEmpty;
+  bool get isInitialized => default_settings_variables.apikey.isNotEmpty;
 
   // Get available models from OpenRouter
   Future<List<String>> getAvailableModels() async {
@@ -147,7 +145,7 @@ class OpenRouterService {
     try {
       // Add timeout
       final response = await _dio
-          .get('$_baseUrl/models')
+          .get('$default_settings_variables.baseUrl/models')
           .timeout(_requestTimeout);
 
       if (response.statusCode == 200) {
@@ -157,9 +155,8 @@ class OpenRouterService {
             models.map((model) => model['id'].toString()).toList();
 
         // Sort the models alphabetically
-        availableModels.sort(); // <-- DEĞİŞİKLİK BURADA
+        availableModels.sort();
 
-        // Ensure at least one model is returned
         if (availableModels.isEmpty) {
           debugPrint(Languages.warningNoModelsFound);
           return _defaultModels;
@@ -259,10 +256,10 @@ class OpenRouterService {
         '/chat/completions',
         data: payload,
         options: Options(validateStatus: (status) => status! < 500, headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $_apiKey',
-          'HTTP-Referer': 'https://github.com/bruhmomentumtr/flutterai',
-          'X-Title': 'FlutterAI Chat App',
+          'Content-Type': _contentType,
+          'Authorization': 'Bearer $default_settings_variables.apikey',
+          'HTTP-Referer': _httpReferer,
+          'X-Title': _appTitle,
         }),
       );
 
@@ -352,7 +349,7 @@ class OpenRouterService {
 
       // Prepare request for title generation
       final Map<String, dynamic> payload = {
-        'model': _mistralModel,
+        'model': default_settings_variables.defaultControlModel,
         'messages': messagesJson,
         'temperature': temperature,
         'max_tokens': _titleMaxTokens,
@@ -360,7 +357,7 @@ class OpenRouterService {
 
       // Send the request
       final response = await _dio.post(
-        '$_baseUrl/chat/completions',
+        '$default_settings_variables.baseUrl/chat/completions',
         data: jsonEncode(payload),
       );
 
@@ -399,7 +396,7 @@ class OpenRouterService {
     try {
       // Create a simple test request - only 25 tokens
       final Map<String, dynamic> payload = {
-        'model': _mistralModel,
+        'model': default_settings_variables.defaultControlModel,
         'messages': [
           {'role': 'user', 'content': '${Languages.sayOkIfYouCanReadThis}.'}
         ],
@@ -410,7 +407,7 @@ class OpenRouterService {
       // Send request with short timeout
       final response = await _dio
           .post(
-            '$_baseUrl/chat/completions',
+            '$default_settings_variables.baseUrl/chat/completions',
             data: jsonEncode(payload),
           )
           .timeout(_testTimeout);

@@ -50,6 +50,11 @@ I created this project after searching for alternatives to avoid paying around $
      ```
    - Save these values somewhere; if you download and want to build in local pc later, you’ll need them. Otherwise, you won't be able to update the app due to signature conflicts.
 
+  > **Note:**  
+  > After forking the project, you should review and customize the following files for your own needs:
+  > - `lib/languages/languages.dart`: This file centralizes all user-visible strings. Edit it to translate the app or change any user-facing messages.
+  > - `lib/settingsvariables/default_settings_variables.dart`: This file contains the default bot list, system prompt, and API key management. Update it to set your own default bots, system prompts, or to manage API key handling.
+
 3. **Or [download a release](https://github.com/bruhmomentumtr/flutterai/releases) to get started quickly.**
 
 ## ⚙️ Usage
