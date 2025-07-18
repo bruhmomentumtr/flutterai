@@ -39,7 +39,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               const Icon(
                 Icons.chat_rounded,
                 size: 80.0,
-                color: Colors.blue,
+                color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(height: 16.0),
               Text(

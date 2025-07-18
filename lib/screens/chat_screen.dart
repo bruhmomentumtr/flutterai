@@ -252,16 +252,16 @@ class _ChatScreenState extends State<ChatScreen> {
                   MaterialBanner(
                     content: Text(
                       Languages.textNoInternet,
-                      style: const TextStyle(color: Colors.black),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),
                     ),
-                    leading: const Icon(Icons.wifi_off, color: Colors.red),
-                    backgroundColor: Colors.amber[200],
+                    leading: Icon(Icons.wifi_off, color: Theme.of(context).colorScheme.secondary),
+                    backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                     actions: [
                       TextButton(
                         onPressed: _checkConnection,
                         child: Text(Languages.textRetry),
                         style: TextButton.styleFrom(
-                          foregroundColor: Colors.blue,
+                          foregroundColor: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
                     ],
@@ -275,21 +275,22 @@ class _ChatScreenState extends State<ChatScreen> {
                       children: [
                         Icon(
                           Icons.error_outline,
-                          color: Theme.of(context).colorScheme.error,
+                          color: Theme.of(context).colorScheme.onErrorContainer,
                         ),
                         const SizedBox(width: 8.0),
                         Expanded(
                           child: Text(
                             chatProvider.error!,
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.error,
+                              color: Theme.of(context).colorScheme.onErrorContainer,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
                         ),
                         IconButton(
                           icon: const Icon(Icons.close),
                           onPressed: chatProvider.clearError,
-                          color: Theme.of(context).colorScheme.error,
+                          color: Theme.of(context).colorScheme.onErrorContainer,
                         ),
                       ],
                     ),
@@ -368,7 +369,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     Icon(
                       Icons.chat_bubble_outline,
                       size: 64,
-                      color: Colors.grey.withAlpha(128),
+                      color: Theme.of(context).colorScheme.outline.withAlpha(128),
                     ),
                     const SizedBox(height: 16),
                     const Text(
@@ -376,7 +377,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey,
+                        color: Theme.of(context).colorScheme.outline,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -385,7 +386,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: Text(
                         Languages.textSendMessageToStart,
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(color: Theme.of(context).colorScheme.outline),
                       ),
                     ),
                   ],
@@ -482,17 +483,17 @@ class BotSelectionDrawer extends StatelessWidget {
             Icon(
               Icons.smart_toy_outlined,
               size: 48,
-              color: Colors.grey,
+              color: Theme.of(context).colorScheme.outline,
             ),
             SizedBox(height: 16.0),
             Text(
               Languages.textNoBotsConfigured,
-              style: TextStyle(color: Colors.grey),
+              style: TextStyle(color: Theme.of(context).colorScheme.outline),
             ),
             SizedBox(height: 8.0),
             Text(
               Languages.textAddBotToStart,
-              style: TextStyle(color: Colors.grey, fontSize: 12.0),
+              style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12.0),
             ),
           ],
         ),

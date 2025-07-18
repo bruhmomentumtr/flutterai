@@ -51,23 +51,25 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.signal_wifi_off,
                 size: 80,
-                color: Colors.red,
+                color: Theme.of(context).colorScheme.onErrorContainer,
               ),
               const SizedBox(height: 24),
               Text(
                 Languages.textNoInternet,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  color: Theme.of(context).colorScheme.onErrorContainer,
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
               Text(
                 Languages.textCheckConnection,
+                style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -79,12 +81,18 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
                         height: 24,
                         padding: const EdgeInsets.all(2.0),
                         child: const CircularProgressIndicator(
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onError,
                           strokeWidth: 3,
                         ),
                       )
-                    : const Icon(Icons.refresh),
-                label: Text(_isLoading ? Languages.textChecking : Languages.textRetry),
+                    : Icon(Icons.refresh, color: Theme.of(context).colorScheme.onErrorContainer),
+                label: Text(
+                  _isLoading ? Languages.textChecking : Languages.textRetry,
+                  style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+                ),
+                style: FilledButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.errorContainer,
+                ),
               ),
               if (_diagnostics.isNotEmpty) ...[
                 const SizedBox(height: 40),
@@ -96,7 +104,7 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.grey.withAlpha(26),
+                    color: Theme.of(context).colorScheme.surfaceVariant,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Column(

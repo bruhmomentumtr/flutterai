@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 
 import 'providers/chat_provider.dart';
 import 'providers/bot_provider.dart';
@@ -92,24 +93,28 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<SettingsProvider>(
-      builder: (context, settings, _) {
-        return MaterialApp(
-          title: Languages.appTitleMain,
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-            useMaterial3: true,
-          ),
-          darkTheme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.blue,
-              brightness: Brightness.dark,
-            ),
-            useMaterial3: true,
-          ),
-          themeMode: settings.themeMode,
-          home: settings.hasApiKey ? const ChatScreen() : const WelcomeScreen(),
+    return DynamicColorBuilder(
+      builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+        return Consumer<SettingsProvider>(
+          builder: (context, settings, _) {
+            return MaterialApp(
+              title: Languages.appTitleMain,
+              debugShowCheckedModeBanner: false,
+              theme: ThemeData(
+                colorScheme: lightDynamic ?? ColorScheme.fromSeed(seedColor: Colors.blue),
+                useMaterial3: true,
+              ),
+              darkTheme: ThemeData(
+                colorScheme: darkDynamic ?? ColorScheme.fromSeed(
+                  seedColor: Colors.blue,
+                  brightness: Brightness.dark,
+                ),
+                useMaterial3: true,
+              ),
+              themeMode: settings.themeMode,
+              home: settings.hasApiKey ? const ChatScreen() : const WelcomeScreen(),
+            );
+          },
         );
       },
     );

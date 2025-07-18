@@ -861,14 +861,14 @@ class _MessageBubbleState extends State<MessageBubble> {
               return Container(
                 width: double.infinity,
                 height: 150,
-                color: Colors.grey.shade200,
+                color: Theme.of(context).colorScheme.surfaceVariant,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.error_outline, color: Colors.red, size: 40),
+                    Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error, size: 40),
                     SizedBox(height: 8),
                     Text(Languages.textImageLoadError, 
-                      style: TextStyle(color: Colors.red),
+                      style: TextStyle(color: Theme.of(context).colorScheme.error),
                     ),
                   ],
                 ),
@@ -884,14 +884,14 @@ class _MessageBubbleState extends State<MessageBubble> {
       return Container(
         width: double.infinity,
         height: 150,
-        color: Colors.grey.shade200,
+        color: Theme.of(context).colorScheme.surfaceVariant,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.image_not_supported, color: Colors.red, size: 40),
+            Icon(Icons.image_not_supported, color: Theme.of(context).colorScheme.error, size: 40),
             SizedBox(height: 8),
             Text(Languages.textImageFormatError, 
-              style: TextStyle(color: Colors.red),
+              style: TextStyle(color: Theme.of(context).colorScheme.error),
             ),
           ],
         ),
@@ -918,9 +918,9 @@ class _MessageBubbleState extends State<MessageBubble> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.error, color: Colors.red),
+                Icon(Icons.error, color: Theme.of(context).colorScheme.error),
                 Text(Languages.textImageLoadError, 
-                  style: TextStyle(color: Colors.red),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ],
             ),
