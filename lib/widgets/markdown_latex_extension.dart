@@ -131,7 +131,7 @@ class LatexElementBuilder extends MarkdownElementBuilder {
               debugPrint(' [31m$latexErrorDebug $error [0m');
               return Text(
                 ' [31m$errorRenderingLatex ${error.message} [0m',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(color: Theme.of(context).colorScheme.error),
               );
             },
           ),
@@ -200,16 +200,16 @@ class InlineLatexElementBuilder extends MarkdownElementBuilder {
                 children: [
                   Text(
                     ' [31m$latexErrorWidget ${error.message} [0m',
-                    style: TextStyle(color: Colors.red, fontSize: 12),
+                    style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     // Display the original LaTeX code when there's an error
                     '\$\$' + textContent + '\$\$',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: 'monospace', 
                       fontSize: 12,
-                      color: Colors.grey,
+                      color: Theme.of(context).colorScheme.outline,
                     ),
                   ),
                 ],

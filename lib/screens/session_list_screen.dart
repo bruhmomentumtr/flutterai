@@ -221,12 +221,12 @@ class _SessionListScreenState extends State<SessionListScreen> {
                 return Dismissible(
                   key: Key(sessionId),
                   background: Container(
-                    color: Colors.red,
+                    color: Theme.of(context).colorScheme.errorContainer,
                     alignment: Alignment.centerRight,
                     padding: const EdgeInsets.only(right: 16.0),
-                    child: const Icon(
+                    child: Icon(
                       Icons.delete,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onError,
                     ),
                   ),
                   direction: DismissDirection.endToStart,

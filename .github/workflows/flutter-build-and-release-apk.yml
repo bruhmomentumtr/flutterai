@@ -90,8 +90,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v1.5.${{ github.run_number }}  # örnek: v12
-          release_name: Release v1.5.${{ github.run_number }}
+          tag_name: v1.6.${{ github.run_number }}  # örnek: v12
+          release_name: Release v1.6.${{ github.run_number }}
           draft: false
           prerelease: false
 

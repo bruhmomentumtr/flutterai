@@ -162,7 +162,7 @@ class _MessageInputState extends State<MessageInput> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red,
+        backgroundColor: Theme.of(context).colorScheme.error,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -184,7 +184,7 @@ class _MessageInputState extends State<MessageInput> {
         color: Theme.of(context).colorScheme.surface,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withAlpha(13),
+            color: Theme.of(context).colorScheme.outline.withAlpha(13),
             offset: const Offset(0, -1),
             blurRadius: 3,
           ),
@@ -213,15 +213,15 @@ class _MessageInputState extends State<MessageInput> {
                         return Container(
                           width: double.infinity,
                           height: 120,
-                          color: Colors.grey.shade200,
-                          child: const Column(
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.error_outline, color: Colors.red),
+                              Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
                               SizedBox(height: 4),
                               Text(Languages.msgImageNotLoaded,
                                   style: TextStyle(
-                                      color: Colors.red, fontSize: 12)),
+                                      color: Theme.of(context).colorScheme.error, fontSize: 12)),
                             ],
                           ),
                         );
@@ -230,14 +230,14 @@ class _MessageInputState extends State<MessageInput> {
                   ),
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.black54,
+                      color: Theme.of(context).colorScheme.surfaceVariant,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     margin: const EdgeInsets.all(4),
                     child: IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.close,
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.onPrimary,
                         size: 20,
                       ),
                       onPressed: _clearSelectedImage,
@@ -303,7 +303,7 @@ class _MessageInputState extends State<MessageInput> {
                           Icons.send,
                           color: _isComposing || _selectedImage != null
                               ? Theme.of(context).colorScheme.primary
-                              : Colors.grey,
+                              : Theme.of(context).colorScheme.outline,
                         ),
                         onPressed: _isComposing || _selectedImage != null
                             ? () => _handleSubmitted(_textController.text)
