@@ -7,7 +7,7 @@ import 'package:uuid/uuid.dart';
 import '../models/bot.dart';
 import '../providers/settings_provider.dart';
 import '../languages/languages.dart';
-import '../settingsvariables/default_settings_variables.dart';
+import '../settingsvariables/default_settings_variables.dart' as default_settings_variables;
 
 class BotEditorDialog extends StatefulWidget {
   final Bot? bot; // null for creating a new bot
@@ -28,7 +28,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
   final _nameController = TextEditingController();
   final _systemPromptController = TextEditingController();
   
-  String _selectedModel = 'openai/gpt-4o-mini';
+  String _selectedModel = default_settings_variables.nousablebot;
   double _temperature = defaultTemperature;
   int _maxTokens = defaultMaxTokens;
   String _selectedIcon = 'chat';
@@ -66,7 +66,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
     
     // If no available models or selected model not in list, use default
     if (widget.availableModels.isEmpty) {
-      _selectedModel = 'openai/gpt-4o-mini';
+      _selectedModel = default_settings_variables.nousablebot;
     } else if (!widget.availableModels.contains(_selectedModel)) {
       _selectedModel = widget.availableModels.first;
     }
