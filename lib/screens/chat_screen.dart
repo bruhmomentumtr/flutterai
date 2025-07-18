@@ -372,7 +372,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       color: Theme.of(context).colorScheme.outline.withAlpha(128),
                     ),
                     const SizedBox(height: 16),
-                    const Text(
+                    Text(
                       Languages.textNoMessages,
                       style: TextStyle(
                         fontSize: 18,
