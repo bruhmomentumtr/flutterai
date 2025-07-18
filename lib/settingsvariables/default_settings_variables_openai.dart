@@ -21,15 +21,15 @@ final List<Bot> defaultBots = [
   ),
   Bot(
     id: const Uuid().v4(),
-    name: '4 Turbo',
+    name: 'GPT 4 Turbo',
     model: 'gpt-4-turbo',
     iconName: 'smart_toy',
   ),
 ];
 
-const double defaultTemperature = 0.7;
-const int defaultMaxTokens = 2048;
-const String defaultSystemPrompt = """You are a helpful assistant that formats responses clearly. 
+double defaultTemperature = 0.7;
+int defaultMaxTokens = 2048;
+String defaultSystemPrompt = """You are a helpful assistant that formats responses clearly. 
 
 When writing mathematical expressions or equations, you MUST use LaTeX syntax in your responses.
 
@@ -45,6 +45,6 @@ Format all your responses with proper markdown.""";
 
 
 const String baseUrl = 'https://api.openai.com/v1';
-const String defaultControlModel = 'text-embedding-3-small';
+const String defaultControlModel = 'text-embedding-3-small'; //this is for the test connections and for the session title
 const String nousablebot = 'gpt-4o-mini' // If no available models or selected model not in list, use default
 String apikey = ''; // dont add your apikey here, leave it empty

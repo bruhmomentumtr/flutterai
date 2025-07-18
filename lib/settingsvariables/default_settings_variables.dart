@@ -68,6 +68,6 @@ Format all your responses with proper markdown.""";
 
 
 const String baseUrl = 'https://openrouter.ai/api/v1';
-const String defaultControlModel = 'mistralai/ministral-3b';
+const String defaultControlModel = 'mistralai/ministral-3b'; //this is for the test connections and for the session title
 const String nousablebot = 'openai/gpt-4o-mini'; // If no available models or selected model not in list, use default
 String apikey = ''; // dont add your apikey here, leave it empty
