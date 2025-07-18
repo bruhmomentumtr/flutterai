@@ -36,7 +36,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // App logo and title
-              const Icon(
+              Icon(
                 Icons.chat_rounded,
                 size: 80.0,
                 color: Theme.of(context).colorScheme.primary,

@@ -214,7 +214,7 @@ class _MessageInputState extends State<MessageInput> {
                           width: double.infinity,
                           height: 120,
                           color: Theme.of(context).colorScheme.surfaceVariant,
-                          child: const Column(
+                          child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
@@ -235,7 +235,7 @@ class _MessageInputState extends State<MessageInput> {
                     ),
                     margin: const EdgeInsets.all(4),
                     child: IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.close,
                         color: Theme.of(context).colorScheme.onPrimary,
                         size: 20,

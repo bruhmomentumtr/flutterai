@@ -80,7 +80,7 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
                         width: 24,
                         height: 24,
                         padding: const EdgeInsets.all(2.0),
-                        child: const CircularProgressIndicator(
+                        child: CircularProgressIndicator(
                           color: Theme.of(context).colorScheme.onError,
                           strokeWidth: 3,
                         ),

@@ -381,8 +381,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 32.0),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
                       child: Text(
                         Languages.textSendMessageToStart,
                         textAlign: TextAlign.center,
@@ -476,7 +476,7 @@ class BotSelectionDrawer extends StatelessWidget {
     final botProvider = Provider.of<BotProvider>(context);
     
     if (!botProvider.hasBots) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -556,14 +556,14 @@ class BotSelectionDrawer extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.edit_outlined, size: 20),
+                  icon: Icon(Icons.edit_outlined, size: 20),
                   onPressed: () {
                     // Show dialog to edit bot
                     _showBotEditorDialog(context, bot: bot);
                   },
                 ),
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, size: 20),
+                  icon: Icon(Icons.delete_outline, size: 20),
                   onPressed: () {
                     // Show confirmation dialog before deleting
                     showDialog(
