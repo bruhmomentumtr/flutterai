@@ -66,7 +66,7 @@ class OpenRouterService {
         sendTimeout: _sendTimeout,
         headers: {
           'Content-Type': _contentType,
-          'Authorization': '$_authorizationPrefix$default_settings_variables.apikey',
+          'Authorization': '$_authorizationPrefix${default_settings_variables.apikey}',
           'HTTP-Referer': _httpReferer,
           'X-Title': _appTitle,
         }));
@@ -145,7 +145,7 @@ class OpenRouterService {
     try {
       // Add timeout
       final response = await _dio
-          .get('$default_settings_variables.baseUrl/models')
+          .get('${default_settings_variables.baseUrl}/models')
           .timeout(_requestTimeout);
 
       if (response.statusCode == 200) {
@@ -257,7 +257,7 @@ class OpenRouterService {
         data: payload,
         options: Options(validateStatus: (status) => status! < 500, headers: {
           'Content-Type': _contentType,
-          'Authorization': 'Bearer $default_settings_variables.apikey',
+          'Authorization': 'Bearer ${default_settings_variables.apikey}',
           'HTTP-Referer': _httpReferer,
           'X-Title': _appTitle,
         }),
@@ -357,7 +357,7 @@ class OpenRouterService {
 
       // Send the request
       final response = await _dio.post(
-        '$default_settings_variables.baseUrl/chat/completions',
+        '${default_settings_variables.baseUrl}/chat/completions',
         data: jsonEncode(payload),
       );
 
@@ -407,7 +407,7 @@ class OpenRouterService {
       // Send request with short timeout
       final response = await _dio
           .post(
-            '$default_settings_variables.baseUrl/chat/completions',
+            '${default_settings_variables.baseUrl}/chat/completions',
             data: jsonEncode(payload),
           )
           .timeout(_testTimeout);
