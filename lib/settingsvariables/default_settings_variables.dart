@@ -50,9 +50,9 @@ final List<Bot> defaultBots = [
   ),
 ];
 
-const double defaultTemperature = 0.7;
-const int defaultMaxTokens = 2048;
-const String defaultSystemPrompt = """You are a helpful assistant that formats responses clearly. 
+double defaultTemperature = 0.7;
+int defaultMaxTokens = 2048;
+String defaultSystemPrompt = """You are a helpful assistant that formats responses clearly. 
 
 When writing mathematical expressions or equations, you MUST use LaTeX syntax in your responses.
 
