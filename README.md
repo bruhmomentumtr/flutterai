@@ -17,6 +17,7 @@
 
 🎯 **Get started in minutes 📱**  
 **Switch models, change themes, copy answers, and more — all in one place!**
+- **[download a release](https://github.com/bruhmomentumtr/flutterai/releases) to get started**
 
 ---
 

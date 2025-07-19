@@ -50,12 +50,13 @@ Bu projeyi, mevcuttaki platformlar için yaklaşık 20$ ödeme yapmak yerine bir
      ```
    - Bu değerleri bir yere kaydedin; ileride local olarak bir cihazda build ederken yeniden lazım olacak. Aksi takdirde imza çakışmalarından dolayı uygulamayı güncelleyemezsiniz.
 
-3. **Veya [bir release üzerinden sürüm indirerek](https://github.com/bruhmomentumtr/flutterai/releases) hızlıca başlayın.**
-
   > **Not:**  
   > Projeyi fork'ladıktan sonra aşağıdaki dosyaları kendi ihtiyaçlarınıza göre gözden geçirip özelleştirmeniz önerilir:
   > - `lib/languages/languages.dart`: Uygulamadaki tüm kullanıcıya gösterilen metinler burada merkezi olarak tutulur. Uygulamayı çevirmek veya kullanıcıya gösterilen mesajları değiştirmek için bu dosyayı düzenleyin.
   > - `lib/settingsvariables/default_settings_variables.dart`: Varsayılan bot listesi, sistem mesajı ve API anahtarı yönetimi bu dosyada bulunur. Kendi varsayılan botlarınızı, sistem mesajınızı veya API anahtarı yönetimini ayarlamak için bu dosyayı güncelleyin.
+  > - eğer kodlamadan uğraşmak istemiyorsanız [OpenRouter Integrations](https://openrouter.ai/settings/integrations) üzerinden openAI api anahtarınızı ekleyerek devam edebilirsiniz.
+
+3. **Veya [bir release üzerinden sürüm indirerek](https://github.com/bruhmomentumtr/flutterai/releases) hızlıca başlayın.**
 
 ## ⚙️ Kullanım
 

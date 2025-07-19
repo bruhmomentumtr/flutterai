@@ -54,6 +54,7 @@ I created this project after searching for alternatives to avoid paying around $
   > After forking the project, you should review and customize the following files for your own needs:
   > - `lib/languages/languages.dart`: This file centralizes all user-visible strings. Edit it to translate the app or change any user-facing messages.
   > - `lib/settingsvariables/default_settings_variables.dart`: This file contains the default bot list, system prompt, and API key management. Update it to set your own default bots, system prompts, or to manage API key handling.
+  > - If you don't want to deal with coding, you can continue by adding your openAI api key via [OpenRouter Integrations](https://openrouter.ai/settings/integrations).
 
 3. **Or [download a release](https://github.com/bruhmomentumtr/flutterai/releases) to get started quickly.**
 
