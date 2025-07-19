@@ -1,42 +1,11 @@
 // Default location: lib/services/network_service.dart
-// Girilen API anahtarı ile tüm endpointleri test eder, başarılı olanı döndürür.
+// Network connectivity service for checking internet access
+
 import 'dart:io';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../languages/languages.dart';
-import '../settingsvariables/default_settings_variables.dart';
-import 'package:http/http.dart' as http;
-
-/// === API Anahtarı Test Fonksiyonu ===
-// Girilen apikey ile tüm endpointleri defaultControlModel üzerinden test eder.
-/// Başarılı olan ilk endpointi döndürür, hiçbiri başarılı olmazsa null döner.
-Future<ApiEndpoint?> testApiKeyOnAllEndpoints(String apiKey) async {
-  for (final endpoint in apiEndpoints) {
-    try {
-      final response = await http.post(
-        Uri.parse('${endpoint.baseUrl}/chat/completions'),
-        headers: {
-          'Authorization': 'Bearer $apiKey',
-          'Content-Type': 'application/json',
-        },
-        body: '{"model": "${endpoint.defaultControlModel}", "messages": [{"role": "user", "content": "Hello"}]}'
-      );
-      if (response.statusCode == 200) {
-        // Başarılı yanıt alındı
-        return endpoint;
-      }
-    } catch (_) {
-      // Hata olursa diğer endpointi dene
-      continue;
-    }
-  }
-  // Hiçbiri başarılı olmadı
-  return null;
-}
-
-/// === Network Bağlantı Kontrol Servisi ===
-// Network connectivity service for checking internet access
 
 // Network test configuration
 const Duration _dnsLookupTimeout = Duration(seconds: 3);

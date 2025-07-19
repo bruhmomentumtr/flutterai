@@ -20,12 +20,12 @@ void main() async {
   // Initialize date formatting for Turkish locale
   await initializeDateFormatting('tr_TR', null);
   
-  // Create and initialize settings provider
+  // Initialize services
+  final openRouterService = OpenRouterService();
+  
+  // Create and initialize providers
   final settingsProvider = SettingsProvider();
   await settingsProvider.loadSettings();
-  
-  // Initialize services
-  final openRouterService = OpenRouterService(settingsProvider);
   
   // Initialize OpenRouter service with API key from settings
   if (settingsProvider.hasApiKey) {
