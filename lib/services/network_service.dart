@@ -1,11 +1,14 @@
 // Default location: lib/services/network_service.dart
-// Network connectivity service for checking internet access
+// API endpoint test fonksiyonu ve network işlemleri
 
 import 'dart:io';
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import '../languages/languages.dart';
+import 'package:http/http.dart' as http;
+import '../settingsvariables/default_settings_variables.dart';
 
 // Network test configuration
 const Duration _dnsLookupTimeout = Duration(seconds: 3);
@@ -14,6 +17,10 @@ const List<String> _testDomains = [
   'cloudflare.com',
   'openrouter.ai'
 ];
+
+// Verilen endpoint ve apikey ile defaultControlModel'e test isteği atar
+// Başarılı ise true, değilse false döner
+enum EndpointTestResult { success, unauthorized, error }
 
 class NetworkService {
   // Check internet connectivity by trying to make a basic connection
@@ -87,6 +94,33 @@ class NetworkService {
       return diagnostics;
     } catch (e) {
       return {'error': e.toString()};
+    }
+  }
+
+  static Future<bool> testEndpoint({
+    required ApiEndpoint endpoint,
+    required String apiKey,
+  }) async {
+    try {
+      final url = Uri.parse('${endpoint.baseUrl}/models');
+      final headers = {
+        'Authorization': 'Bearer $apiKey',
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(url, headers: headers).timeout(const Duration(seconds: 8));
+      if (response.statusCode == 200) {
+        // Model listesi döndüyse başarılı say
+        return true;
+      } else if (response.statusCode == 401 || response.statusCode == 403) {
+        // Yetkisiz
+        return false;
+      } else {
+        // Diğer hatalar
+        return false;
+      }
+    } catch (e) {
+      // Hata oluşursa başarısız say
+      return false;
     }
   }
 } 

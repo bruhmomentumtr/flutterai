@@ -1,4 +1,63 @@
 // Default location: lib/providers/settings_provider.dart
+// Uygulamanın seçili endpoint ve apikey yönetimini sağlayan provider
+
+import 'package:flutter/material.dart';
+import '../settingsvariables/default_settings_variables.dart';
+import '../services/network_service.dart';
+import '../languages/languages.dart';
+
+// Seçili endpoint ve apikey'i yöneten provider
+class ApiSettingsProvider extends ChangeNotifier {
+  String _apiKey = '';
+  ApiEndpoint? _selectedEndpoint;
+  bool _isTesting = false;
+  String? _testResultMessage;
+
+  String get apiKey => _apiKey;
+  ApiEndpoint? get selectedEndpoint => _selectedEndpoint;
+  bool get isTesting => _isTesting;
+  String? get testResultMessage => _testResultMessage;
+
+  // API key'i ayarla ve endpoint testini başlat
+  Future<void> setApiKeyAndTest(String apiKey) async {
+    _apiKey = apiKey;
+    _isTesting = true;
+    _testResultMessage = null;
+    notifyListeners();
+    await _testAllEndpoints();
+    _isTesting = false;
+    notifyListeners();
+  }
+
+  // Manuel olarak endpoint testini başlat
+  Future<void> manualTest() async {
+    _isTesting = true;
+    _testResultMessage = null;
+    notifyListeners();
+    await _testAllEndpoints();
+    _isTesting = false;
+    notifyListeners();
+  }
+
+  // Tüm endpointleri verilen apikey ile test eden fonksiyon
+  // Başarılı olan ilk endpointi seçer
+  Future<void> _testAllEndpoints() async {
+    for (final endpoint in apiEndpoints) {
+      final success = await NetworkService.testEndpoint(
+        endpoint: endpoint,
+        apiKey: _apiKey,
+      );
+      if (success) {
+        _selectedEndpoint = endpoint;
+        _testResultMessage = '${Languages.msgEndpointSuccess}${endpoint.name}';
+        return;
+      }
+    }
+    _selectedEndpoint = null;
+    _testResultMessage = Languages.msgEndpointFail;
+  }
+}
+
 // Provider to manage application settings
 
 import 'package:flutter/material.dart';
