@@ -8,21 +8,17 @@ import 'package:uuid/uuid.dart';
 import '../models/bot.dart';
 import '../settingsvariables/default_settings_variables.dart';
 import '../languages/languages.dart';
-import '../providers/settings_provider.dart';
 
 class BotProvider extends ChangeNotifier {
   List<Bot> _bots = [];
   bool _isLoading = false;
   String? _error;
-  final SettingsProvider settingsProvider;
   
   // Getters
   List<Bot> get bots => _bots;
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get hasBots => _bots.isNotEmpty;
-
-  BotProvider(this.settingsProvider);
 
   // Initialize with default bots
   Future<void> initializeBots() async {
@@ -70,13 +66,8 @@ class BotProvider extends ChangeNotifier {
 
   // Create default bot configurations
   void _createDefaultBots() {
-    // Seçili endpoint'e göre bot listesini ayarla
-    final endpoint = settingsProvider.selectedEndpoint;
-    if (endpoint != null) {
-      _bots = List<Bot>.from(endpoint.bots);
-    } else {
-      _bots = [];
-    }
+    // Use the defaultBots list from default_settings_variables.dart
+    _bots = defaultBots;
     _saveBots();
   }
 

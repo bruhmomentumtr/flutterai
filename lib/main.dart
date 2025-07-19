@@ -33,7 +33,7 @@ void main() async {
   }
   
   // Create and initialize bot provider
-  final botProvider = BotProvider(settingsProvider);
+  final botProvider = BotProvider();
   await botProvider.initializeBots();
   
   runApp(
