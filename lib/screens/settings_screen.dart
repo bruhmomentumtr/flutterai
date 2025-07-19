@@ -1,10 +1,9 @@
 // Default location: lib/screens/settings_screen.dart
-// Ayarlar ekranında manuel endpoint test butonu
+// Settings screen for managing application settings
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
-import '../providers/api_settings_provider.dart'; // Added this import
 import '../languages/languages.dart';
 import '../settingsvariables/default_settings_variables.dart';
 
@@ -193,43 +192,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   child: Text(Languages.textSave),
                 ),
               ],
-            ),
-            const SizedBox(height: 16),
-            Consumer<ApiSettingsProvider>(
-              builder: (context, apiSettings, child) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    ElevatedButton.icon(
-                      onPressed: apiSettings.isTesting
-                          ? null
-                          : () async {
-                              await apiSettings.manualTest();
-                            },
-                      icon: const Icon(Icons.refresh),
-                      label: apiSettings.isTesting
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text(Languages.msgManualTestButton),
-                    ),
-                    if (apiSettings.testResultMessage != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          apiSettings.testResultMessage!,
-                          style: TextStyle(
-                            color: apiSettings.selectedEndpoint != null
-                                ? Colors.green
-                                : Colors.red,
-                          ),
-                        ),
-                      ),
-                  ],
-                );
-              },
             ),
           ],
         ),

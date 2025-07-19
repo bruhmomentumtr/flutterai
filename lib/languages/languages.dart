@@ -118,10 +118,6 @@ class Languages {
   static const String errorEnterApiKey = 'Please enter a valid API key';
   static const String errorInvalidApiKey = 'Invalid API key format. OpenRouter keys must start with "sk-".';
   static const String successApiKeySaved = 'API key saved successfully';
-  static const String msgEnterApiKey = 'Please enter your API key.';
-  static const String msgInvalidApiKey = 'Invalid API key.';
-  static const String msgApiKeySaved = 'API key saved.';
-
 
   // screens/settings_screen.dart debug and user text messages
   static const String textSettings = 'Settings'; // Use this everywhere for settings
@@ -145,7 +141,6 @@ class Languages {
   static const String errorTemperatureRange = 'Temperature value must be between 0.0 and 2.0';
   static const String errorMaxTokensEmpty = 'Maximum token value cannot be empty';
   static const String errorMaxTokensPositive = 'Maximum token value must be a positive number';
-    static const String msgManualTestButton = 'Test API Key';
 
   // screens/session_list_screen.dart debug and user text messages
   static const String titleDeleteSessions = 'Delete Sessions';
@@ -206,8 +201,6 @@ class Languages {
   static const String msgErrorSavingSettings = 'Error saving settings:';
   static const String themeModeDark = 'dark';
   static const String themeModeLight = 'light';
-  static const String msgEndpointSuccess = 'Success! Using endpoint: ';
-  static const String msgEndpointFail = 'Could not connect to any endpoint.';
 
   // providers/chat_provider.dart debug and user text messages
   static const String msgErrorLoadingSessions = 'Error loading sessions:';
@@ -242,5 +235,5 @@ class Languages {
   static const String titleShouldBeMaximum5Words = 'Title should be maximum 5 words';
   static const String sayOkIfYouCanReadThis = 'Say "OK" if you can read this'; // this is for the bot connection test message
   static const String imageConvertedToBase64WithMimeType = 'Image converted to base64 with MIME type:';
-  
+
 }
