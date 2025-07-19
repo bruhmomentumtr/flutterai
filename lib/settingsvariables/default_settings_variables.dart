@@ -22,7 +22,7 @@ class ApiEndpoint {
 }
 
 // Kullanılabilir endpointlerin listesi
-const List<ApiEndpoint> apiEndpoints = [
+List<ApiEndpoint> apiEndpoints = [
   ApiEndpoint(
     name: 'OpenRouter',
     baseUrl: 'https://openrouter.ai/api/v1',

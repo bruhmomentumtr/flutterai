@@ -1,5 +1,10 @@
 // Default location: lib/services/network_service.dart
 // Girilen API anahtarı ile tüm endpointleri test eder, başarılı olanı döndürür.
+import 'dart:io';
+import 'dart:async';
+import 'package:flutter/material.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import '../languages/languages.dart';
 import '../settingsvariables/default_settings_variables.dart';
 import 'package:http/http.dart' as http;
 

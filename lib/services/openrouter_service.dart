@@ -12,6 +12,7 @@ import '../models/bot.dart';
 import '../services/network_service.dart';
 import '../languages/languages.dart';
 import '../settingsvariables/default_settings_variables.dart' as default_settings_variables;
+import '../providers/settings_provider.dart';
 
 // Constants for API configuration
 const int _maxRetries = 3;
@@ -43,6 +44,9 @@ const List<String> _defaultModels = [
 class OpenRouterService {
   late Dio _dio;
   int _chatCounter = 0;
+  final SettingsProvider settingsProvider;
+
+  OpenRouterService(this.settingsProvider);
 
   // Set chat counter
   void setChatCounter(int counter) {
@@ -58,9 +62,14 @@ class OpenRouterService {
 
     default_settings_variables.apikey = apiKey;
 
+    final endpoint = settingsProvider.selectedEndpoint;
+    if (endpoint == null) {
+      throw Exception('No endpoint selected!');
+    }
+
     // Dio configuration
     _dio = Dio(BaseOptions(
-        baseUrl: default_settings_variables.baseUrl,
+        baseUrl: endpoint.baseUrl,
         connectTimeout: _connectTimeout,
         receiveTimeout: _receiveTimeout,
         sendTimeout: _sendTimeout,
@@ -135,6 +144,12 @@ class OpenRouterService {
       return _defaultModels;
     }
 
+    final endpoint = settingsProvider.selectedEndpoint;
+    if (endpoint == null) {
+      debugPrint('No endpoint selected!');
+      return _defaultModels;
+    }
+
     // Check network connection
     final isConnected = await NetworkService.isConnected();
     if (!isConnected) {
@@ -145,7 +160,7 @@ class OpenRouterService {
     try {
       // Add timeout
       final response = await _dio
-          .get('${default_settings_variables.baseUrl}/models')
+          .get('${endpoint.baseUrl}/models')
           .timeout(_requestTimeout);
 
       if (response.statusCode == 200) {
@@ -190,6 +205,12 @@ class OpenRouterService {
   }) async {
     if (!isInitialized) {
       debugPrint(Languages.errorApiKeyNotInitialized);
+      return null;
+    }
+
+    final endpoint = settingsProvider.selectedEndpoint;
+    if (endpoint == null) {
+      debugPrint('No endpoint selected!');
       return null;
     }
 
@@ -321,6 +342,12 @@ class OpenRouterService {
       return null;
     }
 
+    final endpoint = settingsProvider.selectedEndpoint;
+    if (endpoint == null) {
+      debugPrint('No endpoint selected!');
+      return null;
+    }
+
     // Check network connection
     final isConnected = await NetworkService.isConnected();
     if (!isConnected) {
@@ -349,7 +376,7 @@ class OpenRouterService {
 
       // Prepare request for title generation
       final Map<String, dynamic> payload = {
-        'model': default_settings_variables.defaultControlModel,
+        'model': endpoint.defaultControlModel,
         'messages': messagesJson,
         'temperature': temperature,
         'max_tokens': _titleMaxTokens,
@@ -357,7 +384,7 @@ class OpenRouterService {
 
       // Send the request
       final response = await _dio.post(
-        '${default_settings_variables.baseUrl}/chat/completions',
+        '${endpoint.baseUrl}/chat/completions',
         data: jsonEncode(payload),
       );
 
@@ -393,10 +420,16 @@ class OpenRouterService {
       return false;
     }
 
+    final endpoint = settingsProvider.selectedEndpoint;
+    if (endpoint == null) {
+      debugPrint('No endpoint selected!');
+      return false;
+    }
+
     try {
       // Create a simple test request - only 25 tokens
       final Map<String, dynamic> payload = {
-        'model': default_settings_variables.defaultControlModel,
+        'model': endpoint.defaultControlModel,
         'messages': [
           {'role': 'user', 'content': '${Languages.sayOkIfYouCanReadThis}.'}
         ],
@@ -407,7 +440,7 @@ class OpenRouterService {
       // Send request with short timeout
       final response = await _dio
           .post(
-            '${default_settings_variables.baseUrl}/chat/completions',
+            '${endpoint.baseUrl}/chat/completions',
             data: jsonEncode(payload),
           )
           .timeout(_testTimeout);

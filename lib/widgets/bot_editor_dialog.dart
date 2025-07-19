@@ -46,14 +46,16 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
   @override
   void initState() {
     super.initState();
-    
+    final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
+    final nousablebot = settingsProvider.selectedEndpoint?.nousablebot ?? 'openai/gpt-4o-mini';
     // If editing an existing bot, populate the form with bot data
     if (widget.bot != null) {
       _nameController.text = widget.bot!.name;
       _selectedModel = widget.bot!.model;
       _selectedIcon = widget.bot!.iconName;
+    } else {
+      _selectedModel = nousablebot;
     }
-    
     // Get global settings
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = Provider.of<SettingsProvider>(context, listen: false);
@@ -63,10 +65,9 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
         _maxTokens = settings.maxTokens;
       });
     });
-    
     // If no available models or selected model not in list, use default
     if (widget.availableModels.isEmpty) {
-      _selectedModel = default_settings_variables.nousablebot;
+      _selectedModel = nousablebot;
     } else if (!widget.availableModels.contains(_selectedModel)) {
       _selectedModel = widget.availableModels.first;
     }
