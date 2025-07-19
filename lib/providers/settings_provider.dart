@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../settingsvariables/default_settings_variables.dart';
 import '../languages/languages.dart';
+import '../services/network_service.dart';
 
 // SharedPreferences keys
 const String _themeModeKey = 'themeMode';
@@ -38,6 +39,14 @@ class SettingsProvider extends ChangeNotifier {
   double get temperature => _temperature;
   int get maxTokens => _maxTokens;
   String get systemPrompt => _systemPrompt;
+
+  ApiEndpoint? _selectedEndpoint;
+  String? _endpointTestMessage;
+  bool _isTestingEndpoint = false;
+
+  ApiEndpoint? get selectedEndpoint => _selectedEndpoint;
+  String? get endpointTestMessage => _endpointTestMessage;
+  bool get isTestingEndpoint => _isTestingEndpoint;
 
   // Load settings from SharedPreferences
   Future<void> loadSettings() async {
@@ -128,6 +137,33 @@ class SettingsProvider extends ChangeNotifier {
     _systemPrompt = value;
     await _saveSettings();
     notifyListeners();
+  }
+
+  // API anahtarı değiştiğinde endpoint testini tetikler
+  Future<void> setApiKeyAndTestEndpoints(String apiKey) async {
+    _apiKey = apiKey;
+    _isTestingEndpoint = true;
+    _endpointTestMessage = null;
+    notifyListeners();
+
+    final endpoint = await testApiKeyOnAllEndpoints(apiKey);
+    if (endpoint != null) {
+      _selectedEndpoint = endpoint;
+      _endpointTestMessage =
+          'API anahtarı başarılı! Kullanılacak endpoint: \'${endpoint.name}\'';
+    } else {
+      _selectedEndpoint = null;
+      _endpointTestMessage = 'API anahtarı geçersiz veya endpointlere ulaşılamıyor.';
+    }
+    _isTestingEndpoint = false;
+    await _saveSettings();
+    notifyListeners();
+  }
+
+  // Manuel endpoint testi (ayarlar ekranı için)
+  Future<void> manualTestEndpoints() async {
+    if (_apiKey.isEmpty) return;
+    await setApiKeyAndTestEndpoints(_apiKey);
   }
   
   // Helper to convert string to ThemeMode

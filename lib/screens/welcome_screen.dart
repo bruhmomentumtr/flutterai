@@ -27,6 +27,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final settingsProvider = Provider.of<SettingsProvider>(context);
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -108,6 +109,47 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                 ),
               ),
+              const SizedBox(height: 8.0),
+
+              // API anahtarını manuel test etme butonu
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  icon: settingsProvider.isTestingEndpoint
+                      ? const SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.check_circle_outline),
+                  label: Text('API Anahtarını Test Et'),
+                  onPressed: settingsProvider.isTestingEndpoint
+                      ? null
+                      : () async {
+                          final apiKey = _apiKeyController.text.trim();
+                          if (apiKey.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text(Languages.errorEnterApiKey)),
+                            );
+                            return;
+                          }
+                          await settingsProvider.setApiKeyAndTestEndpoints(apiKey);
+                        },
+                ),
+              ),
+              if (settingsProvider.endpointTestMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Text(
+                    settingsProvider.endpointTestMessage!,
+                    style: TextStyle(
+                      color: settingsProvider.selectedEndpoint != null
+                          ? Colors.green
+                          : Colors.red,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
               const SizedBox(height: 16.0),
               
               // Skip for now (debug only)
@@ -126,9 +168,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
     );
   }
 
-  void _saveApiKey() {
+  void _saveApiKey() async {
     final apiKey = _apiKeyController.text.trim();
-    
     if (apiKey.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -138,8 +179,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       );
       return;
     }
-    
-    // API anahtarı format kontrolü
     if (!apiKey.startsWith('sk-')) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -149,26 +188,25 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
       );
       return;
     }
-    
-    // API anahtarını kaydet ve doğrudan ChatScreen'e yönlendir
-    // API testi yapmak yerine hemen anahtarı kaydedip devam edelim
-    
     final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
-    
-    // API anahtarını kaydet
-    settingsProvider.setApiKey(apiKey);
-    
-    // Başarı mesajı göster
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(Languages.successApiKeySaved),
-        duration: const Duration(seconds: 2),
-      ),
-    );
-    
-    // Doğrudan chat ekranına yönlendir
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const ChatScreen()),
-    );
+    await settingsProvider.setApiKeyAndTestEndpoints(apiKey);
+    if (settingsProvider.selectedEndpoint != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(settingsProvider.endpointTestMessage ?? ''),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const ChatScreen()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(settingsProvider.endpointTestMessage ?? ''),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 } 
