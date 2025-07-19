@@ -8,12 +8,6 @@ import 'package:uuid/uuid.dart';
 final List<Bot> defaultBots = [
   Bot(
     id: const Uuid().v4(),
-    name: 'OpenRouter Auto',
-    model: 'openrouter/auto',
-    iconName: 'flutter',
-  ),
-  Bot(
-    id: const Uuid().v4(),
     name: 'Openrouter Auto',
     model: 'openrouter/auto',
     iconName: 'chat',

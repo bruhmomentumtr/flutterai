@@ -6,8 +6,6 @@ import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
 import 'chat_screen.dart';
 import '../languages/languages.dart';
-import '../widgets/material3_flutter_logo.dart';
-import 'logo_demo_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -38,10 +36,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               // App logo and title
-              const Material3FlutterLogo(
+              Icon(
+                Icons.chat_rounded,
                 size: 80.0,
-                showShadow: true,
-                showAccents: true,
+                color: Theme.of(context).colorScheme.primary,
               ),
               const SizedBox(height: 16.0),
               Text(
@@ -120,19 +118,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   );
                 },
                 child: Text(Languages.buttonSkip),
-              ),
-              const SizedBox(height: 8.0),
-              
-              // Logo demo button
-              TextButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LogoDemoScreen()),
-                  );
-                },
-                icon: const Icon(Icons.palette),
-                label: const Text('Logo Demo'),
               ),
             ],
           ),
