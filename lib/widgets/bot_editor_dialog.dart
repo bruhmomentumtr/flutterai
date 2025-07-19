@@ -28,7 +28,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
   final _nameController = TextEditingController();
   final _systemPromptController = TextEditingController();
   
-  String _selectedModel = default_settings_variables.nousablebot;
+  late String _selectedModel;
   double _temperature = default_settings_variables.defaultTemperature;
   int _maxTokens = default_settings_variables.defaultMaxTokens;
   String _selectedIcon = 'chat';

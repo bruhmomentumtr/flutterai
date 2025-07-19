@@ -8,7 +8,8 @@ import '../languages/languages.dart';
 import '../settingsvariables/default_settings_variables.dart';
 import 'package:http/http.dart' as http;
 
-/// Girilen apikey ile tüm endpointleri defaultControlModel üzerinden test eder.
+/// === API Anahtarı Test Fonksiyonu ===
+// Girilen apikey ile tüm endpointleri defaultControlModel üzerinden test eder.
 /// Başarılı olan ilk endpointi döndürür, hiçbiri başarılı olmazsa null döner.
 Future<ApiEndpoint?> testApiKeyOnAllEndpoints(String apiKey) async {
   for (final endpoint in apiEndpoints) {
@@ -34,13 +35,8 @@ Future<ApiEndpoint?> testApiKeyOnAllEndpoints(String apiKey) async {
   return null;
 }
 
+/// === Network Bağlantı Kontrol Servisi ===
 // Network connectivity service for checking internet access
-
-import 'dart:io';
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
-import '../languages/languages.dart';
 
 // Network test configuration
 const Duration _dnsLookupTimeout = Duration(seconds: 3);

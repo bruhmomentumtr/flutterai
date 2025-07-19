@@ -21,7 +21,7 @@ void main() async {
   await initializeDateFormatting('tr_TR', null);
   
   // Initialize services
-  final openRouterService = OpenRouterService();
+  final openRouterService = OpenRouterService(settingsProvider);
   
   // Create and initialize providers
   final settingsProvider = SettingsProvider();
