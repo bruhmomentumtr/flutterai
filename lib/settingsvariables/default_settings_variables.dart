@@ -8,50 +8,38 @@ import 'package:uuid/uuid.dart';
 final List<Bot> defaultBots = [
   Bot(
     id: const Uuid().v4(),
-    name: 'openrouter auto',
+    name: 'OpenRouter Auto',
+    model: 'openrouter/auto',
+    iconName: 'flutter',
+  ),
+  Bot(
+    id: const Uuid().v4(),
+    name: 'Openrouter Auto',
     model: 'openrouter/auto',
     iconName: 'chat',
   ),
   Bot(
     id: const Uuid().v4(),
-    name: 'gemini 2.5 flash',
+    name: 'Gemini 2.5 Flash',
     model: 'google/gemini-2.5-flash',
-    iconName: 'chat',
+    iconName: 'smart_toy',
   ),
   Bot(
     id: const Uuid().v4(),
-    name: 'GPT-4.1 nano',
+    name: 'GPT-4.1 Nano',
     model: 'openai/gpt-4.1-nano',
     iconName: 'edit',
   ),
   Bot(
     id: const Uuid().v4(),
-    name: 'Qwen 3.0 14b',
-    model: 'qwen/qwen3-14b',
-    iconName: 'chat',
-  ),
-  Bot(
-    id: const Uuid().v4(),
-    name: 'gemma 3 27b',
+    name: 'Gemma 3 27b',
     model: 'google/gemma-3-27b-it',
     iconName: 'chat',
-  ),
-  Bot(
-    id: const Uuid().v4(),
-    name: 'Llama 3.2 11b vision',
-    model: 'meta-llama/llama-3.2-11b-vision-instruct',
-    iconName: 'smart_toy',
-  ),
-  Bot(
-    id: const Uuid().v4(),
-    name: 'claude sonnet 4',
-    model: 'anthropic/claude-sonnet-4',
-    iconName: 'smart_toy',
   ),
 ];
 
 double defaultTemperature = 0.7;
-int defaultMaxTokens = 2048;
+int defaultMaxTokens = 3072;
 String defaultSystemPrompt = """You are a helpful assistant that formats responses clearly. 
 
 When writing mathematical expressions or equations, you MUST use LaTeX syntax in your responses.

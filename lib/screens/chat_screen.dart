@@ -13,6 +13,8 @@ import '../services/network_service.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/message_input.dart';
 import '../widgets/bot_editor_dialog.dart';
+import '../widgets/material3_flutter_logo.dart';
+import '../widgets/bot_icon.dart';
 import 'settings_screen.dart';
 import 'session_list_screen.dart';
 import '../languages/languages.dart';
@@ -98,10 +100,8 @@ class _ChatScreenState extends State<ChatScreen> {
             final bot = chatProvider.selectedBot;
             return Row(
               children: [
-                Icon(
-                  bot != null 
-                      ? _getIconData(bot.iconName)
-                      : Icons.chat,
+                BotIcon(
+                  iconName: bot?.iconName ?? 'chat',
                   size: 24,
                 ),
                 const SizedBox(width: 8),
@@ -523,12 +523,12 @@ class BotSelectionDrawer extends StatelessWidget {
                     : Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(128),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: Icon(
-                _getIconData(bot.iconName),
+              child: BotIcon(
+                iconName: bot.iconName,
+                size: 22,
                 color: isSelected
                     ? Theme.of(context).colorScheme.onPrimary
                     : Theme.of(context).colorScheme.onSurfaceVariant,
-                size: 22,
               ),
             ),
             title: Text(
@@ -601,25 +601,7 @@ class BotSelectionDrawer extends StatelessWidget {
     );
   }
 
-  // Helper method to get icon data from string
-  IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'chat':
-        return Icons.chat;
-      case 'smart_toy':
-        return Icons.smart_toy;
-      case 'edit':
-        return Icons.edit;
-      case 'science':
-        return Icons.science;
-      case 'school':
-        return Icons.school;
-      case 'code':
-        return Icons.code;
-      default:
-        return Icons.android;
-    }
-  }
+
 
   void _showBotEditorDialog(BuildContext context, {Bot? bot}) {
     final openRouterService = Provider.of<OpenRouterService>(context, listen: false);

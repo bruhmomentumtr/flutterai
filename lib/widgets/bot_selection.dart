@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import '../models/bot.dart';
 import '../providers/settings_provider.dart';
 import '../languages/languages.dart';
+import 'bot_icon.dart';
 
 class BotSelection extends StatelessWidget {
   final List<Bot> bots;
@@ -77,8 +78,8 @@ class BotSelection extends StatelessWidget {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  Icon(
-                    _getIconData(bot.iconName),
+                  BotIcon(
+                    iconName: bot.iconName,
                     size: 32.0,
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -150,22 +151,5 @@ class BotSelection extends StatelessWidget {
     );
   }
 
-  IconData _getIconData(String iconName) {
-    switch (iconName) {
-      case 'chat':
-        return Icons.chat;
-      case 'smart_toy':
-        return Icons.smart_toy;
-      case 'edit':
-        return Icons.edit;
-      case 'science':
-        return Icons.science;
-      case 'school':
-        return Icons.school;
-      case 'code':
-        return Icons.code;
-      default:
-        return Icons.android;
-    }
-  }
+
 } 
