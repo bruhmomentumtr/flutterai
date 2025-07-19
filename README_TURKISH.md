@@ -23,7 +23,7 @@ Bu projeyi, mevcuttaki platformlar için yaklaşık 20$ ödeme yapmak yerine bir
 - **Koyu ve Açık Tema**  
   Göz dostu tema seçenekleri ile deneyiminizi kişiselleştirin.
 
-## 📸 Ekran Görüntüleri (Uygulamanın tam İngilizce arayüz desteği şu an yok)
+## 📸 Ekran Görüntüleri (languages.dart üzerinden dili değiştirebilirsiniz)
 ![İlk giriş ekranı](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(1).jpg)
 ![Sohbet arayüzü](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(2).jpg)
 ![LaTeX ve markdown desteği](https://github.com/bruhmomentumtr/flutterai/blob/main/ss%20(3).jpg)
