@@ -9,8 +9,8 @@ import 'package:uuid/uuid.dart';
 final List<Bot> defaultBots = [
   Bot(
     id: const Uuid().v4(),
-    name: 'GPT-4.1 nano',
-    model: 'gpt-4.1-nano',
+    name: 'GPT-4o Mini',
+    model: 'gpt-4o-mini',
     iconName: 'edit',
   ),
   Bot(
