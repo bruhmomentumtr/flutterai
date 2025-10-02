@@ -33,6 +33,12 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+# Ignore all platform folders except android
+/ios/
+/macos/
+/linux/
+/windows/
+/web/
 
 # Symbolication related
 app.*.symbols
