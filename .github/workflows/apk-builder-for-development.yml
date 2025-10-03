@@ -64,10 +64,10 @@ jobs:
       - name: Build APK (all platform)
         run: flutter build apk --split-per-abi --release
 
-      - name: APK imza sertifika bilgilerini göster
-        run: |
-          echo "------------- APK İMZA DETAYLARI -------------"
-          apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
+      #- name: APK imza sertifika bilgilerini göster
+      #  run: |
+      #    echo "------------- APK İMZA DETAYLARI -------------"
+      #    apksigner verify --print-certs build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
