@@ -31,7 +31,7 @@ class BotSelection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            labelSelectBot,
+            Languages.labelSelectBot,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           const SizedBox(height: 16.0),
@@ -40,7 +40,7 @@ class BotSelection extends StatelessWidget {
           OutlinedButton.icon(
             onPressed: onAddBot,
             icon: const Icon(Icons.add),
-            label: Text(labelAddNewBot),
+            label: const Text(Languages.labelAddNewBot),
           ),
         ],
       ),
@@ -107,12 +107,12 @@ class BotSelection extends StatelessWidget {
                           children: [
                             _buildPropertyChip(
                               context, 
-                              labelTemp + settings.temperature.toStringAsFixed(1),
+                              Languages.labelTemp + settings.temperature.toStringAsFixed(1),
                             ),
                             const SizedBox(width: 8.0),
                             _buildPropertyChip(
                               context, 
-                              labelMax + settings.maxTokens,
+                              Languages.labelMax + settings.maxTokens.toString(),
                             ),
                           ],
                         ),
@@ -122,7 +122,7 @@ class BotSelection extends StatelessWidget {
                   IconButton(
                     icon: const Icon(Icons.edit),
                     onPressed: () => onEditBot(bot),
-                    tooltip: tooltipEditBot,
+                    tooltip: Languages.tooltipEditBot,
                   ),
                 ],
               ),
@@ -168,4 +168,4 @@ class BotSelection extends StatelessWidget {
         return Icons.android;
     }
   }
-} 
+}

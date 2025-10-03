@@ -128,10 +128,12 @@ class LatexElementBuilder extends MarkdownElementBuilder {
             textStyle: textStyle,
             mathStyle: MathStyle.display,
             onErrorFallback: (error) {
-              debugPrint(' [31m$latexErrorDebug $error [0m');
-              return Text(
-                ' [31m$errorRenderingLatex ${error.message} [0m',
-                style: TextStyle(color: Theme.of(context).colorScheme.error),
+              debugPrint('\x1B[31m${Languages.latexErrorDebug} $error\x1B[0m');
+              return Builder(
+                builder: (context) => Text(
+                  '\x1B[31m${Languages.errorRenderingLatex} ${error.message}\x1B[0m',
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
               );
             },
           ),
@@ -194,25 +196,27 @@ class InlineLatexElementBuilder extends MarkdownElementBuilder {
             textStyle: textStyle,
             mathStyle: mathStyle,
             onErrorFallback: (error) {
-              debugPrint(' [31m$inlineLatexErrorDebug $error [0m');
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    ' [31m$latexErrorWidget ${error.message} [0m',
-                    style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    // Display the original LaTeX code when there's an error
-                    '\$\$' + textContent + '\$\$',
-                    style: TextStyle(
-                      fontFamily: 'monospace', 
-                      fontSize: 12,
-                      color: Theme.of(context).colorScheme.outline,
+              debugPrint('\x1B[31m${Languages.inlineLatexErrorDebug} $error\x1B[0m');
+              return Builder(
+                builder: (context) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '\x1B[31m${Languages.latexErrorWidget} ${error.message}\x1B[0m',
+                      style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      // Display the original LaTeX code when there's an error
+                      '\$\$$textContent\$\$',
+                      style: TextStyle(
+                        fontFamily: 'monospace', 
+                        fontSize: 12,
+                        color: Theme.of(context).colorScheme.outline,
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           ),
@@ -242,4 +246,4 @@ extension MarkdownExtensions on MarkdownStyleSheet {
       'inlineLatex': InlineLatexElementBuilder(textStyle: style),
     };
   }
-} 
+}

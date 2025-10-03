@@ -46,5 +46,5 @@ Format all your responses with proper markdown.""";
 
 const String baseUrl = 'https://api.openai.com/v1';
 const String defaultControlModel = 'text-embedding-3-small'; //this is for the test connections and for the session title
-const String nousablebot = 'gpt-4o-mini' // If no available models or selected model not in list, use default
+const String nousablebot = 'gpt-4o-mini'; // If no available models or selected model not in list, use default
 String apikey = ''; // dont add your apikey here, leave it empty
