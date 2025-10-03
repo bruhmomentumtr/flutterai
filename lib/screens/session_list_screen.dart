@@ -38,20 +38,20 @@ class _SessionListScreenState extends State<SessionListScreen> {
 
   void _deleteSelectedSessions(BuildContext context) {
     if (_selectedSessions.isEmpty) return;
-    
+
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(Languages.titleDeleteSessions),
+        title: const Text(Languages.titleDeleteSessions),
         content: Text(
           '${_selectedSessions.length} ${Languages.confirmDeleteSessions}',
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text(Languages.labelCancel),
+            child: const Text(Languages.labelCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -64,7 +64,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
               });
               Navigator.of(context).pop();
             },
-            child: Text(Languages.labelDelete),
+            child: const Text(Languages.labelDelete),
           ),
         ],
       ),
@@ -76,15 +76,17 @@ class _SessionListScreenState extends State<SessionListScreen> {
     return Scaffold(
       appBar: AppBar(
         title: _isSelectionMode
-            ? Text('${_selectedSessions.length} ${Languages.labelSelectedSessions}')
-            : Text(Languages.titleSessionList),
+            ? Text(
+                '${_selectedSessions.length} ${Languages.labelSelectedSessions}')
+            : const Text(Languages.titleSessionList),
         actions: [
           if (_isSelectionMode) ...[
             IconButton(
               icon: const Icon(Icons.select_all),
               tooltip: Languages.tooltipSelectAll,
               onPressed: () {
-                final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+                final chatProvider =
+                    Provider.of<ChatProvider>(context, listen: false);
                 setState(() {
                   // Tüm sohbetleri seç
                   _selectedSessions = Set.from(chatProvider.sessionIds);
@@ -127,44 +129,45 @@ class _SessionListScreenState extends State<SessionListScreen> {
           final sessionIds = chatProvider.sessionIds;
           final sessions = chatProvider.sessions;
           final currentSessionId = chatProvider.currentSessionId;
-          
+
           if (sessionIds.isEmpty) {
             return const Center(
               child: Text(Languages.labelNoSessions),
             );
           }
-          
+
           return ListView.builder(
             itemCount: sessionIds.length,
             itemBuilder: (context, index) {
               final sessionId = sessionIds[index];
               final messages = sessions[sessionId] ?? [];
               final isSelected = _selectedSessions.contains(sessionId);
-              
+
               // Get the first message title or use a default
               String sessionTitle = Languages.labelNewSession;
               String sessionPreview = '';
               String formattedDate = '';
-              
+
               if (messages.isNotEmpty) {
                 // Try to find first bot message with a title
                 final botMsgWithTitle = messages.firstWhere(
-                  (msg) => msg.role == MessageRole.assistant && msg.title != null,
+                  (msg) =>
+                      msg.role == MessageRole.assistant && msg.title != null,
                   orElse: () => messages.first,
                 );
-                
+
                 sessionTitle = botMsgWithTitle.title ?? 'Sohbet ${index + 1}';
-                
+
                 // Get preview from last message
                 final lastMsg = messages.last;
                 sessionPreview = lastMsg.content.length > 50
                     ? '${lastMsg.content.substring(0, 50)}...'
                     : lastMsg.content;
-                
+
                 // Format date based on how recent it is
                 formattedDate = _formatMessageDate(lastMsg.timestamp);
               }
-              
+
               if (_isSelectionMode) {
                 // Seçim modunda listItem
                 return ListTile(
@@ -234,16 +237,16 @@ class _SessionListScreenState extends State<SessionListScreen> {
                     return await showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: Text(Languages.titleDeleteSession),
-                        content: Text(Languages.confirmDeleteSession),
+                        title: const Text(Languages.titleDeleteSession),
+                        content: const Text(Languages.confirmDeleteSession),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(false),
-                            child: Text(Languages.labelCancel),
+                            child: const Text(Languages.labelCancel),
                           ),
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(true),
-                            child: Text(Languages.labelDelete),
+                            child: const Text(Languages.labelDelete),
                           ),
                         ],
                       ),
@@ -308,12 +311,12 @@ class _SessionListScreenState extends State<SessionListScreen> {
       ),
     );
   }
-  
+
   // Format message date based on how recent it is
   String _formatMessageDate(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
-    
+
     if (difference.inDays == 0) {
       // Today - show time
       return DateFormat.Hm().format(date);

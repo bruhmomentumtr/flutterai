@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:intl/intl.dart';
+
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 
@@ -16,26 +16,26 @@ import 'languages/languages.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize date formatting for Turkish locale
   await initializeDateFormatting('tr_TR', null);
-  
+
   // Initialize services
   final openRouterService = OpenRouterService();
-  
+
   // Create and initialize providers
   final settingsProvider = SettingsProvider();
   await settingsProvider.loadSettings();
-  
+
   // Initialize OpenRouter service with API key from settings
   if (settingsProvider.hasApiKey) {
     openRouterService.initialize(settingsProvider.apiKey);
   }
-  
+
   // Create and initialize bot provider
   final botProvider = BotProvider();
   await botProvider.initializeBots();
-  
+
   runApp(
     MultiProvider(
       providers: [
@@ -43,7 +43,8 @@ void main() async {
         ChangeNotifierProvider<BotProvider>.value(value: botProvider),
         Provider<OpenRouterService>.value(value: openRouterService),
         ChangeNotifierProvider<ChatProvider>(
-          create: (context) => ChatProvider(openRouterService, settingsProvider),
+          create: (context) =>
+              ChatProvider(openRouterService, settingsProvider),
         ),
       ],
       child: const MyApp(),
@@ -101,18 +102,22 @@ class _MyAppState extends State<MyApp> {
               title: Languages.appTitleMain,
               debugShowCheckedModeBanner: false,
               theme: ThemeData(
-                colorScheme: lightDynamic ?? ColorScheme.fromSeed(seedColor: Colors.blue),
+                colorScheme: lightDynamic ??
+                    ColorScheme.fromSeed(seedColor: Colors.blue),
                 useMaterial3: true,
               ),
               darkTheme: ThemeData(
-                colorScheme: darkDynamic ?? ColorScheme.fromSeed(
-                  seedColor: Colors.blue,
-                  brightness: Brightness.dark,
-                ),
+                colorScheme: darkDynamic ??
+                    ColorScheme.fromSeed(
+                      seedColor: Colors.blue,
+                      brightness: Brightness.dark,
+                    ),
                 useMaterial3: true,
               ),
               themeMode: settings.themeMode,
-              home: settings.hasApiKey ? const ChatScreen() : const WelcomeScreen(),
+              home: settings.hasApiKey
+                  ? const ChatScreen()
+                  : const WelcomeScreen(),
             );
           },
         );

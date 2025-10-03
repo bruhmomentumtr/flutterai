@@ -43,7 +43,7 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(Languages.textConnectionError),
+        title: const Text(Languages.textConnectionError),
       ),
       body: Center(
         child: Padding(
@@ -69,7 +69,8 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
               const SizedBox(height: 16),
               Text(
                 Languages.textCheckConnection,
-                style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.onErrorContainer),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -85,10 +86,12 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
                           strokeWidth: 3,
                         ),
                       )
-                    : Icon(Icons.refresh, color: Theme.of(context).colorScheme.onErrorContainer),
+                    : Icon(Icons.refresh,
+                        color: Theme.of(context).colorScheme.onErrorContainer),
                 label: Text(
                   _isLoading ? Languages.textChecking : Languages.textRetry,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onErrorContainer),
+                  style: TextStyle(
+                      color: Theme.of(context).colorScheme.onErrorContainer),
                 ),
                 style: FilledButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.errorContainer,
@@ -127,4 +130,4 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
       ),
     );
   }
-} 
+}

@@ -31,32 +31,32 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _initializeBot();
-    
+
     // API servisi kontrolü
     _checkApiService();
     _checkConnection(); // <-- ekle
   }
-  
+
   // Bot seçimi yoksa ilk botu seç
   void _initializeBot() {
     // İlk render'dan sonra işlem yap
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      
+
       final chatProvider = Provider.of<ChatProvider>(context, listen: false);
       final botProvider = Provider.of<BotProvider>(context, listen: false);
-      
+
       // Eğer bot seçili değilse ve botlar varsa, ilk botu seç
       if (chatProvider.selectedBot == null && botProvider.bots.isNotEmpty) {
         chatProvider.selectBot(botProvider.bots.first);
       }
     });
   }
-  
+
   // API servisini kontrol et
   Future<void> _checkApiService() async {
     final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-    
+
     try {
       final bool isAvailable = await chatProvider.isApiServiceAvailable();
       if (!isAvailable && mounted) {
@@ -99,9 +99,7 @@ class _ChatScreenState extends State<ChatScreen> {
             return Row(
               children: [
                 Icon(
-                  bot != null 
-                      ? _getIconData(bot.iconName)
-                      : Icons.chat,
+                  bot != null ? _getIconData(bot.iconName) : Icons.chat,
                   size: 24,
                 ),
                 const SizedBox(width: 8),
@@ -117,7 +115,8 @@ class _ChatScreenState extends State<ChatScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const SessionListScreen()),
+                MaterialPageRoute(
+                    builder: (context) => const SessionListScreen()),
               );
             },
           ),
@@ -252,17 +251,23 @@ class _ChatScreenState extends State<ChatScreen> {
                   MaterialBanner(
                     content: Text(
                       Languages.textNoInternet,
-                      style: TextStyle(color: Theme.of(context).colorScheme.onSecondaryContainer),
+                      style: TextStyle(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSecondaryContainer),
                     ),
-                    leading: Icon(Icons.wifi_off, color: Theme.of(context).colorScheme.secondary),
-                    backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                    leading: Icon(Icons.wifi_off,
+                        color: Theme.of(context).colorScheme.secondary),
+                    backgroundColor:
+                        Theme.of(context).colorScheme.secondaryContainer,
                     actions: [
                       TextButton(
                         onPressed: _checkConnection,
-                        child: Text(Languages.textRetry),
                         style: TextButton.styleFrom(
-                          foregroundColor: Theme.of(context).colorScheme.secondary,
+                          foregroundColor:
+                              Theme.of(context).colorScheme.secondary,
                         ),
+                        child: const Text(Languages.textRetry),
                       ),
                     ],
                   ),
@@ -282,7 +287,9 @@ class _ChatScreenState extends State<ChatScreen> {
                           child: Text(
                             chatProvider.error!,
                             style: TextStyle(
-                              color: Theme.of(context).colorScheme.onErrorContainer,
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onErrorContainer,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -295,14 +302,14 @@ class _ChatScreenState extends State<ChatScreen> {
                       ],
                     ),
                   ),
-                
+
                 // Chat messages list
                 Expanded(
                   child: chatProvider.messages.isEmpty
-                    ? _buildEmptyChat()
-                    : _buildChatMessages(chatProvider),
+                      ? _buildEmptyChat()
+                      : _buildChatMessages(chatProvider),
                 ),
-                
+
                 // Message input
                 MessageInput(
                   onSendMessage: (content, imageFile) {
@@ -334,11 +341,13 @@ class _ChatScreenState extends State<ChatScreen> {
         itemCount: chatProvider.messages.length,
         itemBuilder: (context, index) {
           // Mesajları sondan başa sırala (reverse: true olduğu için)
-          final message = chatProvider.messages[chatProvider.messages.length - 1 - index];
-          
+          final message =
+              chatProvider.messages[chatProvider.messages.length - 1 - index];
+
           // Key burada kritik - aynı ID'yi kullanmak yerine index + id kombinasyonu daha güvenli
-          final itemKey = ValueKey<String>('${chatProvider.currentSessionId}_${message.id}_$index');
-          
+          final itemKey = ValueKey<String>(
+              '${chatProvider.currentSessionId}_${message.id}_$index');
+
           return Padding(
             key: itemKey,
             padding: const EdgeInsets.only(bottom: 4.0),
@@ -369,7 +378,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     Icon(
                       Icons.chat_bubble_outline,
                       size: 64,
-                      color: Theme.of(context).colorScheme.outline.withAlpha(128),
+                      color:
+                          Theme.of(context).colorScheme.outline.withAlpha(128),
                     ),
                     const SizedBox(height: 16),
                     Text(
@@ -386,7 +396,8 @@ class _ChatScreenState extends State<ChatScreen> {
                       child: Text(
                         Languages.textSendMessageToStart,
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: Theme.of(context).colorScheme.outline),
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.outline),
                       ),
                     ),
                   ],
@@ -425,7 +436,7 @@ class BotSelectionDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    
+
     return Drawer(
       width: screenWidth * 0.85, // Geniş cihazlarda drawer'ı daha geniş yap
       child: SafeArea(
@@ -474,7 +485,7 @@ class BotSelectionDrawer extends StatelessWidget {
     // You would need to implement a BotProvider to get the list of bots
     // For now, using a placeholder implementation
     final botProvider = Provider.of<BotProvider>(context);
-    
+
     if (!botProvider.hasBots) {
       return Center(
         child: Column(
@@ -485,15 +496,16 @@ class BotSelectionDrawer extends StatelessWidget {
               size: 48,
               color: Theme.of(context).colorScheme.outline,
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text(
               Languages.textNoBotsConfigured,
               style: TextStyle(color: Theme.of(context).colorScheme.outline),
             ),
-            SizedBox(height: 8.0),
+            const SizedBox(height: 8.0),
             Text(
               Languages.textAddBotToStart,
-              style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12.0),
+              style: TextStyle(
+                  color: Theme.of(context).colorScheme.outline, fontSize: 12.0),
             ),
           ],
         ),
@@ -505,7 +517,7 @@ class BotSelectionDrawer extends StatelessWidget {
       itemBuilder: (context, index) {
         final bot = botProvider.bots[index];
         final isSelected = chatProvider.selectedBot?.id == bot.id;
-        
+
         return Card(
           margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
           elevation: isSelected ? 2 : 0,
@@ -513,14 +525,18 @@ class BotSelectionDrawer extends StatelessWidget {
               ? Theme.of(context).colorScheme.primaryContainer
               : Theme.of(context).colorScheme.surface,
           child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
             leading: Container(
               width: 40,
               height: 40,
               decoration: BoxDecoration(
                 color: isSelected
                     ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(128),
+                    : Theme.of(context)
+                        .colorScheme
+                        .surfaceContainerHighest
+                        .withAlpha(128),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(
@@ -539,9 +555,13 @@ class BotSelectionDrawer extends StatelessWidget {
             ),
             subtitle: Container(
               margin: const EdgeInsets.only(top: 4.0),
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest.withAlpha(128),
+                color: Theme.of(context)
+                    .colorScheme
+                    .surfaceContainerHighest
+                    .withAlpha(128),
                 borderRadius: BorderRadius.circular(12.0),
               ),
               child: Text(
@@ -556,21 +576,22 @@ class BotSelectionDrawer extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.edit_outlined, size: 20),
+                  icon: const Icon(Icons.edit_outlined, size: 20),
                   onPressed: () {
                     // Show dialog to edit bot
                     _showBotEditorDialog(context, bot: bot);
                   },
                 ),
                 IconButton(
-                  icon: Icon(Icons.delete_outline, size: 20),
+                  icon: const Icon(Icons.delete_outline, size: 20),
                   onPressed: () {
                     // Show confirmation dialog before deleting
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
                         title: const Text(Languages.textDeleteBot),
-                        content: Text('${Languages.textDeleteBotConfirm} ${bot.name}?'),
+                        content: Text(
+                            '${Languages.textDeleteBotConfirm} ${bot.name}?'),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(context).pop(),
@@ -622,25 +643,28 @@ class BotSelectionDrawer extends StatelessWidget {
   }
 
   void _showBotEditorDialog(BuildContext context, {Bot? bot}) {
-    final openRouterService = Provider.of<OpenRouterService>(context, listen: false);
-    final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
-    
+    final openRouterService =
+        Provider.of<OpenRouterService>(context, listen: false);
+    final settingsProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
+
     // Check if API key is set before proceeding
     if (!settingsProvider.hasApiKey) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text(Languages.textSetApiKeyForBots),
-          duration: const Duration(seconds: 3),
+          duration: Duration(seconds: 3),
         ),
       );
       return;
     }
-    
+
     // Get available models or use defaults if API isn't ready
-    final Future<List<String>> modelsFuture = openRouterService.isInitialized 
-        ? openRouterService.getAvailableModels() 
-        : Future.value(['openai/gpt-4o-mini', 'openai/gpt-4', 'anthropic/claude-2']);
-    
+    final Future<List<String>> modelsFuture = openRouterService.isInitialized
+        ? openRouterService.getAvailableModels()
+        : Future.value(
+            ['openai/gpt-4o-mini', 'openai/gpt-4', 'anthropic/claude-2']);
+
     // Show loading indicator while fetching models
     showDialog(
       context: context,
@@ -656,12 +680,12 @@ class BotSelectionDrawer extends StatelessWidget {
         ),
       ),
     );
-    
+
     // Once models are loaded, show the editor dialog
     modelsFuture.then((models) {
       if (context.mounted) {
         Navigator.of(context).pop(); // Close loading dialog
-        
+
         showDialog(
           context: context,
           builder: (context) => BotEditorDialog(
@@ -670,8 +694,9 @@ class BotSelectionDrawer extends StatelessWidget {
           ),
         ).then((result) {
           if (result != null && context.mounted) {
-            final botProvider = Provider.of<BotProvider>(context, listen: false);
-            
+            final botProvider =
+                Provider.of<BotProvider>(context, listen: false);
+
             if (bot == null) {
               // Adding a new bot
               botProvider.addBot(result);
@@ -694,4 +719,4 @@ class BotSelectionDrawer extends StatelessWidget {
       }
     });
   }
-} 
+}

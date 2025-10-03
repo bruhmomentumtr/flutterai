@@ -45,8 +45,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               Text(
                 Languages.appTitle,
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8.0),
@@ -56,7 +56,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32.0),
-              
+
               // API key input
               TextField(
                 controller: _apiKeyController,
@@ -93,23 +93,23 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24.0),
-              
+
               // Continue button
               SizedBox(
                 width: double.infinity,
                 child: FilledButton(
                   onPressed: _saveApiKey,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
+                  child: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12.0),
                     child: Text(
                       Languages.buttonContinue,
-                      style: const TextStyle(fontSize: 16.0),
+                      style: TextStyle(fontSize: 16.0),
                     ),
                   ),
                 ),
               ),
               const SizedBox(height: 16.0),
-              
+
               // Skip for now (debug only)
               TextButton(
                 onPressed: () {
@@ -117,7 +117,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                     MaterialPageRoute(builder: (_) => const ChatScreen()),
                   );
                 },
-                child: Text(Languages.buttonSkip),
+                child: const Text(Languages.buttonSkip),
               ),
             ],
           ),
@@ -128,47 +128,48 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   void _saveApiKey() {
     final apiKey = _apiKeyController.text.trim();
-    
+
     if (apiKey.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text(Languages.errorEnterApiKey),
-          duration: const Duration(seconds: 2),
+          duration: Duration(seconds: 2),
         ),
       );
       return;
     }
-    
+
     // API anahtarı format kontrolü
     if (!apiKey.startsWith('sk-')) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Text(Languages.errorInvalidApiKey),
-          duration: const Duration(seconds: 3),
+          duration: Duration(seconds: 3),
         ),
       );
       return;
     }
-    
+
     // API anahtarını kaydet ve doğrudan ChatScreen'e yönlendir
     // API testi yapmak yerine hemen anahtarı kaydedip devam edelim
-    
-    final settingsProvider = Provider.of<SettingsProvider>(context, listen: false);
-    
+
+    final settingsProvider =
+        Provider.of<SettingsProvider>(context, listen: false);
+
     // API anahtarını kaydet
     settingsProvider.setApiKey(apiKey);
-    
+
     // Başarı mesajı göster
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
+      const SnackBar(
         content: Text(Languages.successApiKeySaved),
-        duration: const Duration(seconds: 2),
+        duration: Duration(seconds: 2),
       ),
     );
-    
+
     // Doğrudan chat ekranına yönlendir
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => const ChatScreen()),
     );
   }
-} 
+}

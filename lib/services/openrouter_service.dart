@@ -11,7 +11,8 @@ import '../models/message.dart';
 import '../models/bot.dart';
 import '../services/network_service.dart';
 import '../languages/languages.dart';
-import '../settingsvariables/default_settings_variables.dart' as default_settings_variables;
+import '../settingsvariables/default_settings_variables.dart'
+    as default_settings_variables;
 
 // Constants for API configuration
 const int _maxRetries = 3;
@@ -66,7 +67,8 @@ class OpenRouterService {
         sendTimeout: _sendTimeout,
         headers: {
           'Content-Type': _contentType,
-          'Authorization': '$_authorizationPrefix${default_settings_variables.apikey}',
+          'Authorization':
+              '$_authorizationPrefix${default_settings_variables.apikey}',
           'HTTP-Referer': _httpReferer,
           'X-Title': _appTitle,
         }));
@@ -168,7 +170,8 @@ class OpenRouterService {
         return _defaultModels;
       }
     } on DioException catch (e) {
-      debugPrint('${Languages.dioExceptionFetchingModels} ${e.type} - ${e.message}');
+      debugPrint(
+          '${Languages.dioExceptionFetchingModels} ${e.type} - ${e.message}');
       return _defaultModels;
     } on TimeoutException catch (e) {
       debugPrint('${Languages.timeoutFetchingModels} $e');
@@ -194,10 +197,6 @@ class OpenRouterService {
     }
 
     try {
-      // Check for images in messages
-      bool hasImage = messages
-          .any((msg) => msg.imageUrl != null && msg.role == MessageRole.user);
-
       // Prepare messages for API request
       final List<Map<String, dynamic>> messagesJson = [];
 
@@ -281,7 +280,8 @@ class OpenRouterService {
           sessionId: sessionId,
         );
       } else {
-        debugPrint('${Languages.apiErrorPrefix} ${response.statusCode} - ${response.data}');
+        debugPrint(
+            '${Languages.apiErrorPrefix} ${response.statusCode} - ${response.data}');
         // Check for rate limit error
         if (response.statusCode == 429) {
           final errorMessage = response.data.toString();
@@ -290,11 +290,12 @@ class OpenRouterService {
             role: MessageRole.assistant,
             content: '${Languages.errorRateLimitReached} ($errorMessage)',
             timestamp: DateTime.now(),
-            title: '${Languages.chatTitle} ${_chatCounter}',
+            title: '${Languages.chatTitle} $_chatCounter',
             sessionId: sessionId,
           );
         }
-        throw Exception('${Languages.apiErrorPrefix} ${response.statusCode} - ${response.data}');
+        throw Exception(
+            '${Languages.apiErrorPrefix} ${response.statusCode} - ${response.data}');
       }
     } catch (e) {
       debugPrint('${Languages.errorGeneratingChatResponse} $e');
@@ -305,7 +306,7 @@ class OpenRouterService {
           role: MessageRole.assistant,
           content: '${Languages.errorRateLimitReached} ($e)',
           timestamp: DateTime.now(),
-          title: '${Languages.chatTitle} ${_chatCounter}',
+          title: '${Languages.chatTitle} $_chatCounter',
           sessionId: sessionId,
         );
       }
@@ -373,7 +374,7 @@ class OpenRouterService {
 
         // If title is empty or only contains whitespace, generate numbered title
         if (title.isEmpty || title.trim().isEmpty) {
-          return '${Languages.chatTitle} ${_chatCounter}';
+          return '${Languages.chatTitle} $_chatCounter';
         }
 
         return title;
@@ -382,7 +383,7 @@ class OpenRouterService {
     } catch (e) {
       debugPrint('${Languages.errorGeneratingTitle} $e');
       // Generate a numbered title when bot fails
-      return '${Languages.chatTitle} ${_chatCounter}';
+      return '${Languages.chatTitle} $_chatCounter';
     }
   }
 
@@ -442,7 +443,8 @@ class OpenRouterService {
     // Check if file exists and is readable
     if (!await imageFile.exists()) {
       debugPrint('${Languages.errorImageFileNotExist} ${imageFile.path}');
-      throw Exception('${Languages.exceptionImageFileNotFound} ${path.basename(imageFile.path)}');
+      throw Exception(
+          '${Languages.exceptionImageFileNotFound} ${path.basename(imageFile.path)}');
     }
 
     try {

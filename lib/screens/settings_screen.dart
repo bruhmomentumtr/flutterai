@@ -27,9 +27,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     super.initState();
     final settings = context.read<SettingsProvider>();
     _apiKeyController = TextEditingController(text: settings.apiKey);
-    _temperatureController = TextEditingController(text: settings.temperature.toString());
-    _maxTokensController = TextEditingController(text: settings.maxTokens.toString());
-    _systemPromptController = TextEditingController(text: settings.systemPrompt);
+    _temperatureController =
+        TextEditingController(text: settings.temperature.toString());
+    _maxTokensController =
+        TextEditingController(text: settings.maxTokens.toString());
+    _systemPromptController =
+        TextEditingController(text: settings.systemPrompt);
     _showRawFormat = settings.showRawFormat;
   }
 
@@ -58,16 +61,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(Languages.textReset),
-        content: Text(Languages.textResetConfirm),
+        title: const Text(Languages.textReset),
+        content: const Text(Languages.textResetConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text(Languages.textNo),
+            child: const Text(Languages.textNo),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: Text(Languages.textYes),
+            child: const Text(Languages.textYes),
           ),
         ],
       ),
@@ -93,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(Languages.textSettings),
+        title: const Text(Languages.textSettings),
         actions: [
           IconButton(
             icon: const Icon(Icons.restore),
@@ -109,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             TextFormField(
               controller: _apiKeyController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: Languages.textApiKey,
                 hintText: Languages.textApiKeyHint,
               ),
@@ -122,8 +125,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
             const SizedBox(height: 16),
             SwitchListTile(
-              title: Text(Languages.textShowRawFormat),
-              subtitle: Text(Languages.textShowRawFormatDesc),
+              title: const Text(Languages.textShowRawFormat),
+              subtitle: const Text(Languages.textShowRawFormatDesc),
               value: _showRawFormat,
               onChanged: (value) {
                 setState(() {
@@ -134,11 +137,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _temperatureController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: Languages.textTemperature,
                 helperText: Languages.textTemperatureDesc,
               ),
-              keyboardType: const TextInputType.numberWithOptions(decimal: true),
+              keyboardType:
+                  const TextInputType.numberWithOptions(decimal: true),
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return Languages.errorTemperatureEmpty;
@@ -153,7 +157,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _maxTokensController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: Languages.textMaxTokens,
                 helperText: Languages.textMaxTokensDesc,
               ),
@@ -172,7 +176,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _systemPromptController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: Languages.textSystemPrompt,
                 helperText: Languages.textSystemPromptDesc,
               ),
@@ -184,12 +188,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text(Languages.textCancel),
+                  child: const Text(Languages.textCancel),
                 ),
                 const SizedBox(width: 16),
                 FilledButton(
                   onPressed: _saveSettings,
-                  child: Text(Languages.textSave),
+                  child: const Text(Languages.textSave),
                 ),
               ],
             ),
@@ -198,4 +202,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
-} 
+}

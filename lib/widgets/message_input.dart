@@ -217,11 +217,14 @@ class _MessageInputState extends State<MessageInput> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
-                              SizedBox(height: 4),
+                              Icon(Icons.error_outline,
+                                  color: Theme.of(context).colorScheme.error),
+                              const SizedBox(height: 4),
                               Text(Languages.msgImageNotLoaded,
                                   style: TextStyle(
-                                      color: Theme.of(context).colorScheme.error, fontSize: 12)),
+                                      color:
+                                          Theme.of(context).colorScheme.error,
+                                      fontSize: 12)),
                             ],
                           ),
                         );
@@ -257,14 +260,16 @@ class _MessageInputState extends State<MessageInput> {
               IconButton(
                 icon: const Icon(Icons.photo),
                 onPressed: widget.isLoading ? null : _pickImage,
-                tooltip: Languages.tooltipAddImage, // Languages sınıfından çağrıldı
+                tooltip:
+                    Languages.tooltipAddImage, // Languages sınıfından çağrıldı
               ),
 
               // Camera button
               IconButton(
                 icon: const Icon(Icons.camera_alt),
                 onPressed: widget.isLoading ? null : _takePhoto,
-                tooltip: Languages.tooltipTakePhoto, // Languages sınıfından çağrıldı
+                tooltip:
+                    Languages.tooltipTakePhoto, // Languages sınıfından çağrıldı
               ),
 
               // Text field
@@ -273,7 +278,8 @@ class _MessageInputState extends State<MessageInput> {
                   controller: _textController,
                   focusNode: _focusNode,
                   decoration: InputDecoration(
-                    hintText: Languages.hintTextMessage, // Languages sınıfından çağrıldı
+                    hintText: Languages
+                        .hintTextMessage, // Languages sınıfından çağrıldı
                     border: InputBorder.none,
                     enabled: !widget.isLoading,
                   ),

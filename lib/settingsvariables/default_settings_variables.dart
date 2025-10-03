@@ -20,8 +20,8 @@ final List<Bot> defaultBots = [
   ),
   Bot(
     id: const Uuid().v4(),
-    name: 'GPT-4.1 nano',
-    model: 'openai/gpt-4.1-nano',
+    name: 'GPT-4o Mini',
+    model: 'openai/gpt-4o-mini',
     iconName: 'edit',
   ),
   Bot(
@@ -38,14 +38,8 @@ final List<Bot> defaultBots = [
   ),
   Bot(
     id: const Uuid().v4(),
-    name: 'Llama 3.2 11b vision',
-    model: 'meta-llama/llama-3.2-11b-vision-instruct',
-    iconName: 'smart_toy',
-  ),
-  Bot(
-    id: const Uuid().v4(),
-    name: 'claude sonnet 4',
-    model: 'anthropic/claude-sonnet-4',
+    name: 'claude sonnet 4.5',
+    model: 'anthropic/claude-sonnet-4.5',
     iconName: 'smart_toy',
   ),
 ];

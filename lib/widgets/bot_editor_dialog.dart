@@ -7,7 +7,8 @@ import 'package:uuid/uuid.dart';
 import '../models/bot.dart';
 import '../providers/settings_provider.dart';
 import '../languages/languages.dart';
-import '../settingsvariables/default_settings_variables.dart' as default_settings_variables;
+import '../settingsvariables/default_settings_variables.dart'
+    as default_settings_variables;
 
 class BotEditorDialog extends StatefulWidget {
   final Bot? bot; // null for creating a new bot
@@ -27,7 +28,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _systemPromptController = TextEditingController();
-  
+
   String _selectedModel = default_settings_variables.nousablebot;
   double _temperature = default_settings_variables.defaultTemperature;
   int _maxTokens = default_settings_variables.defaultMaxTokens;
@@ -46,14 +47,14 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
   @override
   void initState() {
     super.initState();
-    
+
     // If editing an existing bot, populate the form with bot data
     if (widget.bot != null) {
       _nameController.text = widget.bot!.name;
       _selectedModel = widget.bot!.model;
       _selectedIcon = widget.bot!.iconName;
     }
-    
+
     // Get global settings
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = Provider.of<SettingsProvider>(context, listen: false);
@@ -63,7 +64,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
         _maxTokens = settings.maxTokens;
       });
     });
-    
+
     // If no available models or selected model not in list, use default
     if (widget.availableModels.isEmpty) {
       _selectedModel = default_settings_variables.nousablebot;
@@ -85,12 +86,10 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
     final title = isNewBot ? Languages.titleCreateBot : Languages.titleEditBot;
     final screenWidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
-    
+
     return Dialog(
       insetPadding: EdgeInsets.symmetric(
-        horizontal: screenWidth * 0.07, 
-        vertical: screenHeight * 0.08
-      ),
+          horizontal: screenWidth * 0.07, vertical: screenHeight * 0.08),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -104,7 +103,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
-              
+
               // Content with form
               Form(
                 key: _formKey,
@@ -115,7 +114,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                     // Bot name field
                     TextFormField(
                       controller: _nameController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: Languages.labelBotName,
                         hintText: Languages.hintBotName,
                       ),
@@ -127,10 +126,10 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                       },
                     ),
                     const SizedBox(height: 16.0),
-                    
+
                     // Model selection dropdown
                     DropdownButtonFormField<String>(
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: Languages.labelModel,
                       ),
                       value: _selectedModel,
@@ -144,11 +143,11 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                       },
                     ),
                     const SizedBox(height: 16.0),
-                    
+
                     // System prompt field
                     TextFormField(
                       controller: _systemPromptController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: Languages.labelSystemPrompt,
                         hintText: Languages.hintSystemPrompt,
                       ),
@@ -161,7 +160,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                       maxLines: 3,
                     ),
                     const SizedBox(height: 16.0),
-                    
+
                     // Temperature slider
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -189,7 +188,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                       ],
                     ),
                     const SizedBox(height: 16.0),
-                    
+
                     // Max tokens slider
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -213,14 +212,14 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                       ],
                     ),
                     const SizedBox(height: 16.0),
-                    
+
                     // Icon selection
                     Text(
                       Languages.labelIcon,
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                     const SizedBox(height: 8.0),
-                    
+
                     // Icon grid
                     Wrap(
                       spacing: 8.0,
@@ -262,7 +261,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                   ],
                 ),
               ),
-              
+
               // Button row
               const SizedBox(height: 24),
               Row(
@@ -270,12 +269,14 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
-                    child: Text(Languages.buttonCancel),
+                    child: const Text(Languages.buttonCancel),
                   ),
                   const SizedBox(width: 8),
                   FilledButton(
                     onPressed: _saveBot,
-                    child: Text(isNewBot ? Languages.buttonCreate : Languages.buttonUpdate),
+                    child: Text(isNewBot
+                        ? Languages.buttonCreate
+                        : Languages.buttonUpdate),
                   ),
                 ],
               ),
@@ -299,7 +300,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
 
     // Create or update bot
     final Bot result;
-    
+
     if (widget.bot == null) {
       // Creating a new bot
       const uuid = Uuid();
@@ -317,23 +318,30 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
         iconName: _selectedIcon,
       );
     }
-    
+
     Navigator.of(context).pop(result);
   }
 
   // Helper method to get model dropdown items with proper validation
   List<DropdownMenuItem<String>> _getModelItems() {
-    final defaultModels = ['openai/gpt-3.5-turbo', 'openai/gpt-4', 'anthropic/claude-2'];
-    final models = widget.availableModels.isEmpty ? defaultModels : widget.availableModels;
-    
+    final defaultModels = [
+      'openai/gpt-3.5-turbo',
+      'openai/gpt-4',
+      'anthropic/claude-2'
+    ];
+    final models =
+        widget.availableModels.isEmpty ? defaultModels : widget.availableModels;
+
     // Ensure selected model is in the list
     if (!models.contains(_selectedModel)) {
       models.add(_selectedModel);
     }
-    
-    return models.map((model) => DropdownMenuItem(
-      value: model,
-      child: Text(model),
-    )).toList();
+
+    return models
+        .map((model) => DropdownMenuItem(
+              value: model,
+              child: Text(model),
+            ))
+        .toList();
   }
-} 
+}
