@@ -88,7 +88,8 @@ class _MessageInputState extends State<MessageInput> {
         // Logic to create topic header
         String topicHeader = "Topic: ${text.trim()}"; // Example header
         // You may want to send this header to the chat provider or handle it accordingly
-        print(topicHeader); // For demonstration, replace with actual handling
+        debugPrint(
+            topicHeader); // For demonstration, replace with actual handling
         isFirstMessage = false; // Set to false after the first message
       }
       setState(() {
@@ -213,7 +214,9 @@ class _MessageInputState extends State<MessageInput> {
                         return Container(
                           width: double.infinity,
                           height: 120,
-                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .surfaceContainerHighest,
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -233,7 +236,8 @@ class _MessageInputState extends State<MessageInput> {
                   ),
                   Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceVariant,
+                      color:
+                          Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(16),
                     ),
                     margin: const EdgeInsets.all(4),

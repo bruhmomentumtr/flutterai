@@ -860,7 +860,7 @@ class _MessageBubbleState extends State<MessageBubble> {
               return Container(
                 width: double.infinity,
                 height: 150,
-                color: Theme.of(context).colorScheme.surfaceVariant,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -886,7 +886,7 @@ class _MessageBubbleState extends State<MessageBubble> {
       return Container(
         width: double.infinity,
         height: 150,
-        color: Theme.of(context).colorScheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
