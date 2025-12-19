@@ -1,5 +1,5 @@
-// Default location: lib/widgets/message_bubble.dart
-// Message bubble widget to display chat messages with markdown support
+// lib/widgets/message_bubble.dart
+// Modern message bubble widget with animations and markdown support
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,24 +11,23 @@ import '../providers/settings_provider.dart';
 import '../providers/chat_provider.dart';
 import 'dart:convert';
 import '../languages/languages.dart';
+import '../core/markdown/markdown_normalizer.dart';
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_spacing.dart';
 
 // LaTeX regex patterns
 final Map<String, RegExp> _latexPatterns = {
-  'dollar': RegExp(r'\$\$([\s\S]*?)\$\$', multiLine: true), // $$ x^2 $$ formatı
-  'dollarSingleLine': RegExp(r'\$([\s\S]*?)\$(?!\$)',
-      multiLine: true), // $ x^2 $ formatı (tek dolar)
-  'latexTag': RegExp(r'\[latex\]([\s\S]*?)\[/latex\]',
-      multiLine: true), // [latex] x^2 [/latex] formatı
+  'dollar': RegExp(r'\$\$([\s\S]*?)\$\$', multiLine: true),
+  'dollarSingleLine': RegExp(r'\$([\s\S]*?)\$(?!\$)', multiLine: true),
+  'latexTag': RegExp(r'\[latex\]([\s\S]*?)\[/latex\]', multiLine: true),
   'standardLatex': RegExp(r'\\begin\{equation\}([\s\S]*?)\\end\{equation\}',
-      multiLine: true), // \begin{equation} formatı
-  'displayLatex': RegExp(r'\\begin\{align\}([\s\S]*?)\\end\{align\}',
-      multiLine: true), // \begin{align} formatı
-  'inlineLatex': RegExp(r'\\begin\{math\}([\s\S]*?)\\end\{math\}',
-      multiLine: true), // \begin{math} formatı
-  'inlineLatexMath':
-      RegExp(r'\\\(([\s\S]*?)\\\)', multiLine: true), // \( x^2 \) formatı
-  'displayLatexMath':
-      RegExp(r'\\\[([\s\S]*?)\\\]', multiLine: true), // \[ x^2 \] formatı
+      multiLine: true),
+  'displayLatex':
+      RegExp(r'\\begin\{align\}([\s\S]*?)\\end\{align\}', multiLine: true),
+  'inlineLatex':
+      RegExp(r'\\begin\{math\}([\s\S]*?)\\end\{math\}', multiLine: true),
+  'inlineLatexMath': RegExp(r'\\\(([\s\S]*?)\\\)', multiLine: true),
+  'displayLatexMath': RegExp(r'\\\[([\s\S]*?)\\\]', multiLine: true),
 };
 
 // Turkish character mapping
@@ -49,24 +48,55 @@ const Map<String, String> _turkishMap = {
 
 class MessageBubble extends StatefulWidget {
   final Message message;
+  final bool showAnimation;
 
   const MessageBubble({
     Key? key,
     required this.message,
+    this.showAnimation = true,
   }) : super(key: key);
 
   @override
   State<MessageBubble> createState() => _MessageBubbleState();
 }
 
-class _MessageBubbleState extends State<MessageBubble> {
+class _MessageBubbleState extends State<MessageBubble>
+    with SingleTickerProviderStateMixin {
   bool _showRawContent = false;
+  final MarkdownNormalizer _normalizer = MarkdownNormalizer();
+  late AnimationController _animationController;
+  late Animation<double> _scaleAnimation;
+  late Animation<double> _fadeAnimation;
 
-  // Widget'ın yeniden oluşturulma durumunda state'i korumak için
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: AppSpacing.animMedium,
+    );
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOutBack),
+    );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
+    );
+    if (widget.showAnimation) {
+      _animationController.forward();
+    } else {
+      _animationController.value = 1.0;
+    }
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   @override
   void didUpdateWidget(MessageBubble oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // Mesaj değiştiğinde raw content gösterimini sıfırla
     if (oldWidget.message.id != widget.message.id) {
       setState(() {
         _showRawContent = false;
@@ -79,167 +109,247 @@ class _MessageBubbleState extends State<MessageBubble> {
     final bool isUser = widget.message.role == MessageRole.user;
     final theme = Theme.of(context);
     final settings = Provider.of<SettingsProvider>(context);
+    final isDark = theme.brightness == Brightness.dark;
 
-    return Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 12.0),
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 14.0),
-        constraints: BoxConstraints(
-          maxWidth: MediaQuery.of(context).size.width * 0.75,
-        ),
-        decoration: BoxDecoration(
-          color: isUser
-              ? theme.colorScheme.primary.withAlpha(204)
-              : theme.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(16.0),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Display title if present and it's a bot message
-            if (widget.message.title != null && !isUser) ...[
-              Text(
-                widget.message.title!,
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                ),
-              ),
-              const Divider(),
-              const SizedBox(height: 4.0),
-            ],
-
-            // Display image if present
-            if (widget.message.imageUrl != null) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: _buildImagePreview(context, widget.message.imageUrl!),
-              ),
-              const SizedBox(height: 8.0),
-            ],
-
-            // Display message content - wrap in RepaintBoundary for better performance
-            RepaintBoundary(
-              child: _showRawContent || settings.showRawFormat
-                  ? _buildSimpleTextContent(
-                      context,
-                      widget.message.content,
-                      isUser
-                          ? theme.colorScheme.onPrimary
-                          : theme.colorScheme.onSurface)
-                  : _getContentWidget(
-                      context,
-                      widget.message.content,
-                      isUser
-                          ? theme.colorScheme.onPrimary
-                          : theme.colorScheme.onSurface,
-                      isUser),
+    return FadeTransition(
+      opacity: _fadeAnimation,
+      child: ScaleTransition(
+        scale: _scaleAnimation,
+        alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+        child: Align(
+          alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: AppSpacing.xs,
+              horizontal: AppSpacing.md,
             ),
-
-            // Bottom row with timestamp, copy and delete buttons
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+            child: Row(
+              mainAxisAlignment:
+                  isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                // Toggle rendering button (only show if message contains LaTeX content)
-                if (_containsLatexSyntax(widget.message.content))
-                  IconButton(
-                    icon: Icon(
-                      _showRawContent ? Icons.code_off : Icons.code,
-                      size: 16.0,
+                // AI Avatar
+                if (!isUser) ...[
+                  _buildAvatar(context, isUser, isDark),
+                  const SizedBox(width: AppSpacing.xs),
+                ],
+
+                // Message content
+                Flexible(
+                  child: Container(
+                    constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width *
+                          AppSpacing.bubbleMaxWidth,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.sm,
+                      horizontal: AppSpacing.md,
+                    ),
+                    decoration: BoxDecoration(
                       color: isUser
-                          ? theme.colorScheme.onPrimary.withAlpha(179)
-                          : theme.colorScheme.onSurface.withAlpha(153),
-                    ),
-                    tooltip: _showRawContent
-                        ? Languages.textShowProcessed
-                        : Languages.textShowRaw,
-                    onPressed: () {
-                      setState(() {
-                        _showRawContent = !_showRawContent;
-                      });
-                    },
-                    constraints: const BoxConstraints(
-                      minHeight: 24,
-                      minWidth: 24,
-                    ),
-                    padding: EdgeInsets.zero,
-                    visualDensity: VisualDensity.compact,
-                  ),
-                // More actions button
-                PopupMenuButton<String>(
-                  icon: Icon(
-                    Icons.more_vert,
-                    size: 16.0,
-                    color: isUser
-                        ? theme.colorScheme.onPrimary.withAlpha(179)
-                        : theme.colorScheme.onSurface.withAlpha(153),
-                  ),
-                  tooltip: Languages.textMoreOptions,
-                  onSelected: (value) {
-                    if (value == Languages.textCopyMessage) {
-                      _copyMessageToClipboard(context);
-                    } else if (value == Languages.textCopyRawText) {
-                      _copyRawMessageToClipboard(context);
-                    } else if (value == Languages.textDeleteMessage) {
-                      _deleteMessage(context);
-                    }
-                  },
-                  itemBuilder: (context) => [
-                    const PopupMenuItem<String>(
-                      value: Languages.textCopyMessage,
-                      child: ListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(Icons.copy, size: 18),
-                        title: Text(Languages.textCopyMessage),
+                          ? (isDark
+                              ? AppColors.userBubbleDark
+                              : AppColors.userBubbleLight)
+                          : (isDark
+                              ? AppColors.aiBubbleDark
+                              : AppColors.aiBubbleLight),
+                      borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(AppSpacing.bubbleRadius),
+                        topRight:
+                            const Radius.circular(AppSpacing.bubbleRadius),
+                        bottomLeft: Radius.circular(isUser
+                            ? AppSpacing.bubbleRadius
+                            : AppSpacing.radiusXs),
+                        bottomRight: Radius.circular(isUser
+                            ? AppSpacing.radiusXs
+                            : AppSpacing.bubbleRadius),
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
-                    const PopupMenuItem<String>(
-                      value: Languages.textCopyRawText,
-                      child: ListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(Icons.code, size: 18),
-                        title: Text(Languages.textCopyRawText),
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Title for AI messages
+                        if (widget.message.title != null && !isUser) ...[
+                          Text(
+                            widget.message.title!,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
+                              color: isUser
+                                  ? Colors.white.withOpacity(0.8)
+                                  : theme.colorScheme.primary,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                        ],
+
+                        // Image preview
+                        if (widget.message.imageUrl != null) ...[
+                          ClipRRect(
+                            borderRadius: AppSpacing.borderRadiusMd,
+                            child: _buildImagePreview(
+                                context, widget.message.imageUrl!),
+                          ),
+                          const SizedBox(height: AppSpacing.xs),
+                        ],
+
+                        // Message content
+                        RepaintBoundary(
+                          child: _showRawContent || settings.showRawFormat
+                              ? _buildSimpleTextContent(
+                                  context,
+                                  widget.message.content,
+                                  isUser
+                                      ? Colors.white
+                                      : theme.colorScheme.onSurface,
+                                )
+                              : _getContentWidget(
+                                  context,
+                                  _normalizer.normalize(widget.message.content),
+                                  isUser
+                                      ? Colors.white
+                                      : theme.colorScheme.onSurface,
+                                  isUser,
+                                ),
+                        ),
+
+                        // Bottom row
+                        const SizedBox(height: AppSpacing.xs),
+                        _buildBottomRow(context, isUser, theme),
+                      ],
                     ),
-                    const PopupMenuItem<String>(
-                      value: Languages.textDeleteMessage,
-                      child: ListTile(
-                        dense: true,
-                        contentPadding: EdgeInsets.zero,
-                        leading: Icon(Icons.delete_outline, size: 18),
-                        title: Text(Languages.textDeleteMessage),
-                      ),
-                    ),
-                  ],
-                  padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(
-                    minHeight: 24,
-                    minWidth: 24,
-                  ),
-                  position: PopupMenuPosition.under,
-                ),
-                // Timestamp
-                Text(
-                  _formatTime(widget.message.timestamp),
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    color: isUser
-                        ? theme.colorScheme.onPrimary.withAlpha(179)
-                        : theme.colorScheme.onSurface.withAlpha(153),
                   ),
                 ),
+
+                // User Avatar
+                if (isUser) ...[
+                  const SizedBox(width: AppSpacing.xs),
+                  _buildAvatar(context, isUser, isDark),
+                ],
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
   }
 
-  // LaTeX sözdizimi içerip içermediğini kontrol et
+  Widget _buildAvatar(BuildContext context, bool isUser, bool isDark) {
+    return Container(
+      width: AppSpacing.avatarSm,
+      height: AppSpacing.avatarSm,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: isUser ? AppColors.primaryGradient : AppColors.accentGradient,
+        boxShadow: [
+          BoxShadow(
+            color: (isUser ? AppColors.primary : AppColors.secondary)
+                .withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Icon(
+        isUser ? Icons.person : Icons.auto_awesome,
+        size: 18,
+        color: Colors.white,
+      ),
+    );
+  }
+
+  Widget _buildBottomRow(BuildContext context, bool isUser, ThemeData theme) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Toggle raw content
+        if (_containsLatexSyntax(widget.message.content))
+          _buildIconButton(
+            icon: _showRawContent ? Icons.code_off : Icons.code,
+            onPressed: () => setState(() => _showRawContent = !_showRawContent),
+            isUser: isUser,
+          ),
+
+        // More options
+        PopupMenuButton<String>(
+          icon: Icon(
+            Icons.more_vert,
+            size: 16,
+            color: isUser
+                ? Colors.white.withOpacity(0.7)
+                : theme.colorScheme.onSurface.withOpacity(0.5),
+          ),
+          tooltip: Languages.textMoreOptions,
+          onSelected: (value) => _handleMenuAction(context, value),
+          itemBuilder: (context) => [
+            _buildMenuItem(Icons.copy, Languages.textCopyMessage),
+            _buildMenuItem(Icons.code, Languages.textCopyRawText),
+            _buildMenuItem(Icons.delete_outline, Languages.textDeleteMessage),
+          ],
+          padding: EdgeInsets.zero,
+          constraints: const BoxConstraints(minHeight: 24, minWidth: 24),
+        ),
+
+        // Timestamp
+        Text(
+          _formatTime(widget.message.timestamp),
+          style: TextStyle(
+            fontSize: 11,
+            color: isUser
+                ? Colors.white.withOpacity(0.6)
+                : theme.colorScheme.onSurface.withOpacity(0.4),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIconButton({
+    required IconData icon,
+    required VoidCallback onPressed,
+    required bool isUser,
+  }) {
+    return IconButton(
+      icon: Icon(icon, size: 16),
+      onPressed: onPressed,
+      color: isUser
+          ? Colors.white.withOpacity(0.7)
+          : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+      constraints: const BoxConstraints(minHeight: 24, minWidth: 24),
+      padding: EdgeInsets.zero,
+      visualDensity: VisualDensity.compact,
+    );
+  }
+
+  PopupMenuItem<String> _buildMenuItem(IconData icon, String text) {
+    return PopupMenuItem<String>(
+      value: text,
+      child: ListTile(
+        dense: true,
+        contentPadding: EdgeInsets.zero,
+        leading: Icon(icon, size: 18),
+        title: Text(text),
+      ),
+    );
+  }
+
+  void _handleMenuAction(BuildContext context, String value) {
+    if (value == Languages.textCopyMessage) {
+      _copyMessageToClipboard(context);
+    } else if (value == Languages.textCopyRawText) {
+      _copyRawMessageToClipboard(context);
+    } else if (value == Languages.textDeleteMessage) {
+      _deleteMessage(context);
+    }
+  }
+
   bool _containsLatexSyntax(String content) {
     return content.contains(r'$$') ||
         content.contains(r'\begin') ||
@@ -248,711 +358,245 @@ class _MessageBubbleState extends State<MessageBubble> {
         content.contains(r'[latex]');
   }
 
-  // Markdown sözdizimi içerip içermediğini kontrol et
   bool _containsMarkdown(String content) {
-    // Markdown için yaygın patternler
     final patterns = [
-      r'#{1,6}\s.+', // headers
-      r'\*\*.+?\*\*', // bold
-      r'_.+?_', // italic with underscore
-      r'\*.+?\*', // italic with asterisk
-      r'`[^`]+`', // inline code
-      r'```[\s\S]*?```', // code blocks
-      r'~~~[\s\S]*?~~~', // alternate code blocks
-      r'\[.+?\]\(.+?\)', // links
-      r'!\[.+?\]\(.+?\)', // images
-      r'^\s*[-*+]\s', // unordered list items
-      r'^\s*\d+\.\s', // numbered list items
-      r'^\s*>\s', // blockquotes
-      r'^\s*\|.+\|.+\|', // tables
-      r'^\s*-{3,}', // horizontal rule
-      r'<[a-z][a-z0-9]*(\s+[a-z0-9]+="[^"]*")*\s*>', // html tags
+      r'#{1,6}\s.+',
+      r'\*\*.+?\*\*',
+      r'_.+?_',
+      r'\*.+?\*',
+      r'`[^`]+`',
+      r'```[\s\S]*?```',
+      r'\[.+?\]\(.+?\)',
+      r'^\s*[-*+]\s',
+      r'^\s*\d+\.\s',
+      r'^\s*>\s',
     ];
-
-    // Her satırı kontrol etmek için içeriği satırlara böl
-    final lines = content.split('\n');
-
-    // Liste ve numaralı liste için arka arkaya satırları kontrol et
-    bool hasListItems = false;
-    bool hasNumberedList = false;
-
-    for (int i = 0; i < lines.length; i++) {
-      final line = lines[i];
-
-      // Liste kontrolü
-      if (RegExp(r'^\s*[-*+]\s').hasMatch(line)) {
-        hasListItems = true;
-      }
-
-      // Numaralı liste kontrolü
-      if (RegExp(r'^\s*\d+\.\s').hasMatch(line)) {
-        hasNumberedList = true;
-      }
-
-      // Tablo kontrolü - en az iki satırı olan bir tablo yapısı
-      if (i < lines.length - 1 &&
-          RegExp(r'^\s*\|.+\|.+\|').hasMatch(line) &&
-          RegExp(r'^\s*\|[\s-:]*\|[\s-:]*\|').hasMatch(lines[i + 1])) {
-        return true;
-      }
-    }
-
-    if (hasListItems || hasNumberedList) {
-      return true;
-    }
-
-    // Diğer markdown elementlerini kontrol et
     for (final pattern in patterns) {
-      final regex = RegExp(pattern, multiLine: true);
-      if (regex.hasMatch(content)) {
-        return true;
-      }
+      if (RegExp(pattern, multiLine: true).hasMatch(content)) return true;
     }
-
     return false;
   }
 
-  // İçerik türüne göre widget seç
   Widget _getContentWidget(
       BuildContext context, String content, Color textColor, bool isUser) {
-    // Hem LaTeX hem de Markdown içeriyor mu diye kontrol et
     if (_containsLatexSyntax(content)) {
       try {
         return _buildLatexContent(context, content, textColor, isUser);
       } catch (e) {
-        debugPrint('LaTeX render edilirken hata oluştu: $e');
         return _buildSimpleTextContent(context, content, textColor);
       }
     } else if (_containsMarkdown(content)) {
       try {
         return _buildMarkdownContent(context, content, textColor);
       } catch (e) {
-        debugPrint('Markdown render edilirken hata oluştu: $e');
         return _buildSimpleTextContent(context, content, textColor);
       }
-    } else {
-      return _buildSimpleTextContent(context, content, textColor);
     }
+    return _buildSimpleTextContent(context, content, textColor);
   }
 
-  // Helper method to format timestamp
   String _formatTime(DateTime time) {
     final hour = time.hour.toString().padLeft(2, '0');
     final minute = time.minute.toString().padLeft(2, '0');
     return '$hour:$minute';
   }
 
-  // Basit metin içeriği gösterme
   Widget _buildSimpleTextContent(
       BuildContext context, String content, Color textColor) {
-    // Markdown içeriyor mu kontrol et
     if (_containsMarkdown(content) && !_containsLatexSyntax(content)) {
       return _buildMarkdownContent(context, content, textColor);
     }
-
     return SizedBox(
       width: double.infinity,
-      child: GestureDetector(
-        onLongPress: () {
-          // Uzun basınca metni panoya kopyalama seçeneği sun
-          final scaffold = ScaffoldMessenger.of(context);
-          scaffold.showSnackBar(
-            const SnackBar(
-              content: Text(Languages.textCopyToClipboard),
-              duration: Duration(seconds: 2),
-              behavior: SnackBarBehavior.floating,
-              width: 250,
-            ),
-          );
-        },
-        child: Text(
-          content,
-          style: TextStyle(
-            color: textColor,
-            fontSize: 16.0,
-          ),
-        ),
+      child: SelectableText(
+        content,
+        style: TextStyle(color: textColor, fontSize: 15, height: 1.4),
       ),
     );
   }
 
-  // Markdown içeriği oluştur
   Widget _buildMarkdownContent(
       BuildContext context, String content, Color textColor) {
-    // Kod blokları için dil tanımalı düzenleme
-    final formattedContent = _formatCodeBlocks(content);
-
     return SizedBox(
       width: double.infinity,
       child: MarkdownBody(
-        data: formattedContent,
+        data: content,
         styleSheet: _createMarkdownStyleSheet(context, textColor),
-        selectable: false,
-        onTapLink: (text, href, title) {
-          // Link tıklamaları için özel işleme yapılabilir
-          debugPrint('Link tıklandı: $href');
-        },
-        builders: const {
-          // Özel markdown elemanları için builder'lar eklenebilir
-        },
+        selectable: true,
       ),
     );
   }
 
-  // Kod bloklarını formatla - dil tanımalı
-  String _formatCodeBlocks(String content) {
-    // Markdown kod bloklarını bul: ```dil ...kod... ```
-    final codeBlockRegex = RegExp(r'```(\w*)\n([\s\S]*?)```', multiLine: true);
-
-    // Her kod bloğunu işle
-    String formattedContent = content;
-    final matches = codeBlockRegex.allMatches(content);
-
-    // Kod bloklarına dil bilgisi ekle veya eksik olanları düzelt
-    for (final match in matches) {
-      final fullMatch = match.group(0) ?? '';
-      final language = match.group(1) ?? '';
-      final code = match.group(2) ?? '';
-
-      // Eğer dil belirtilmemişse "text" olarak işaretle
-      if (language.trim().isEmpty) {
-        final replacementBlock = '```text\n$code```';
-        formattedContent =
-            formattedContent.replaceFirst(fullMatch, replacementBlock);
-      }
-    }
-
-    return formattedContent;
-  }
-
-  // LaTeX içeriğini güvenli şekilde oluştur
   Widget _buildLatexContent(
       BuildContext context, String content, Color textColor, bool isUser) {
-    try {
-      // Farklı LaTeX formatlarını tespit eden regex ifadeleri
-      final dollarRegex = _latexPatterns['dollar']!;
-      final dollarSingleLineRegex = _latexPatterns['dollarSingleLine']!;
-      final latexTagRegex = _latexPatterns['latexTag']!;
-      final standardLatexRegex = _latexPatterns['standardLatex']!;
-      final displayLatexRegex = _latexPatterns['displayLatex']!;
-      final inlineLatexRegex = _latexPatterns['inlineLatex']!;
-      final inlineLatexMathRegex = _latexPatterns['inlineLatexMath']!;
-      final displayLatexMathRegex = _latexPatterns['displayLatexMath']!;
+    final allMatches = <Match>[];
+    for (final pattern in _latexPatterns.values) {
+      allMatches.addAll(pattern.allMatches(content));
+    }
 
-      // Tüm eşleşmeleri topla
-      List<Match> allMatches = [];
-      allMatches.addAll(dollarRegex.allMatches(content));
-      allMatches.addAll(dollarSingleLineRegex.allMatches(content));
-      allMatches.addAll(latexTagRegex.allMatches(content));
-      allMatches.addAll(standardLatexRegex.allMatches(content));
-      allMatches.addAll(displayLatexRegex.allMatches(content));
-      allMatches.addAll(inlineLatexRegex.allMatches(content));
-      allMatches.addAll(inlineLatexMathRegex.allMatches(content));
-      allMatches.addAll(displayLatexMathRegex.allMatches(content));
+    if (allMatches.isEmpty) {
+      return _containsMarkdown(content)
+          ? _buildMarkdownContent(context, content, textColor)
+          : _buildSimpleTextContent(context, content, textColor);
+    }
 
-      // Eşleşme yoksa normal metni göster
-      if (allMatches.isEmpty) {
-        // LaTeX yok, markdown kontrolü yap
-        if (_containsMarkdown(content)) {
-          return _buildMarkdownContent(context, content, textColor);
-        } else {
-          return _buildSimpleTextContent(context, content, textColor);
+    allMatches.sort((a, b) => a.start.compareTo(b.start));
+
+    // Filter overlapping
+    final filteredMatches = <Match>[];
+    for (final current in allMatches) {
+      bool overlapping = false;
+      for (final previous in filteredMatches) {
+        if (current.start >= previous.start && current.end <= previous.end) {
+          overlapping = true;
+          break;
+        }
+      }
+      if (!overlapping) filteredMatches.add(current);
+    }
+
+    List<Widget> widgets = [];
+    int lastEnd = 0;
+
+    for (final match in filteredMatches) {
+      if (match.start > lastEnd) {
+        final text = content.substring(lastEnd, match.start);
+        if (text.trim().isNotEmpty) {
+          widgets.add(Text(text, style: TextStyle(color: textColor)));
         }
       }
 
-      // Konum bilgisine göre sırala
-      allMatches.sort((a, b) => a.start.compareTo(b.start));
-
-      // Örtüşen eşleşmeleri temizle (nested LaTeX patternlarını önle)
-      List<Match> filteredMatches = [];
-      for (int i = 0; i < allMatches.length; i++) {
-        final current = allMatches[i];
-        bool overlapping = false;
-
-        // Önceki eşleşmelerle karşılaştır
-        for (int j = 0; j < filteredMatches.length; j++) {
-          final previous = filteredMatches[j];
-          // Eğer mevcut eşleşme önceki bir eşleşmenin içindeyse
-          if (current.start >= previous.start && current.end <= previous.end) {
-            overlapping = true;
-            break;
-          }
-        }
-
-        if (!overlapping) {
-          filteredMatches.add(current);
-        }
-      }
-
-      // Process both text and LaTeX parts
-      List<Widget> widgets = [];
-      int lastEnd = 0;
-
-      for (final match in filteredMatches) {
-        // Add text before the LaTeX block
-        if (match.start > lastEnd) {
-          final text = content.substring(lastEnd, match.start);
-          if (text.trim().isNotEmpty) {
-            // LaTeX öncesi metin parçası için markdown kontrolü yap
-            if (_containsMarkdown(text)) {
-              widgets.add(SizedBox(
-                width: double.infinity,
-                child: Builder(builder: (context) {
-                  try {
-                    return MarkdownBody(
-                      data: text,
-                      styleSheet: _createMarkdownStyleSheet(context, textColor),
-                      selectable: false,
-                    );
-                  } catch (e) {
-                    return Text(text, style: TextStyle(color: textColor));
-                  }
-                }),
-              ));
-            } else {
-              widgets.add(SizedBox(
-                width: double.infinity,
-                child: Text(
-                  text,
-                  style: TextStyle(color: textColor),
-                ),
-              ));
-            }
-          }
-        }
-
-        // Get full match and group
-        final fullMatch = match.group(0) ?? '';
-        final latexContent = match.group(1) ?? '';
-
-        // Belirli LaTeX komutlarını temizle/düzelt
-        String cleanedLatex;
-        try {
-          // LaTeX içeriğinden Türkçe karakterleri doğru şekilde temizle
-          cleanedLatex = _sanitizeLatexContent(latexContent);
-
-          cleanedLatex = cleanedLatex
-              .trim()
-              .replaceAll(
-                  '\\\\', '\\') // Çift ters eğik çizgileri tek hale getir
-              .replaceAll('&', '') // align ortamından & karakterlerini çıkar
-              .replaceAll('\\nonumber', ''); // nonumber etiketlerini çıkar
-        } catch (e) {
-          // LaTeX temizleme hatası
-          debugPrint('LaTeX temizleme hatası: $e');
-          cleanedLatex = latexContent.trim();
-        }
-
-        // Add the LaTeX block - Math.tex widget'ını error boundary içine al
-        widgets.add(
-          Container(
-            width: double.infinity,
-            margin: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Builder(
-              builder: (context) {
-                try {
-                  return Math.tex(
-                    cleanedLatex,
-                    textStyle: TextStyle(color: textColor, fontSize: 16.0),
-                    onErrorFallback: (err) {
-                      debugPrint(
-                          'LaTeX error: $err for formula: $cleanedLatex');
-                      return Text(
-                        fullMatch,
-                        style: TextStyle(
-                            color: textColor, fontFamily: 'monospace'),
-                      );
-                    },
-                  );
-                } catch (e) {
-                  debugPrint('LaTeX hata: $e');
-                  return Text(
-                    fullMatch,
-                    style: TextStyle(color: textColor, fontFamily: 'monospace'),
-                  );
-                }
-              },
+      final latexContent = match.group(1)?.trim() ?? '';
+      widgets.add(
+        Container(
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          child: Math.tex(
+            _sanitizeLatexContent(latexContent),
+            textStyle: TextStyle(color: textColor, fontSize: 16),
+            onErrorFallback: (err) => Text(
+              match.group(0) ?? '',
+              style: TextStyle(color: textColor, fontFamily: 'monospace'),
             ),
           ),
-        );
-
-        lastEnd = match.end;
-      }
-
-      // Add text after the last LaTeX block
-      if (lastEnd < content.length) {
-        final text = content.substring(lastEnd);
-        if (text.trim().isNotEmpty) {
-          // LaTeX sonrası metin parçası için markdown kontrolü yap
-          if (_containsMarkdown(text)) {
-            widgets.add(SizedBox(
-              width: double.infinity,
-              child: Builder(builder: (context) {
-                try {
-                  return MarkdownBody(
-                    data: text,
-                    styleSheet: _createMarkdownStyleSheet(context, textColor),
-                    selectable: false,
-                  );
-                } catch (e) {
-                  return Text(text, style: TextStyle(color: textColor));
-                }
-              }),
-            ));
-          } else {
-            widgets.add(SizedBox(
-              width: double.infinity,
-              child: Text(
-                text,
-                style: TextStyle(color: textColor),
-              ),
-            ));
-          }
-        }
-      }
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: widgets,
+        ),
       );
-    } catch (e) {
-      debugPrint('LaTeX işleme hatası: $e');
-      // LaTeX render edilemezse Markdown kontrolü yap
-      if (_containsMarkdown(content)) {
-        return _buildMarkdownContent(context, content, textColor);
-      }
-      // Fallback to plain text if anything goes wrong
-      return Text(
-        content,
-        style: TextStyle(color: textColor),
-      );
+      lastEnd = match.end;
     }
+
+    if (lastEnd < content.length) {
+      final text = content.substring(lastEnd);
+      if (text.trim().isNotEmpty) {
+        widgets.add(Text(text, style: TextStyle(color: textColor)));
+      }
+    }
+
+    return Column(
+        crossAxisAlignment: CrossAxisAlignment.start, children: widgets);
   }
 
-  // LaTeX içeriğini Türkçe karakter ve sorunlara karşı temizler
   String _sanitizeLatexContent(String latex) {
-    // Türkçe karakterleri ASCII eşdeğerleriyle değiştir
     String result = latex;
-
-    // Türkçe karakterleri ASCII eşdeğerleriyle değiştir
-    _turkishMap.forEach((turkishChar, asciiChar) {
-      result = result.replaceAll(turkishChar, asciiChar);
-    });
-
-    // % işaretinden sonraki yorum satırlarını kaldır
+    _turkishMap.forEach((k, v) => result = result.replaceAll(k, v));
     result = result.replaceAll(RegExp(r'%.*?$', multiLine: true), '');
-
     return result;
   }
 
-  // Markdown stil sayfası oluşturan yardımcı fonksiyon
   MarkdownStyleSheet _createMarkdownStyleSheet(
       BuildContext context, Color textColor) {
     final theme = Theme.of(context);
-
     return MarkdownStyleSheet(
-      p: TextStyle(
-        color: textColor,
-        fontSize: 16.0,
-      ),
+      p: TextStyle(color: textColor, fontSize: 15, height: 1.4),
       h1: TextStyle(
-        color: textColor,
-        fontSize: 22.0,
-        fontWeight: FontWeight.bold,
-      ),
+          color: textColor, fontSize: 22, fontWeight: FontWeight.bold),
       h2: TextStyle(
-        color: textColor,
-        fontSize: 20.0,
-        fontWeight: FontWeight.bold,
-      ),
+          color: textColor, fontSize: 20, fontWeight: FontWeight.bold),
       h3: TextStyle(
-        color: textColor,
-        fontSize: 18.0,
-        fontWeight: FontWeight.bold,
-      ),
-      h4: TextStyle(
-        color: textColor,
-        fontSize: 16.0,
-        fontWeight: FontWeight.bold,
-      ),
-      h5: TextStyle(
-        color: textColor,
-        fontSize: 15.0,
-        fontWeight: FontWeight.bold,
-      ),
-      h6: TextStyle(
-        color: textColor,
-        fontSize: 14.0,
-        fontWeight: FontWeight.bold,
-      ),
-      em: TextStyle(
-        color: textColor,
-        fontStyle: FontStyle.italic,
-      ),
-      strong: TextStyle(
-        color: textColor,
-        fontWeight: FontWeight.bold,
-      ),
+          color: textColor, fontSize: 18, fontWeight: FontWeight.bold),
       code: TextStyle(
         color: textColor,
         backgroundColor:
-            theme.colorScheme.surfaceContainerHighest.withAlpha(77),
+            theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
         fontFamily: 'monospace',
-        fontSize: 14.0,
+        fontSize: 13,
       ),
-      codeblockPadding: const EdgeInsets.all(8.0),
+      codeblockPadding: const EdgeInsets.all(12),
       codeblockDecoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(4.0),
+        color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.3),
+        borderRadius: AppSpacing.borderRadiusSm,
       ),
-      blockquote: TextStyle(
-        color: textColor.withValues(alpha: 0.8),
-        fontStyle: FontStyle.italic,
-      ),
-      blockquoteDecoration: BoxDecoration(
-        border: Border(
-          left: BorderSide(
-            color: textColor.withValues(alpha: 0.5),
-            width: 4.0,
-          ),
-        ),
-      ),
-      blockquotePadding: const EdgeInsets.only(left: 16.0),
       listBullet: TextStyle(color: textColor),
-      listIndent: 20.0,
-      tableBorder: TableBorder.all(color: textColor.withValues(alpha: 0.3)),
-      tableHead: TextStyle(
-        color: textColor,
-        fontWeight: FontWeight.bold,
-      ),
-      tableBody: TextStyle(color: textColor),
-      a: TextStyle(
-        color: theme.colorScheme.primary,
+      a: TextStyle(color: theme.colorScheme.primary),
+    );
+  }
+
+  Widget _buildImagePreview(BuildContext context, String imageUrl) {
+    if (imageUrl.startsWith('data:image')) {
+      final base64Data = imageUrl.split(',').last;
+      return Image.memory(
+        base64Decode(base64Data),
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: 200,
+        errorBuilder: (_, __, ___) => _buildImageError(context),
+      );
+    }
+    return _buildImageError(context);
+  }
+
+  Widget _buildImageError(BuildContext context) {
+    return Container(
+      height: 100,
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+      child: Center(
+        child: Icon(Icons.broken_image,
+            color: Theme.of(context).colorScheme.error),
       ),
     );
   }
 
-  // Function to copy message content to clipboard
   void _copyMessageToClipboard(BuildContext context) {
-    try {
-      // Null kontrol
-      if (widget.message.content.isEmpty) {
+    Clipboard.setData(ClipboardData(text: widget.message.content)).then((_) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(Languages.textMessageEmpty),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: const Text(Languages.textMessageCopied),
             behavior: SnackBarBehavior.floating,
-            width: 250,
+            backgroundColor: AppColors.success,
           ),
         );
-        return;
       }
-
-      Clipboard.setData(ClipboardData(text: widget.message.content)).then((_) {
-        // Show a snackbar to confirm copy
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(Languages.textMessageCopied),
-            duration: Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            width: 250,
-          ),
-        );
-      }).catchError((error) {
-        debugPrint('Kopyalama işlemi hatası: $error');
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(Languages.textMessageCopyError),
-            duration: Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            width: 250,
-          ),
-        );
-      });
-    } catch (e) {
-      debugPrint('Kopyalama işlemi hatası: $e');
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Mesaj kopyalanamadı'),
-          duration: Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-          width: 250,
-        ),
-      );
-    }
+    });
   }
 
-  // Function to copy raw message text to clipboard
   void _copyRawMessageToClipboard(BuildContext context) {
-    try {
-      // Null kontrol
-      if (widget.message.content.isEmpty) {
+    Clipboard.setData(ClipboardData(text: widget.message.content)).then((_) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(Languages.textRawTextEmpty),
-            duration: Duration(seconds: 2),
+          SnackBar(
+            content: const Text(Languages.textRawTextCopied),
             behavior: SnackBarBehavior.floating,
-            width: 250,
           ),
         );
-        return;
       }
-
-      // Create a plain text version without any formatting
-      String rawText = widget.message.content;
-
-      Clipboard.setData(ClipboardData(text: rawText)).then((_) {
-        // Show a snackbar to confirm copy
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(Languages.textRawTextCopied),
-            duration: Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            width: 250,
-          ),
-        );
-      }).catchError((error) {
-        debugPrint('Panoya ham metin kopyalama hatası: $error');
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text(Languages.textRawTextCopyError),
-            duration: Duration(seconds: 2),
-            behavior: SnackBarBehavior.floating,
-            width: 250,
-          ),
-        );
-      });
-    } catch (e) {
-      debugPrint('Ham metin kopyalama işlemi hatası: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Ham metin kopyalanamadı'),
-          duration: Duration(seconds: 2),
-          behavior: SnackBarBehavior.floating,
-          width: 250,
-        ),
-      );
-    }
+    });
   }
 
-  // Görsel önizleme widget'ı
-  Widget _buildImagePreview(BuildContext context, String imageUrl) {
-    // Base64 görseli mi yoksa ağ görseli mi kontrol et
-    if (imageUrl.startsWith('data:image')) {
-      try {
-        // Base64 görselini işle
-        // Prefix'i kaldır: "data:image/jpeg;base64," -> sadece base64 kısmını al
-        final RegExp regex = RegExp(r'data:image/[^;]+;base64,(.*)');
-        final match = regex.firstMatch(imageUrl);
-
-        if (match != null && match.groupCount >= 1) {
-          final String base64String = match.group(1)!;
-          return Image.memory(
-            base64Decode(base64String),
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: 200, // Sabit bir yükseklik ver
-            errorBuilder: (context, error, stackTrace) {
-              debugPrint('Görsel yükleme hatası: $error');
-              return Container(
-                width: double.infinity,
-                height: 150,
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline,
-                        color: Theme.of(context).colorScheme.error, size: 40),
-                    const SizedBox(height: 8),
-                    Text(
-                      Languages.textImageLoadError,
-                      style:
-                          TextStyle(color: Theme.of(context).colorScheme.error),
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
-        }
-      } catch (e) {
-        debugPrint('Base64 görsel işleme hatası: $e');
-      }
-
-      // Hata durumunda hata görseli göster
-      return Container(
-        width: double.infinity,
-        height: 150,
-        color: Theme.of(context).colorScheme.surfaceContainerHighest,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.image_not_supported,
-                color: Theme.of(context).colorScheme.error, size: 40),
-            const SizedBox(height: 8),
-            Text(
-              Languages.textImageFormatError,
-              style: TextStyle(color: Theme.of(context).colorScheme.error),
-            ),
-          ],
-        ),
-      );
-    } else {
-      // Normal ağ görseli
-      return Image.network(
-        imageUrl,
-        fit: BoxFit.cover,
-        width: double.infinity,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Center(
-            child: CircularProgressIndicator(
-              value: loadingProgress.expectedTotalBytes != null
-                  ? loadingProgress.cumulativeBytesLoaded /
-                      loadingProgress.expectedTotalBytes!
-                  : null,
-            ),
-          );
-        },
-        errorBuilder: (context, error, stackTrace) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.error, color: Theme.of(context).colorScheme.error),
-                Text(
-                  Languages.textImageLoadError,
-                  style: TextStyle(color: Theme.of(context).colorScheme.error),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    }
-  }
-
-  // Mesajı silmek için onay dialogu göster
   void _deleteMessage(BuildContext context) {
-    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
-
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx) => AlertDialog(
         title: const Text(Languages.textDeleteMessageTitle),
         content: const Text(Languages.textDeleteMessageConfirm),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () => Navigator.pop(ctx),
             child: const Text(Languages.textCancel),
           ),
           FilledButton(
             onPressed: () {
-              chatProvider.deleteMessage(widget.message.id);
-              Navigator.of(context).pop();
+              Provider.of<ChatProvider>(context, listen: false)
+                  .deleteMessage(widget.message.id);
+              Navigator.pop(ctx);
             },
             child: const Text(Languages.textDelete),
           ),

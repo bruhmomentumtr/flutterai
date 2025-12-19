@@ -4,7 +4,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:uuid/uuid.dart';
 import '../models/bot.dart';
 import '../settingsvariables/default_settings_variables.dart';
 import '../languages/languages.dart';
@@ -13,7 +12,7 @@ class BotProvider extends ChangeNotifier {
   List<Bot> _bots = [];
   bool _isLoading = false;
   String? _error;
-  
+
   // Getters
   List<Bot> get bots => _bots;
   bool get isLoading => _isLoading;
@@ -28,7 +27,7 @@ class BotProvider extends ChangeNotifier {
     try {
       // First, try to load bots from SharedPreferences
       await _loadBotsFromPrefs();
-      
+
       // If no bots found, create defaults
       if (_bots.isEmpty) {
         _createDefaultBots();
@@ -45,7 +44,7 @@ class BotProvider extends ChangeNotifier {
   Future<void> _loadBotsFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     final botsJson = prefs.getString(Languages.msgBotName);
-    
+
     if (botsJson != null) {
       final List<dynamic> decodedList = jsonDecode(botsJson);
       _bots = decodedList.map((item) => Bot.fromJson(item)).toList();
@@ -81,7 +80,7 @@ class BotProvider extends ChangeNotifier {
   // Update an existing bot
   Future<void> updateBot(Bot updatedBot) async {
     final index = _bots.indexWhere((bot) => bot.id == updatedBot.id);
-    
+
     if (index != -1) {
       _bots[index] = updatedBot;
       await _saveBots();
@@ -102,6 +101,6 @@ class BotProvider extends ChangeNotifier {
   // Clear error message
   void clearError() {
     _error = null;
-    notifyListeners(); 
+    notifyListeners();
   }
-} 
+}

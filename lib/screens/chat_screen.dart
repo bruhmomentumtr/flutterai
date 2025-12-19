@@ -16,6 +16,9 @@ import '../widgets/bot_editor_dialog.dart';
 import 'settings_screen.dart';
 import 'session_list_screen.dart';
 import '../languages/languages.dart';
+import '../core/theme/app_colors.dart';
+import '../core/theme/app_spacing.dart';
+import '../core/animations/page_transitions.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -115,8 +118,7 @@ class ChatScreenState extends State<ChatScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                    builder: (context) => const SessionListScreen()),
+                FadeSlideTransition(page: const SessionListScreen()),
               );
             },
           ),
@@ -153,9 +155,7 @@ class ChatScreenState extends State<ChatScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
-                ),
+                FadeSlideTransition(page: const SettingsScreen()),
               );
             },
           ),
@@ -362,6 +362,9 @@ class ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildEmptyChat() {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Expanded(
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -375,29 +378,47 @@ class ChatScreenState extends State<ChatScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.chat_bubble_outline,
-                      size: 64,
-                      color:
-                          Theme.of(context).colorScheme.outline.withAlpha(128),
+                    // Animated gradient icon
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: [
+                            AppColors.primary.withOpacity(0.2),
+                            AppColors.secondary.withOpacity(0.2),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                      child: Icon(
+                        Icons.auto_awesome,
+                        size: 40,
+                        color:
+                            isDark ? AppColors.primaryLight : AppColors.primary,
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.lg),
                     Text(
                       Languages.textNoMessages,
                       style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).colorScheme.outline,
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 8),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                    const SizedBox(height: AppSpacing.sm),
+                    SizedBox(
+                      width: 280,
                       child: Text(
                         Languages.textSendMessageToStart,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.outline),
+                          fontSize: 14,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ],
