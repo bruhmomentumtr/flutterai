@@ -266,9 +266,20 @@ class OpenRouterService {
         final data = response.data;
         final rawContent = data['choices'][0]['message']['content'];
 
-        // Extract thinking content if present
-        final (cleanContent, thinkingContent) =
-            _extractThinkingContent(rawContent);
+        // Check for reasoning field from OpenRouter API (for DeepSeek, Gemini, etc.)
+        String? reasoningFromApi;
+        final messageData = data['choices'][0]['message'];
+        if (messageData['reasoning'] != null) {
+          reasoningFromApi = messageData['reasoning'].toString();
+        } else if (messageData['reasoning_content'] != null) {
+          reasoningFromApi = messageData['reasoning_content'].toString();
+        }
+
+        // Extract thinking content from HTML tags if not in API response
+        final (cleanContent, tagThinking) = _extractThinkingContent(rawContent);
+
+        // Use API reasoning first, then fallback to tag-based extraction
+        final thinkingContent = reasoningFromApi ?? tagThinking;
 
         // Generate a title for the message
         final title =

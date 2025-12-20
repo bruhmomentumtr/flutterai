@@ -7,7 +7,6 @@ import 'package:intl/intl.dart';
 import '../providers/chat_provider.dart';
 import '../models/message.dart';
 import '../languages/languages.dart';
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 
 class SessionListScreen extends StatefulWidget {
@@ -67,7 +66,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
               Navigator.of(context).pop();
             },
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
             child: const Text(Languages.labelDelete),
           ),
@@ -131,8 +130,6 @@ class _SessionListScreenState extends State<SessionListScreen> {
               },
               icon: const Icon(Icons.add),
               label: const Text('New Chat'),
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
             )
           : null,
       body: Consumer<ChatProvider>(
@@ -229,15 +226,15 @@ class _SessionListScreenState extends State<SessionListScreen> {
               shape: BoxShape.circle,
               gradient: LinearGradient(
                 colors: [
-                  AppColors.primary.withOpacity(0.2),
-                  AppColors.secondary.withOpacity(0.2),
+                  theme.colorScheme.primary.withAlpha(51),
+                  theme.colorScheme.secondary.withAlpha(51),
                 ],
               ),
             ),
             child: Icon(
               Icons.chat_bubble_outline,
               size: 40,
-              color: AppColors.primary,
+              color: theme.colorScheme.primary,
             ),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -274,7 +271,6 @@ class _SessionListScreenState extends State<SessionListScreen> {
     required VoidCallback onDelete,
   }) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Dismissible(
       key: Key(sessionId),
@@ -284,7 +280,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: AppSpacing.lg),
         decoration: BoxDecoration(
-          color: AppColors.error,
+          color: theme.colorScheme.error,
           borderRadius: AppSpacing.borderRadiusLg,
         ),
         child: const Icon(Icons.delete, color: Colors.white),
@@ -302,7 +298,8 @@ class _SessionListScreenState extends State<SessionListScreen> {
               ),
               FilledButton(
                 onPressed: () => Navigator.of(context).pop(true),
-                style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+                style: FilledButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.error),
                 child: const Text(Languages.labelDelete),
               ),
             ],
@@ -323,7 +320,7 @@ class _SessionListScreenState extends State<SessionListScreen> {
               color: isSelected
                   ? theme.colorScheme.primaryContainer
                   : (isActive
-                      ? (isDark ? AppColors.cardDark : AppColors.cardLight)
+                      ? theme.colorScheme.surfaceContainerHigh
                       : theme.colorScheme.surface),
               borderRadius: AppSpacing.borderRadiusLg,
               border: Border.all(
@@ -360,16 +357,15 @@ class _SessionListScreenState extends State<SessionListScreen> {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    gradient: isActive ? AppColors.primaryGradient : null,
                     color: isActive
-                        ? null
+                        ? theme.colorScheme.primary
                         : theme.colorScheme.surfaceContainerHighest,
                     borderRadius: AppSpacing.borderRadiusMd,
                   ),
                   child: Icon(
                     Icons.chat_rounded,
                     color: isActive
-                        ? Colors.white
+                        ? theme.colorScheme.onPrimary
                         : theme.colorScheme.onSurfaceVariant,
                     size: 22,
                   ),
@@ -403,13 +399,13 @@ class _SessionListScreenState extends State<SessionListScreen> {
                                 vertical: AppSpacing.xxs,
                               ),
                               decoration: BoxDecoration(
-                                gradient: AppColors.primaryGradient,
+                                color: theme.colorScheme.primary,
                                 borderRadius: AppSpacing.borderRadiusSm,
                               ),
-                              child: const Text(
+                              child: Text(
                                 'Active',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: theme.colorScheme.onPrimary,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w600,
                                 ),

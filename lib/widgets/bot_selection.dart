@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../models/bot.dart';
 import '../providers/settings_provider.dart';
 import '../languages/languages.dart';
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 
 class BotSelection extends StatelessWidget {
@@ -43,12 +42,12 @@ class BotSelection extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
-                  gradient: AppColors.primaryGradient,
+                  color: theme.colorScheme.primary,
                   borderRadius: AppSpacing.borderRadiusMd,
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.smart_toy,
-                  color: Colors.white,
+                  color: theme.colorScheme.onPrimary,
                   size: 20,
                 ),
               ),
@@ -102,12 +101,11 @@ class BotSelection extends StatelessWidget {
 
   Widget _buildBotCard(BuildContext context, Bot bot) {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final isSelected = selectedBot?.id == bot.id;
     final settings = Provider.of<SettingsProvider>(context);
 
     // Get bot color based on icon type
-    final botColor = _getBotColor(bot.iconName);
+    final botColor = _getBotColor(bot.iconName, context);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: AppSpacing.sm),
@@ -121,8 +119,8 @@ class BotSelection extends StatelessWidget {
             padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
               color: isSelected
-                  ? botColor.withOpacity(0.1)
-                  : (isDark ? AppColors.cardDark : AppColors.cardLight),
+                  ? botColor.withAlpha(26)
+                  : theme.colorScheme.surfaceContainerHighest,
               borderRadius: AppSpacing.borderRadiusLg,
               border: Border.all(
                 color: isSelected
@@ -291,14 +289,15 @@ class BotSelection extends StatelessWidget {
     );
   }
 
-  Color _getBotColor(String iconName) {
+  Color _getBotColor(String iconName, BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     switch (iconName) {
       case 'chat':
-        return AppColors.primary;
+        return colorScheme.primary;
       case 'smart_toy':
-        return AppColors.secondary;
+        return colorScheme.secondary;
       case 'edit':
-        return AppColors.accent;
+        return colorScheme.tertiary;
       case 'science':
         return const Color(0xFF10B981); // Green
       case 'school':
@@ -306,7 +305,7 @@ class BotSelection extends StatelessWidget {
       case 'code':
         return const Color(0xFF8B5CF6); // Purple
       default:
-        return AppColors.primary;
+        return colorScheme.primary;
     }
   }
 

@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
 import '../languages/languages.dart';
 import '../settingsvariables/default_settings_variables.dart';
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -63,7 +62,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         SnackBar(
           content: const Text('Settings saved'),
           behavior: SnackBarBehavior.floating,
-          backgroundColor: AppColors.success,
+          backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
       Navigator.pop(context);
@@ -84,7 +83,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
             style: FilledButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
             child: const Text(Languages.textYes),
           ),
@@ -136,9 +135,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             // API Section
             _buildSectionHeader(
+              context,
               icon: Icons.key_rounded,
               title: 'API Configuration',
-              color: AppColors.primary,
             ),
             _buildCard(
               child: Column(
@@ -181,9 +180,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             // Display Section
             _buildSectionHeader(
+              context,
               icon: Icons.palette_outlined,
               title: 'Display',
-              color: AppColors.secondary,
             ),
             _buildCard(
               child: Column(
@@ -256,9 +255,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             // Model Settings Section
             _buildSectionHeader(
+              context,
               icon: Icons.tune_rounded,
               title: 'Model Settings',
-              color: AppColors.accent,
             ),
             _buildCard(
               child: Column(
@@ -355,9 +354,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             // System Prompt Section
             _buildSectionHeader(
+              context,
               icon: Icons.psychology_outlined,
               title: 'System Prompt',
-              color: AppColors.info,
             ),
             _buildCard(
               child: Padding(
@@ -383,10 +382,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             Center(
               child: TextButton.icon(
                 onPressed: _resetSettings,
-                icon: Icon(Icons.restore, color: AppColors.error),
+                icon: Icon(Icons.restore,
+                    color: Theme.of(context).colorScheme.error),
                 label: Text(
                   Languages.textReset,
-                  style: TextStyle(color: AppColors.error),
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
                 ),
               ),
             ),
@@ -398,11 +398,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSectionHeader({
+  Widget _buildSectionHeader(
+    BuildContext context, {
     required IconData icon,
     required String title,
-    required Color color,
   }) {
+    final color = Theme.of(context).colorScheme.primary;
     return Padding(
       padding: const EdgeInsets.only(
         left: AppSpacing.xs,
@@ -413,7 +414,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           Container(
             padding: const EdgeInsets.all(AppSpacing.xs),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withAlpha(26),
               borderRadius: AppSpacing.borderRadiusSm,
             ),
             child: Icon(icon, size: 18, color: color),

@@ -12,7 +12,6 @@ import '../providers/chat_provider.dart';
 import 'dart:convert';
 import '../languages/languages.dart';
 import '../core/markdown/markdown_normalizer.dart';
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 
 // LaTeX regex patterns
@@ -148,12 +147,8 @@ class _MessageBubbleState extends State<MessageBubble>
                     ),
                     decoration: BoxDecoration(
                       color: isUser
-                          ? (isDark
-                              ? AppColors.userBubbleDark
-                              : AppColors.userBubbleLight)
-                          : (isDark
-                              ? AppColors.aiBubbleDark
-                              : AppColors.aiBubbleLight),
+                          ? theme.colorScheme.primaryContainer
+                          : theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.only(
                         topLeft: const Radius.circular(AppSpacing.bubbleRadius),
                         topRight:
@@ -259,16 +254,19 @@ class _MessageBubbleState extends State<MessageBubble>
   }
 
   Widget _buildAvatar(BuildContext context, bool isUser, bool isDark) {
+    final theme = Theme.of(context);
     return Container(
       width: AppSpacing.avatarSm,
       height: AppSpacing.avatarSm,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        gradient: isUser ? AppColors.primaryGradient : AppColors.accentGradient,
+        color: isUser ? theme.colorScheme.primary : theme.colorScheme.secondary,
         boxShadow: [
           BoxShadow(
-            color: (isUser ? AppColors.primary : AppColors.secondary)
-                .withOpacity(0.3),
+            color: (isUser
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.secondary)
+                .withAlpha(77),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -277,7 +275,9 @@ class _MessageBubbleState extends State<MessageBubble>
       child: Icon(
         isUser ? Icons.person : Icons.auto_awesome,
         size: 18,
-        color: Colors.white,
+        color: isUser
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.onSecondary,
       ),
     );
   }
@@ -666,7 +666,7 @@ class _MessageBubbleState extends State<MessageBubble>
           SnackBar(
             content: const Text(Languages.textMessageCopied),
             behavior: SnackBarBehavior.floating,
-            backgroundColor: AppColors.success,
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
       }

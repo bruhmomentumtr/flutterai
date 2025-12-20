@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import '../providers/settings_provider.dart';
 import 'chat_screen.dart';
 import '../languages/languages.dart';
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -53,7 +52,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -61,9 +61,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          gradient: isDark
-              ? AppColors.darkWelcomeGradient
-              : AppColors.welcomeGradient,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isDark
+                ? [
+                    theme.colorScheme.surface,
+                    theme.colorScheme.primary.withAlpha(77),
+                  ]
+                : [
+                    theme.colorScheme.primary,
+                    theme.colorScheme.secondary,
+                  ],
+          ),
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -118,6 +128,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   Widget _buildHeader(BuildContext context, bool isDark) {
+    final theme = Theme.of(context);
     return Column(
       children: [
         // Animated logo with gradient
@@ -126,19 +137,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           height: 100,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            gradient: AppColors.accentGradient,
+            color: theme.colorScheme.primaryContainer,
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.4),
+                color: theme.colorScheme.primary.withAlpha(102),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
             ],
           ),
-          child: const Icon(
+          child: Icon(
             Icons.auto_awesome,
             size: 50,
-            color: Colors.white,
+            color: theme.colorScheme.onPrimaryContainer,
           ),
         ),
         const SizedBox(height: AppSpacing.lg),
@@ -167,20 +178,21 @@ class _WelcomeScreenState extends State<WelcomeScreen>
   }
 
   Widget _buildApiKeyCard(BuildContext context, bool isDark) {
+    final theme = Theme.of(context);
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: isDark ? AppColors.glassDark : AppColors.glassLight,
+        color: isDark ? Colors.black.withAlpha(77) : Colors.white.withAlpha(51),
         borderRadius: AppSpacing.borderRadiusXl,
         border: Border.all(
           color:
-              isDark ? AppColors.glassBorderDark : AppColors.glassBorderLight,
+              isDark ? Colors.white.withAlpha(26) : Colors.white.withAlpha(77),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withAlpha(26),
             blurRadius: 20,
             spreadRadius: 5,
           ),
@@ -239,16 +251,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ),
               errorBorder: OutlineInputBorder(
                 borderRadius: AppSpacing.borderRadiusMd,
-                borderSide: BorderSide(color: AppColors.error),
+                borderSide: BorderSide(color: theme.colorScheme.error),
               ),
               prefixIcon: Icon(
                 Icons.vpn_key_outlined,
-                color: Colors.white.withOpacity(0.7),
+                color: Colors.white.withAlpha(178),
               ),
               suffixIcon: IconButton(
                 icon: Icon(
                   _isObscureText ? Icons.visibility_off : Icons.visibility,
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withAlpha(178),
                 ),
                 onPressed: () {
                   setState(() {
@@ -257,7 +269,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 },
               ),
               errorText: _errorMessage,
-              errorStyle: TextStyle(color: AppColors.error),
+              errorStyle: TextStyle(color: theme.colorScheme.error),
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: AppSpacing.md,
                 vertical: AppSpacing.md,
@@ -290,7 +302,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               onPressed: _saveApiKey,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
-                foregroundColor: AppColors.primary,
+                foregroundColor: theme.colorScheme.primary,
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.md),
                 shape: RoundedRectangleBorder(
                   borderRadius: AppSpacing.borderRadiusMd,
@@ -407,7 +419,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text(Languages.successApiKeySaved),
-        backgroundColor: AppColors.success,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
       ),

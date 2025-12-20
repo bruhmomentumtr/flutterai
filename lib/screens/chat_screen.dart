@@ -16,7 +16,6 @@ import '../widgets/bot_editor_dialog.dart';
 import 'settings_screen.dart';
 import 'session_list_screen.dart';
 import '../languages/languages.dart';
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/animations/page_transitions.dart';
 
@@ -376,7 +375,6 @@ class ChatScreenState extends State<ChatScreen> {
 
   Widget _buildEmptyChat() {
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
 
     return Expanded(
       child: LayoutBuilder(
@@ -399,8 +397,8 @@ class ChatScreenState extends State<ChatScreen> {
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
                           colors: [
-                            AppColors.primary.withOpacity(0.2),
-                            AppColors.secondary.withOpacity(0.2),
+                            theme.colorScheme.primary.withAlpha(51),
+                            theme.colorScheme.secondary.withAlpha(51),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -409,8 +407,7 @@ class ChatScreenState extends State<ChatScreen> {
                       child: Icon(
                         Icons.auto_awesome,
                         size: 40,
-                        color:
-                            isDark ? AppColors.primaryLight : AppColors.primary,
+                        color: theme.colorScheme.primary,
                       ),
                     ),
                     const SizedBox(height: AppSpacing.lg),

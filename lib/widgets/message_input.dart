@@ -7,7 +7,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../providers/chat_provider.dart';
 import '../languages/languages.dart';
-import '../core/theme/app_colors.dart';
 import '../core/theme/app_spacing.dart';
 
 class MessageInput extends StatefulWidget {
@@ -170,7 +169,7 @@ class _MessageInputState extends State<MessageInput>
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: AppColors.error,
+        backgroundColor: Theme.of(context).colorScheme.error,
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -233,14 +232,14 @@ class _MessageInputState extends State<MessageInput>
             _buildAttachOption(
               icon: Icons.photo_library_rounded,
               label: 'Gallery',
-              color: AppColors.secondary,
+              color: theme.colorScheme.secondary,
               onTap: widget.isLoading ? null : _pickImage,
             ),
             const SizedBox(width: AppSpacing.md),
             _buildAttachOption(
               icon: Icons.camera_alt_rounded,
               label: 'Camera',
-              color: AppColors.accent,
+              color: theme.colorScheme.tertiary,
               onTap: widget.isLoading ? null : _takePhoto,
             ),
           ],
@@ -432,9 +431,8 @@ class _MessageInputState extends State<MessageInput>
                     width: 40,
                     height: 40,
                     decoration: BoxDecoration(
-                      gradient: canSend ? AppColors.primaryGradient : null,
                       color: canSend
-                          ? null
+                          ? theme.colorScheme.primary
                           : theme.colorScheme.surfaceContainerHighest,
                       shape: BoxShape.circle,
                     ),
