@@ -63,6 +63,7 @@ class MessageBubble extends StatefulWidget {
 class _MessageBubbleState extends State<MessageBubble>
     with SingleTickerProviderStateMixin {
   bool _showRawContent = false;
+  bool _showThinking = false; // For thinking/response tab toggle
   final MarkdownNormalizer _normalizer = MarkdownNormalizer();
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
@@ -200,19 +201,35 @@ class _MessageBubbleState extends State<MessageBubble>
                           const SizedBox(height: AppSpacing.xs),
                         ],
 
+                        // Thinking tabs for AI messages with thinking content
+                        if (!isUser &&
+                            widget.message.thinkingContent != null) ...[
+                          _buildThinkingTabs(context, theme),
+                          const SizedBox(height: AppSpacing.xs),
+                        ],
+
                         // Message content
                         RepaintBoundary(
                           child: _showRawContent || settings.showRawFormat
                               ? _buildSimpleTextContent(
                                   context,
-                                  widget.message.content,
+                                  _showThinking &&
+                                          widget.message.thinkingContent != null
+                                      ? widget.message.thinkingContent!
+                                      : widget.message.content,
                                   isUser
                                       ? Colors.white
                                       : theme.colorScheme.onSurface,
                                 )
                               : _getContentWidget(
                                   context,
-                                  _normalizer.normalize(widget.message.content),
+                                  _normalizer.normalize(
+                                    _showThinking &&
+                                            widget.message.thinkingContent !=
+                                                null
+                                        ? widget.message.thinkingContent!
+                                        : widget.message.content,
+                                  ),
                                   isUser
                                       ? Colors.white
                                       : theme.colorScheme.onSurface,
@@ -261,6 +278,85 @@ class _MessageBubbleState extends State<MessageBubble>
         isUser ? Icons.person : Icons.auto_awesome,
         size: 18,
         color: Colors.white,
+      ),
+    );
+  }
+
+  /// Build mini tabs for switching between Response and Thinking content
+  Widget _buildThinkingTabs(BuildContext context, ThemeData theme) {
+    return Container(
+      height: 32,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildMiniTab(
+            context: context,
+            theme: theme,
+            label: 'Response',
+            icon: Icons.chat_bubble_outline,
+            isSelected: !_showThinking,
+            onTap: () => setState(() => _showThinking = false),
+          ),
+          _buildMiniTab(
+            context: context,
+            theme: theme,
+            label: 'Thinking',
+            icon: Icons.psychology_outlined,
+            isSelected: _showThinking,
+            onTap: () => setState(() => _showThinking = true),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMiniTab({
+    required BuildContext context,
+    required ThemeData theme,
+    required String label,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? theme.colorScheme.primaryContainer
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 14,
+              color: isSelected
+                  ? theme.colorScheme.onPrimaryContainer
+                  : theme.colorScheme.onSurfaceVariant,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                color: isSelected
+                    ? theme.colorScheme.onPrimaryContainer
+                    : theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

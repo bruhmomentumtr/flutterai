@@ -264,17 +264,22 @@ class OpenRouterService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        final content = data['choices'][0]['message']['content'];
+        final rawContent = data['choices'][0]['message']['content'];
+
+        // Extract thinking content if present
+        final (cleanContent, thinkingContent) =
+            _extractThinkingContent(rawContent);
 
         // Generate a title for the message
         final title =
-            await generateTitleForMessage(content, useModel, temperature);
+            await generateTitleForMessage(cleanContent, useModel, temperature);
 
         // Create a new message with the response
         return Message(
           id: DateTime.now().millisecondsSinceEpoch.toString(),
           role: MessageRole.assistant,
-          content: content,
+          content: cleanContent,
+          thinkingContent: thinkingContent,
           timestamp: DateTime.now(),
           title: title,
           sessionId: sessionId,
@@ -312,6 +317,53 @@ class OpenRouterService {
       }
       return null;
     }
+  }
+
+  /// Extract thinking content from response (for models like DeepSeek R1, Claude)
+  (String, String?) _extractThinkingContent(String content) {
+    String? thinkingContent;
+    String cleanContent = content;
+
+    // Match <thinking>...</thinking> tags (case insensitive)
+    final thinkingMatch = RegExp(
+      r'<thinking>([\s\S]*?)</thinking>',
+      caseSensitive: false,
+    ).firstMatch(content);
+
+    if (thinkingMatch != null) {
+      thinkingContent = thinkingMatch.group(1)?.trim();
+      cleanContent = content
+          .replaceAll(
+              RegExp(r'<thinking>[\s\S]*?</thinking>', caseSensitive: false),
+              '')
+          .trim();
+    }
+
+    // Also check for <antThinking>...</antThinking> (alternative Claude format)
+    final antThinkingMatch = RegExp(
+      r'<antThinking>([\s\S]*?)</antThinking>',
+      caseSensitive: false,
+    ).firstMatch(cleanContent);
+
+    if (antThinkingMatch != null) {
+      final additionalThinking = antThinkingMatch.group(1)?.trim();
+      if (thinkingContent != null && additionalThinking != null) {
+        thinkingContent = '$thinkingContent\n\n$additionalThinking';
+      } else {
+        thinkingContent = additionalThinking;
+      }
+      cleanContent = cleanContent
+          .replaceAll(
+              RegExp(r'<antThinking>[\s\S]*?</antThinking>',
+                  caseSensitive: false),
+              '')
+          .trim();
+    }
+
+    // Clean up any resulting multiple newlines
+    cleanContent = cleanContent.replaceAll(RegExp(r'\n{3,}'), '\n\n');
+
+    return (cleanContent, thinkingContent);
   }
 
   // Generate a title for a message
