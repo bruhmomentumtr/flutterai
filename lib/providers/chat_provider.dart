@@ -52,12 +52,12 @@ class ChatProvider extends ChangeNotifier {
     if (!_settingsProvider.hasApiKey) {
       return false;
     }
-    
+
     // Initialize service if not already initialized
     if (!_openRouterService.isInitialized) {
       _openRouterService.initialize(_settingsProvider.apiKey);
     }
-    
+
     // Test API connection
     return await _openRouterService.testApiConnection();
   }
@@ -67,28 +67,27 @@ class ChatProvider extends ChangeNotifier {
   Future<void> _loadSessions() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Load session IDs
       final sessionsData = prefs.getString('chat_sessions');
       if (sessionsData != null) {
         final Map<String, dynamic> data = jsonDecode(sessionsData);
         _sessionIds = List<String>.from(data['sessionIds'] ?? []);
       }
-      
+
       // Load current session ID
       _currentSessionId = prefs.getString('current_session_id') ?? '';
-      
+
       // Load individual session messages
       for (var id in _sessionIds) {
         final messagesJson = prefs.getString('session_$id');
         if (messagesJson != null) {
           final List<dynamic> messagesData = jsonDecode(messagesJson);
-          _sessionMessages[id] = messagesData
-              .map((msg) => Message.fromJson(msg))
-              .toList();
+          _sessionMessages[id] =
+              messagesData.map((msg) => Message.fromJson(msg)).toList();
         }
       }
-      
+
       // Eğer hiç session yoksa otomatik olarak yeni bir session oluştur
       if (_sessionIds.isEmpty) {
         _createNewSession();
@@ -98,50 +97,49 @@ class ChatProvider extends ChangeNotifier {
           _messages = _sessionMessages[_currentSessionId] ?? [];
         }
       }
-      
+
       // Update chat counter based on number of sessions
       _chatCounter = _sessionIds.length;
       _openRouterService.setChatCounter(_chatCounter);
-      
+
       notifyListeners();
     } catch (e) {
       debugPrint(Languages.msgErrorLoadingSessions + e.toString());
     }
   }
-  
+
   // Save sessions to storage
   Future<void> _saveSessions() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Save session IDs
       final Map<String, dynamic> sessionsData = {
         'sessionIds': _sessionIds,
       };
       await prefs.setString('chat_sessions', jsonEncode(sessionsData));
-      
+
       // Save current session ID
       await prefs.setString('current_session_id', _currentSessionId);
-      
+
       // Save individual session messages
       for (var id in _sessionIds) {
         final messages = _sessionMessages[id] ?? [];
-        final messagesJson = jsonEncode(
-          messages.map((msg) => msg.toFullJson()).toList()
-        );
+        final messagesJson =
+            jsonEncode(messages.map((msg) => msg.toFullJson()).toList());
         await prefs.setString('session_$id', messagesJson);
       }
     } catch (e) {
       debugPrint(Languages.msgErrorSavingSessions + e.toString());
     }
   }
-  
+
   // Create a new session
   void createNewSession() {
     _createNewSession();
     notifyListeners();
   }
-  
+
   // Helper method to create new session
   void _createNewSession() {
     const uuid = Uuid();
@@ -154,7 +152,7 @@ class ChatProvider extends ChangeNotifier {
     _openRouterService.setChatCounter(_chatCounter);
     _saveSessions();
   }
-  
+
   // Switch to a different session
   void switchSession(String sessionId) {
     if (_sessionIds.contains(sessionId)) {
@@ -164,13 +162,13 @@ class ChatProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   // Delete a session
   void deleteSession(String sessionId) async {
     if (_sessionIds.contains(sessionId)) {
       _sessionIds.remove(sessionId);
       _sessionMessages.remove(sessionId);
-      
+
       // If current session was deleted, switch to another or create new one
       if (_currentSessionId == sessionId) {
         if (_sessionIds.isNotEmpty) {
@@ -180,7 +178,7 @@ class ChatProvider extends ChangeNotifier {
           _createNewSession();
         }
       }
-      
+
       final prefs = await SharedPreferences.getInstance();
       await prefs.remove('session_$sessionId');
       _saveSessions();
@@ -188,8 +186,40 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
+  // Save selected bot ID to SharedPreferences
+  Future<void> _saveSelectedBotId(String? botId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (botId != null) {
+        await prefs.setString('selected_bot_id', botId);
+      } else {
+        await prefs.remove('selected_bot_id');
+      }
+    } catch (e) {
+      debugPrint('Error saving selected bot: $e');
+    }
+  }
+
+  // Load selected bot ID from SharedPreferences
+  Future<String?> loadSelectedBotId() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      return prefs.getString('selected_bot_id');
+    } catch (e) {
+      debugPrint('Error loading selected bot ID: $e');
+      return null;
+    }
+  }
+
   // Set the selected bot
   void selectBot(Bot bot) {
+    _selectedBot = bot;
+    _saveSelectedBotId(bot.id);
+    notifyListeners();
+  }
+
+  // Set selected bot directly (for restoring from storage)
+  void setSelectedBot(Bot? bot) {
     _selectedBot = bot;
     notifyListeners();
   }
@@ -216,11 +246,12 @@ class ChatProvider extends ChangeNotifier {
       if (imageFile != null) {
         _isLoading = true;
         notifyListeners();
-        
+
         try {
           // Upload image and get base64 data URL
           imageUrl = await _openRouterService.uploadImage(imageFile);
-          debugPrint('Image uploaded successfully: ${imageUrl?.substring(0, 50)}...');
+          debugPrint(
+              'Image uploaded successfully: ${imageUrl?.substring(0, 50)}...');
         } catch (uploadError) {
           _error = uploadError.toString();
           if (_error!.startsWith('Exception: ')) {
@@ -230,7 +261,7 @@ class ChatProvider extends ChangeNotifier {
           notifyListeners();
           return;
         }
-        
+
         if (imageUrl == null) {
           _error = Languages.msgImageUploadFailed;
           _isLoading = false;
@@ -241,7 +272,7 @@ class ChatProvider extends ChangeNotifier {
 
       // Trim mesajı ve boş ise basit bir boşluk karakteri ekle
       final trimmedContent = content.trim();
-      
+
       // Create and add user message - make sure content is not null even if empty
       final userMessage = Message(
         id: messageId,
@@ -251,7 +282,7 @@ class ChatProvider extends ChangeNotifier {
         imageUrl: imageUrl,
         sessionId: _currentSessionId,
       );
-      
+
       // İşlemi deferred yaparak UI thread'inin bloke olmasını önleyebiliriz
       Future.microtask(() {
         _messages.add(userMessage);
@@ -273,14 +304,14 @@ class ChatProvider extends ChangeNotifier {
   // Generate AI response based on conversation history
   Future<void> _generateResponse() async {
     if (_selectedBot == null) return;
-    
+
     _isLoading = true;
     notifyListeners();
-    
+
     try {
       const uuid = Uuid();
       final responseId = uuid.v4();
-      
+
       // Create a temporary "thinking" message
       final tempMessage = Message(
         id: responseId,
@@ -289,11 +320,11 @@ class ChatProvider extends ChangeNotifier {
         timestamp: DateTime.now(),
         sessionId: _currentSessionId,
       );
-      
+
       _messages.add(tempMessage);
       _sessionMessages[_currentSessionId] = _messages;
       notifyListeners();
-      
+
       // Get response from OpenAI
       final response = await _openRouterService.generateChatResponse(
         messages: _messages,
@@ -303,10 +334,10 @@ class ChatProvider extends ChangeNotifier {
         maxTokens: _settingsProvider.maxTokens,
         sessionId: _currentSessionId,
       );
-      
+
       // Remove the temporary message before adding the real response
       _messages.removeLast();
-      
+
       if (response != null) {
         // Add the actual response
         _messages.add(response);
@@ -351,18 +382,18 @@ class ChatProvider extends ChangeNotifier {
     _error = null;
     notifyListeners();
   }
-  
+
   // Prepare a message to be edited before sending
   // This will be used for suggestion chips in the empty chat state
   void prepareMessage(String content) {
     // We'll use this method to fill the input field with the content
     // without actually sending the message
     // The MessageInput widget will need to listen for this value
-    
+
     // Notify listeners that we have a prepared message
     _preparedMessage = content;
     notifyListeners();
-    
+
     // Reset the prepared message after a short delay
     // This ensures that the MessageInput widget has time to pick it up
     Future.delayed(const Duration(milliseconds: 300), () {
@@ -370,4 +401,4 @@ class ChatProvider extends ChangeNotifier {
       notifyListeners();
     });
   }
-} 
+}

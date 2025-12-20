@@ -40,18 +40,31 @@ class ChatScreenState extends State<ChatScreen> {
     _checkConnection(); // <-- ekle
   }
 
-  // Bot seçimi yoksa ilk botu seç
+  // Bot seçimi yoksa kaydedilen botu veya ilk botu seç
   void _initializeBot() {
     // İlk render'dan sonra işlem yap
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
 
       final chatProvider = Provider.of<ChatProvider>(context, listen: false);
       final botProvider = Provider.of<BotProvider>(context, listen: false);
 
-      // Eğer bot seçili değilse ve botlar varsa, ilk botu seç
+      // Eğer bot seçili değilse
       if (chatProvider.selectedBot == null && botProvider.bots.isNotEmpty) {
-        chatProvider.selectBot(botProvider.bots.first);
+        // Önce kaydedilen bot ID'sini yükle
+        final savedBotId = await chatProvider.loadSelectedBotId();
+
+        if (savedBotId != null) {
+          // Kaydedilen bot ID'si ile botu bul
+          final savedBot = botProvider.bots.firstWhere(
+            (bot) => bot.id == savedBotId,
+            orElse: () => botProvider.bots.first,
+          );
+          chatProvider.setSelectedBot(savedBot);
+        } else {
+          // Kayıtlı bot yoksa ilk botu seç
+          chatProvider.selectBot(botProvider.bots.first);
+        }
       }
     });
   }

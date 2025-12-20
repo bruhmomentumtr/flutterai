@@ -13,6 +13,7 @@ const String _showRawFormatKey = 'showRawFormat';
 const String _temperatureKey = 'temperature';
 const String _maxTokensKey = 'maxTokens';
 const String _systemPromptKey = 'systemPrompt';
+const String _useDynamicColorsKey = 'useDynamicColors';
 
 class SettingsProvider extends ChangeNotifier {
   // Theme mode
@@ -21,19 +22,22 @@ class SettingsProvider extends ChangeNotifier {
   String _apiKey = '';
   // Show raw format (disable markdown/LaTeX rendering)
   bool _showRawFormat = false;
-  
+  // Material You dynamic colors
+  bool _useDynamicColors = true;
+
   // Common chat settings
   double _temperature = defaultTemperature;
   int _maxTokens = defaultMaxTokens;
   String _systemPrompt = defaultSystemPrompt;
-  
+
   // Getters
   ThemeMode get themeMode => _themeMode;
   String get apiKey => _apiKey;
   bool get isDarkMode => _themeMode == ThemeMode.dark;
   bool get hasApiKey => _apiKey.isNotEmpty;
   bool get showRawFormat => _showRawFormat;
-  
+  bool get useDynamicColors => _useDynamicColors;
+
   // Chat settings getters
   double get temperature => _temperature;
   int get maxTokens => _maxTokens;
@@ -43,22 +47,25 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> loadSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Load theme mode
       final themeModeString = prefs.getString(_themeModeKey) ?? 'system';
       _themeMode = _getThemeModeFromString(themeModeString);
-      
+
       // Load API key
       _apiKey = prefs.getString(_apiKeyKey) ?? '';
-      
+
       // Load show raw format option
       _showRawFormat = prefs.getBool(_showRawFormatKey) ?? false;
-      
+
+      // Load dynamic colors setting
+      _useDynamicColors = prefs.getBool(_useDynamicColorsKey) ?? true;
+
       // Load chat settings
       _temperature = prefs.getDouble(_temperatureKey) ?? defaultTemperature;
       _maxTokens = prefs.getInt(_maxTokensKey) ?? defaultMaxTokens;
       _systemPrompt = prefs.getString(_systemPromptKey) ?? defaultSystemPrompt;
-      
+
       notifyListeners();
     } catch (e) {
       debugPrint('${Languages.msgErrorLoadingSettings} $e');
@@ -69,16 +76,20 @@ class SettingsProvider extends ChangeNotifier {
   Future<void> _saveSettings() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Save theme mode
-      await prefs.setString(_themeModeKey, _themeMode.toString().split('.').last);
-      
+      await prefs.setString(
+          _themeModeKey, _themeMode.toString().split('.').last);
+
       // Save API key
       await prefs.setString(_apiKeyKey, _apiKey);
-      
+
       // Save show raw format option
       await prefs.setBool(_showRawFormatKey, _showRawFormat);
-      
+
+      // Save dynamic colors setting
+      await prefs.setBool(_useDynamicColorsKey, _useDynamicColors);
+
       // Save chat settings
       await prefs.setDouble(_temperatureKey, _temperature);
       await prefs.setInt(_maxTokensKey, _maxTokens);
@@ -94,42 +105,49 @@ class SettingsProvider extends ChangeNotifier {
     await _saveSettings();
     notifyListeners();
   }
-  
+
   // Set theme mode
   Future<void> setThemeMode(ThemeMode mode) async {
     _themeMode = mode;
     await _saveSettings();
     notifyListeners();
   }
-  
+
   // Set show raw format option
   Future<void> setShowRawFormat(bool showRaw) async {
     _showRawFormat = showRaw;
     await _saveSettings();
     notifyListeners();
   }
-  
+
+  // Set dynamic colors option
+  Future<void> setUseDynamicColors(bool value) async {
+    _useDynamicColors = value;
+    await _saveSettings();
+    notifyListeners();
+  }
+
   // Set temperature
   Future<void> setTemperature(double value) async {
     _temperature = value;
     await _saveSettings();
     notifyListeners();
   }
-  
+
   // Set maximum tokens
   Future<void> setMaxTokens(int value) async {
     _maxTokens = value;
     await _saveSettings();
     notifyListeners();
   }
-  
+
   // Set system prompt
   Future<void> setSystemPrompt(String value) async {
     _systemPrompt = value;
     await _saveSettings();
     notifyListeners();
   }
-  
+
   // Helper to convert string to ThemeMode
   ThemeMode _getThemeModeFromString(String value) {
     switch (value) {
@@ -141,4 +159,4 @@ class SettingsProvider extends ChangeNotifier {
         return ThemeMode.system;
     }
   }
-} 
+}

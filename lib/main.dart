@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:dynamic_color/dynamic_color.dart';
 
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -57,13 +58,27 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SettingsProvider>(
       builder: (context, settings, _) {
-        return MaterialApp(
-          title: Languages.appTitleMain,
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: settings.themeMode,
-          home: settings.hasApiKey ? const ChatScreen() : const WelcomeScreen(),
+        return DynamicColorBuilder(
+          builder: (ColorScheme? lightDynamic, ColorScheme? darkDynamic) {
+            // Check if dynamic colors should be used
+            final useDynamic =
+                settings.useDynamicColors && lightDynamic != null;
+
+            return MaterialApp(
+              title: Languages.appTitleMain,
+              debugShowCheckedModeBanner: false,
+              theme: useDynamic
+                  ? AppTheme.lightTheme.copyWith(colorScheme: lightDynamic)
+                  : AppTheme.lightTheme,
+              darkTheme: useDynamic && darkDynamic != null
+                  ? AppTheme.darkTheme.copyWith(colorScheme: darkDynamic)
+                  : AppTheme.darkTheme,
+              themeMode: settings.themeMode,
+              home: settings.hasApiKey
+                  ? const ChatScreen()
+                  : const WelcomeScreen(),
+            );
+          },
         );
       },
     );

@@ -188,6 +188,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
             _buildCard(
               child: Column(
                 children: [
+                  Consumer<SettingsProvider>(
+                    builder: (context, settings, _) {
+                      return _buildSettingsTile(
+                        title: 'Material You',
+                        subtitle: 'Use system dynamic colors',
+                        trailing: Switch.adaptive(
+                          value: settings.useDynamicColors,
+                          onChanged: (value) {
+                            settings.setUseDynamicColors(value);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(height: 1),
                   _buildSettingsTile(
                     title: Languages.textShowRawFormat,
                     subtitle: Languages.textShowRawFormatDesc,

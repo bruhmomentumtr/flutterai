@@ -127,19 +127,82 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                     ),
                     const SizedBox(height: 16.0),
 
-                    // Model selection dropdown
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                        labelText: Languages.labelModel,
-                      ),
-                      value: _selectedModel,
-                      items: _getModelItems(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _selectedModel = value;
-                          });
+                    // Model selection with search
+                    Autocomplete<String>(
+                      initialValue: TextEditingValue(text: _selectedModel),
+                      optionsBuilder: (TextEditingValue textEditingValue) {
+                        if (textEditingValue.text.isEmpty) {
+                          return widget.availableModels;
                         }
+                        return widget.availableModels.where((String model) {
+                          return model.toLowerCase().contains(
+                                textEditingValue.text.toLowerCase(),
+                              );
+                        });
+                      },
+                      onSelected: (String selection) {
+                        setState(() {
+                          _selectedModel = selection;
+                        });
+                      },
+                      fieldViewBuilder: (
+                        BuildContext context,
+                        TextEditingController textEditingController,
+                        FocusNode focusNode,
+                        VoidCallback onFieldSubmitted,
+                      ) {
+                        return TextFormField(
+                          controller: textEditingController,
+                          focusNode: focusNode,
+                          decoration: const InputDecoration(
+                            labelText: Languages.labelModel,
+                            hintText: 'Search models...',
+                            prefixIcon: Icon(Icons.search),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please select a model';
+                            }
+                            if (!widget.availableModels.contains(value)) {
+                              return 'Please select a valid model from the list';
+                            }
+                            return null;
+                          },
+                          onFieldSubmitted: (_) => onFieldSubmitted(),
+                        );
+                      },
+                      optionsViewBuilder: (
+                        BuildContext context,
+                        AutocompleteOnSelected<String> onSelected,
+                        Iterable<String> options,
+                      ) {
+                        return Align(
+                          alignment: Alignment.topLeft,
+                          child: Material(
+                            elevation: 4.0,
+                            borderRadius: BorderRadius.circular(8),
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(
+                                maxHeight: 200,
+                                maxWidth: 400,
+                              ),
+                              child: ListView.builder(
+                                padding: EdgeInsets.zero,
+                                shrinkWrap: true,
+                                itemCount: options.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final String option =
+                                      options.elementAt(index);
+                                  return ListTile(
+                                    dense: true,
+                                    title: Text(option),
+                                    onTap: () => onSelected(option),
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
+                        );
                       },
                     ),
                     const SizedBox(height: 16.0),
@@ -194,7 +257,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${Languages.labelMaxTokens}${_maxTokens}',
+                          '${Languages.labelMaxTokens}$_maxTokens',
                           style: Theme.of(context).textTheme.bodyMedium,
                         ),
                         Slider(
@@ -320,28 +383,5 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
     }
 
     Navigator.of(context).pop(result);
-  }
-
-  // Helper method to get model dropdown items with proper validation
-  List<DropdownMenuItem<String>> _getModelItems() {
-    final defaultModels = [
-      'openai/gpt-3.5-turbo',
-      'openai/gpt-4',
-      'anthropic/claude-2'
-    ];
-    final models =
-        widget.availableModels.isEmpty ? defaultModels : widget.availableModels;
-
-    // Ensure selected model is in the list
-    if (!models.contains(_selectedModel)) {
-      models.add(_selectedModel);
-    }
-
-    return models
-        .map((model) => DropdownMenuItem(
-              value: model,
-              child: Text(model),
-            ))
-        .toList();
   }
 }

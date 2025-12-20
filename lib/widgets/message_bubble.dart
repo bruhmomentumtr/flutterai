@@ -496,6 +496,15 @@ class _MessageBubbleState extends State<MessageBubble>
 
   String _sanitizeLatexContent(String latex) {
     String result = latex;
+    // Replace line breaks inside \text{} commands with spaces
+    result = result.replaceAllMapped(
+      RegExp(r'\\text\{([^}]*)\}'),
+      (match) {
+        String textContent = match.group(1) ?? '';
+        textContent = textContent.replaceAll(RegExp(r'\s*\n\s*'), ' ');
+        return '\\text{$textContent}';
+      },
+    );
     _turkishMap.forEach((k, v) => result = result.replaceAll(k, v));
     result = result.replaceAll(RegExp(r'%.*?$', multiLine: true), '');
     return result;
