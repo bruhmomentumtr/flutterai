@@ -26,8 +26,18 @@ class _NetworkErrorScreenState extends State<NetworkErrorScreen> {
       _isLoading = true;
     });
 
-    final isConnected = await NetworkService.isConnected();
-    final diagnostics = await NetworkService.getDiagnostics();
+    bool isConnected = false;
+    Map<String, dynamic> diagnostics = {};
+    try {
+      isConnected = await NetworkService.isConnected();
+      diagnostics = await NetworkService.getDiagnostics();
+    } catch (e) {
+      diagnostics = {'error': e.toString()};
+    }
+
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       _isLoading = false;

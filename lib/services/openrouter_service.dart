@@ -45,6 +45,67 @@ class OpenRouterService {
   late Dio _dio;
   int _chatCounter = 0;
 
+  void _logError(
+    String event, {
+    Object? error,
+    StackTrace? stackTrace,
+    Map<String, dynamic>? details,
+  }) {
+    final payload = <String, dynamic>{
+      'scope': 'OpenRouterService',
+      'event': event,
+      'timestamp': DateTime.now().toIso8601String(),
+      if (error != null) 'error': error.toString(),
+      if (details != null) 'details': details,
+    };
+    debugPrint(jsonEncode(payload));
+    if (stackTrace != null) {
+      debugPrint(stackTrace.toString());
+    }
+  }
+
+  Message _createErrorMessage(String sessionId, String content) {
+    return Message(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      role: MessageRole.assistant,
+      content: content,
+      timestamp: DateTime.now(),
+      title: '${Languages.chatTitle} $_chatCounter',
+      sessionId: sessionId,
+    );
+  }
+
+  String _mapNetworkOrApiError(Object error) {
+    if (error is TimeoutException) {
+      return '${Languages.msgFailedToGenerateResponse}. ${Languages.textCheckConnection}';
+    }
+    if (error is SocketException) {
+      return '${Languages.msgFailedToGenerateResponse}. ${Languages.textNoInternet}';
+    }
+    if (error is DioException) {
+      switch (error.type) {
+        case DioExceptionType.connectionTimeout:
+        case DioExceptionType.sendTimeout:
+        case DioExceptionType.receiveTimeout:
+          return '${Languages.msgFailedToGenerateResponse}. ${Languages.textCheckConnection}';
+        case DioExceptionType.connectionError:
+          return '${Languages.msgFailedToGenerateResponse}. ${Languages.textNoInternet}';
+        case DioExceptionType.badResponse:
+          final statusCode = error.response?.statusCode;
+          if (statusCode == 429) {
+            return Languages.errorRateLimitReached;
+          }
+          if (statusCode == 401 || statusCode == 403) {
+            return Languages.textApiServiceUnavailable;
+          }
+          return '${Languages.apiErrorPrefix} ${statusCode ?? 'unknown'}';
+        default:
+          return Languages.msgFailedToGenerateResponse;
+      }
+    }
+    return Languages.msgFailedToGenerateResponse;
+  }
+
   // Set chat counter
   void setChatCounter(int counter) {
     _chatCounter = counter;
@@ -151,10 +212,30 @@ class OpenRouterService {
           .timeout(_requestTimeout);
 
       if (response.statusCode == 200) {
-        final List<dynamic> models = response.data['data'];
+        final responseData = response.data;
+        if (responseData is! Map<String, dynamic>) {
+          _logError('getAvailableModels.invalid_response_shape',
+              details: {'type': responseData.runtimeType.toString()});
+          return _defaultModels;
+        }
+
+        final models = responseData['data'];
+        if (models is! List<dynamic>) {
+          _logError('getAvailableModels.invalid_models_payload',
+              details: {'type': models.runtimeType.toString()});
+          return _defaultModels;
+        }
+
         // Get all available models
-        final availableModels =
-            models.map((model) => model['id'].toString()).toList();
+        final availableModels = models
+            .map((model) {
+              if (model is Map<String, dynamic> && model['id'] != null) {
+                return model['id'].toString();
+              }
+              return '';
+            })
+            .where((modelId) => modelId.isNotEmpty)
+            .toList();
 
         // Sort the models alphabetically
         availableModels.sort();
@@ -169,15 +250,24 @@ class OpenRouterService {
         debugPrint('${Languages.apiErrorPrefix} ${response.statusCode}');
         return _defaultModels;
       }
-    } on DioException catch (e) {
-      debugPrint(
-          '${Languages.dioExceptionFetchingModels} ${e.type} - ${e.message}');
+    } on DioException catch (e, stackTrace) {
+      _logError(
+        'getAvailableModels.dio_exception',
+        error: e,
+        stackTrace: stackTrace,
+        details: {
+          'type': e.type.name,
+          'statusCode': e.response?.statusCode,
+        },
+      );
       return _defaultModels;
-    } on TimeoutException catch (e) {
-      debugPrint('${Languages.timeoutFetchingModels} $e');
+    } on TimeoutException catch (e, stackTrace) {
+      _logError('getAvailableModels.timeout',
+          error: e, stackTrace: stackTrace);
       return _defaultModels;
-    } catch (e) {
-      debugPrint('${Languages.errorFetchingModels} $e');
+    } catch (e, stackTrace) {
+      _logError('getAvailableModels.unexpected',
+          error: e, stackTrace: stackTrace);
       return _defaultModels;
     }
   }
@@ -251,24 +341,68 @@ class OpenRouterService {
       debugPrint('${Languages.requestPayload} ${jsonEncode(payload)}');
 
       // Send the request
-      final response = await _dio.post(
-        '/chat/completions',
-        data: payload,
-        options: Options(validateStatus: (status) => status! < 500, headers: {
-          'Content-Type': _contentType,
-          'Authorization': 'Bearer ${default_settings_variables.apikey}',
-          'HTTP-Referer': _httpReferer,
-          'X-Title': _appTitle,
-        }),
-      );
+      final response = await _dio
+          .post(
+            '/chat/completions',
+            data: payload,
+            options: Options(
+              validateStatus: (status) => status != null && status < 500,
+              headers: {
+                'Content-Type': _contentType,
+                'Authorization': '******',
+                'HTTP-Referer': _httpReferer,
+                'X-Title': _appTitle,
+              },
+            ),
+          )
+          .timeout(_requestTimeout);
 
       if (response.statusCode == 200) {
         final data = response.data;
-        final rawContent = data['choices'][0]['message']['content'];
+        if (data is! Map<String, dynamic>) {
+          _logError('generateChatResponse.invalid_response_shape',
+              details: {'type': data.runtimeType.toString()});
+          return _createErrorMessage(
+            sessionId,
+            Languages.msgFailedToGenerateResponse,
+          );
+        }
+
+        final choices = data['choices'];
+        if (choices is! List || choices.isEmpty || choices.first is! Map) {
+          _logError('generateChatResponse.missing_choices',
+              details: {'choicesType': choices.runtimeType.toString()});
+          return _createErrorMessage(
+            sessionId,
+            Languages.msgFailedToGenerateResponse,
+          );
+        }
+
+        final firstChoice = choices.first as Map;
+        final messageDataRaw = firstChoice['message'];
+        if (messageDataRaw is! Map) {
+          _logError('generateChatResponse.missing_message_payload');
+          return _createErrorMessage(
+            sessionId,
+            Languages.msgFailedToGenerateResponse,
+          );
+        }
+
+        final messageData = Map<String, dynamic>.from(
+          messageDataRaw.map((key, value) => MapEntry(key.toString(), value)),
+        );
+
+        final rawContent = messageData['content']?.toString() ?? '';
+        if (rawContent.trim().isEmpty) {
+          _logError('generateChatResponse.empty_content');
+          return _createErrorMessage(
+            sessionId,
+            Languages.msgFailedToGenerateResponse,
+          );
+        }
 
         // Check for reasoning field from OpenRouter API (for DeepSeek, Gemini, etc.)
         String? reasoningFromApi;
-        final messageData = data['choices'][0]['message'];
         if (messageData['reasoning'] != null) {
           reasoningFromApi = messageData['reasoning'].toString();
         } else if (messageData['reasoning_content'] != null) {
@@ -295,38 +429,71 @@ class OpenRouterService {
           title: title,
           sessionId: sessionId,
         );
-      } else {
-        debugPrint(
-            '${Languages.apiErrorPrefix} ${response.statusCode} - ${response.data}');
-        // Check for rate limit error
-        if (response.statusCode == 429) {
-          final errorMessage = response.data.toString();
-          return Message(
-            id: DateTime.now().millisecondsSinceEpoch.toString(),
-            role: MessageRole.assistant,
-            content: '${Languages.errorRateLimitReached} ($errorMessage)',
-            timestamp: DateTime.now(),
-            title: '${Languages.chatTitle} $_chatCounter',
-            sessionId: sessionId,
-          );
-        }
-        throw Exception(
-            '${Languages.apiErrorPrefix} ${response.statusCode} - ${response.data}');
       }
-    } catch (e) {
-      debugPrint('${Languages.errorGeneratingChatResponse} $e');
-      // Check if it's a rate limit error in the exception
-      if (e.toString().contains('Rate limit exceeded')) {
-        return Message(
-          id: DateTime.now().millisecondsSinceEpoch.toString(),
-          role: MessageRole.assistant,
-          content: '${Languages.errorRateLimitReached} ($e)',
-          timestamp: DateTime.now(),
-          title: '${Languages.chatTitle} $_chatCounter',
-          sessionId: sessionId,
+
+      _logError(
+        'generateChatResponse.bad_status',
+        details: {
+          'statusCode': response.statusCode,
+          'responseType': response.data.runtimeType.toString(),
+        },
+      );
+
+      if (response.statusCode == 429) {
+        return _createErrorMessage(
+          sessionId,
+          '${Languages.errorRateLimitReached} (${response.data})',
         );
       }
-      return null;
+
+      return _createErrorMessage(
+        sessionId,
+        '${Languages.apiErrorPrefix} ${response.statusCode}',
+      );
+    } on DioException catch (e, stackTrace) {
+      _logError(
+        'generateChatResponse.dio_exception',
+        error: e,
+        stackTrace: stackTrace,
+        details: {
+          'type': e.type.name,
+          'statusCode': e.response?.statusCode,
+        },
+      );
+      return _createErrorMessage(sessionId, _mapNetworkOrApiError(e));
+    } on TimeoutException catch (e, stackTrace) {
+      _logError(
+        'generateChatResponse.timeout',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return _createErrorMessage(sessionId, _mapNetworkOrApiError(e));
+    } on SocketException catch (e, stackTrace) {
+      _logError(
+        'generateChatResponse.socket_exception',
+        error: e,
+        stackTrace: stackTrace,
+      );
+      return _createErrorMessage(sessionId, _mapNetworkOrApiError(e));
+    } catch (e, stackTrace) {
+      _logError(
+        'generateChatResponse.unexpected',
+        error: e,
+        stackTrace: stackTrace,
+      );
+
+      // Check if it's a rate limit error in the exception
+      if (e.toString().contains('Rate limit exceeded')) {
+        return _createErrorMessage(
+          sessionId,
+          '${Languages.errorRateLimitReached} ($e)',
+        );
+      }
+
+      return _createErrorMessage(
+        sessionId,
+        Languages.msgFailedToGenerateResponse,
+      );
     }
   }
 
