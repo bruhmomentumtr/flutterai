@@ -96,11 +96,19 @@ class ChatScreenState extends State<ChatScreen> {
   }
 
   Future<void> _checkConnection() async {
-    final isConnected = await NetworkService.isConnected();
-    if (mounted) {
-      setState(() {
-        _hasConnection = isConnected;
-      });
+    try {
+      final isConnected = await NetworkService.isConnected();
+      if (mounted) {
+        setState(() {
+          _hasConnection = isConnected;
+        });
+      }
+    } catch (_) {
+      if (mounted) {
+        setState(() {
+          _hasConnection = false;
+        });
+      }
     }
   }
 
