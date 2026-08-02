@@ -23,6 +23,10 @@ class BotProvider extends ChangeNotifier {
     _loadBots();
   }
 
+  Future<void> initializeBots() async {
+    await _loadBots();
+  }
+
   // Load saved bots from SharedPreferences or use default bots
   Future<void> _loadBots() async {
     _isLoading = true;
