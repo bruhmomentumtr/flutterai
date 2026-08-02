@@ -2,86 +2,94 @@
 // Bot model to represent different AI assistant configurations
 
 class Bot {
-  static const Object _unset = Object();
-
   final String id;
   final String name;
-  final String model; // OpenAI model identifier (e.g., gpt-4o, gpt-3.5-turbo)
-  final String iconName;
-  final double? promptPrice;
-  final double? completionPrice;
+  final String model; // OpenAI/OpenRouter model identifier (e.g., gpt-4o, anthropic/claude-3)
+  final String? description;
+  final String? systemPrompt;
+  final double? temperature;
+  final int? maxTokens;
+  final String? iconName;
+  final double? promptPrice; // USD per token
+  final double? completionPrice; // USD per token
 
-  Bot({
+  const Bot({
     required this.id,
     required this.name,
     required this.model,
-    required this.iconName,
+    this.description,
+    this.systemPrompt,
+    this.temperature,
+    this.maxTokens,
+    this.iconName,
     this.promptPrice,
     this.completionPrice,
   });
 
-  String? get formattedPricing {
-    if (promptPrice == null && completionPrice == null) {
-      return null;
-    }
-
-    final pricingParts = <String>[];
-
-    if (promptPrice != null) {
-      pricingParts.add('Prompt \$${promptPrice!.toStringAsFixed(2)}');
-    }
-
-    if (completionPrice != null) {
-      pricingParts.add('Completion \$${completionPrice!.toStringAsFixed(2)}');
-    }
-
-    return '${pricingParts.join(' · ')} per 1M tokens';
+  /// Formatted pricing per 1M tokens (e.g. "$2.50 / $10.00 per 1M tkn")
+  String get formattedPricing {
+    if (promptPrice == null && completionPrice == null) return '';
+    final promptPerM = (promptPrice ?? 0) * 1000000;
+    final completionPerM = (completionPrice ?? 0) * 1000000;
+    return '\$${promptPerM.toStringAsFixed(2)} / \$${completionPerM.toStringAsFixed(2)} per 1M tkn';
   }
 
-  // Create a copy of the bot with updated values
-  Bot copyWith({
-    String? id,
-    String? name,
-    String? model,
-    String? iconName,
-    Object? promptPrice = _unset,
-    Object? completionPrice = _unset,
-  }) {
-    return Bot(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      model: model ?? this.model,
-      iconName: iconName ?? this.iconName,
-      promptPrice: identical(promptPrice, _unset)
-          ? this.promptPrice
-          : promptPrice as double?,
-      completionPrice: identical(completionPrice, _unset)
-          ? this.completionPrice
-          : completionPrice as double?,
-    );
-  }
-
-  // Convert Bot to JSON for storage
+  // Convert Bot instance to JSON map
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
       'model': model,
+      'description': description,
+      'systemPrompt': systemPrompt,
+      'temperature': temperature,
+      'maxTokens': maxTokens,
       'iconName': iconName,
       'promptPrice': promptPrice,
       'completionPrice': completionPrice,
     };
   }
 
-  // Create a Bot from stored JSON
+  // Create Bot instance from JSON map
   factory Bot.fromJson(Map<String, dynamic> json) {
     return Bot(
-      id: json['id'],
-      name: json['name'],
-      model: json['model'],
-      iconName: json['iconName'],
+      id: json['id'] as String,
+      name: json['name'] as String,
+      model: json['model'] as String,
+      description: json['description'] as String?,
+      systemPrompt: json['systemPrompt'] as String?,
+      temperature: (json['temperature'] as num?)?.toDouble(),
+      maxTokens: json['maxTokens'] as int?,
+      iconName: json['iconName'] as String?,
       promptPrice: (json['promptPrice'] as num?)?.toDouble(),
       completionPrice: (json['completionPrice'] as num?)?.toDouble(),
+    );
+  }
+
+  // Create a copy of Bot with updated fields
+  Bot copyWith({
+    String? id,
+    String? name,
+    String? model,
+    String? description,
+    String? systemPrompt,
+    double? temperature,
+    int? maxTokens,
+    String? iconName,
+    double? promptPrice,
+    double? completionPrice,
+  }) {
+    return Bot(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      model: model ?? this.model,
+      description: description ?? this.description,
+      systemPrompt: systemPrompt ?? this.systemPrompt,
+      temperature: temperature ?? this.temperature,
+      maxTokens: maxTokens ?? this.maxTokens,
+      iconName: iconName ?? this.iconName,
+      promptPrice: promptPrice ?? this.promptPrice,
+      completionPrice: completionPrice ?? this.completionPrice,
     );
   }
 }
