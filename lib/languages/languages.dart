@@ -3,6 +3,7 @@
 
 class Languages {
   static const String appTitleMain = 'FlutterAI';
+  static const String appSubtitle = 'Your AI Conversational Assistant';
 
   // services/openrouter_service.dart debug and user text messages
   static const String errorApiKeyNotInitialized = 'Error: API key not initialized';
@@ -12,6 +13,10 @@ class Languages {
   static const String errorNoInternetFetchingModels = 'Error: No internet connection when fetching models';
   static const String errorNetworkConnection = 'Error: Network connection failed';
 
+  // providers/settings_provider.dart
+  static const String msgErrorLoadingSettings = 'Error loading settings';
+  static const String msgErrorSavingSettings = 'Error saving settings';
+
   // providers/bot_provider.dart
   static const String msgErrorLoadingBots = 'Error loading bots';
   static const String msgErrorSavingBots = 'Error saving bots';
@@ -19,8 +24,28 @@ class Languages {
   // providers/chat_provider.dart
   static const String msgPleaseSelectBot = 'Please select a bot';
 
+  // welcome_screen.dart & settings_screen.dart
+  static const String labelApiKey = 'API Key';
+  static const String hintApiKey = 'Enter your OpenRouter or OpenAI API key';
+  static const String apiKeyInfo = 'Your API key is stored securely on your device.';
+  static const String buttonContinue = 'Continue';
+  static const String buttonSkip = 'Skip';
+  static const String errorEnterApiKey = 'Please enter an API key';
+  static const String errorInvalidApiKey = 'Invalid API key format';
+  static const String successApiKeySaved = 'API key saved successfully';
+
   // widgets/bot_selection.dart
   static const String labelSelectBot = 'Select Bot';
+
+  // widgets/message_input.dart
+  static const String msgSelectedImageNotFound = 'Selected image file not found';
+  static const String msgImageLoadError = 'Error loading image';
+  static const String msgErrorPickingImage = 'Error selecting image';
+  static const String msgTakenPhotoNotSaved = 'Taken photo not saved';
+  static const String msgErrorTakingPhoto = 'Error taking photo';
+  static const String msgImageNotLoaded = 'Image could not be loaded';
+  static const String tooltipAddImage = 'Add Image';
+  static const String hintTextMessage = 'Type a message...';
 
   // screens/chat_screen.dart
   static const String textSelectBotToStart = 'Select a bot to start chatting';
