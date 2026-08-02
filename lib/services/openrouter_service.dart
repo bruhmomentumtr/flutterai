@@ -316,7 +316,7 @@ class OpenRouterService {
             messagesJson.add({'role': 'user', 'content': contentList});
           } else {
             // Add regular text message
-            messagesJson.add(message.toJson());
+            messagesJson.add(message.toApiJson());
           }
         } catch (e) {
           debugPrint('${Languages.errorMessageFormatting} $e - ${message.id}');
