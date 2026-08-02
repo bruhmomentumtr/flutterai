@@ -37,7 +37,7 @@ class _BotSelectionState extends State<BotSelection> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusLg)),
       ),
       builder: (context) {
-        return StatefulWidget(
+        return StatefulBuilder(
           builder: (context, setStateModal) {
             final filteredBots = widget.bots.where((bot) {
               final query = searchQuery.toLowerCase();
