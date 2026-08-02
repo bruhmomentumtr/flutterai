@@ -17,214 +17,95 @@ class ChatProvider extends ChangeNotifier {
   final SettingsProvider _settingsProvider;
   List<Message> _messages = [];
   final Map<String, List<Message>> _sessionMessages = {};
-  List<String> _sessionIds = [];
   String _currentSessionId = '';
   Bot? _selectedBot;
   bool _isLoading = false;
   String? _error;
-  String? _preparedMessage;
-  int _chatCounter = 0;
 
-  // Getters
   List<Message> get messages => _messages;
-  Map<String, List<Message>> get sessions => _sessionMessages;
-  List<String> get sessionIds => _sessionIds;
-  String get currentSessionId => _currentSessionId;
   Bot? get selectedBot => _selectedBot;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  bool get hasMessages => _messages.isNotEmpty;
-  bool get hasSessions => _sessionIds.isNotEmpty;
-  String? get preparedMessage => _preparedMessage;
+  String get currentSessionId => _currentSessionId;
+  Map<String, List<Message>> get sessionMessages => _sessionMessages;
 
-  // Constructor
+  /// Calculate total cost spent in the active chat session
+  double get currentSessionTotalCost {
+    return _messages.fold(0.0, (sum, msg) => sum + (msg.cost ?? 0.0));
+  }
+
+  /// Calculate total tokens used in the active chat session
+  int get currentSessionTotalTokens {
+    return _messages.fold(0, (sum, msg) => sum + msg.totalTokens);
+  }
+
+  /// Formatted current session cost (e.g. "$0.0125")
+  String get formattedSessionCost {
+    final cost = currentSessionTotalCost;
+    if (cost == 0) return '';
+    if (cost < 0.0001) return '<\$0.0001';
+    return '\$${cost.toStringAsFixed(4)}';
+  }
+
+  static const String _sessionsKey = 'chat_sessions_list';
+  static const String _sessionPrefix = 'chat_session_';
+
   ChatProvider(this._openRouterService, this._settingsProvider) {
+    _initSession();
+  }
+
+  void selectBot(Bot bot) {
+    _selectedBot = bot;
+    notifyListeners();
+  }
+
+  void _initSession() {
+    _currentSessionId = const Uuid().v4();
+    _messages = [];
     _loadSessions();
-    // Initialize API service when app starts
-    if (_settingsProvider.hasApiKey) {
-      _openRouterService.initialize(_settingsProvider.apiKey);
-    }
   }
 
-  // Check internet connection and verify API service is working
-  Future<bool> isApiServiceAvailable() async {
-    // Cannot access API service if no API key
-    if (!_settingsProvider.hasApiKey) {
-      return false;
-    }
-
-    // Initialize service if not already initialized
-    if (!_openRouterService.isInitialized) {
-      _openRouterService.initialize(_settingsProvider.apiKey);
-    }
-
-    // Test API connection
-    return await _openRouterService.testApiConnection();
-  }
-
-  // Load sessions from storage
-  // Eğer hiç session yoksa otomatik olarak yeni bir session oluşturur
   Future<void> _loadSessions() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      final sessionIds = prefs.getStringList(_sessionsKey) ?? [];
 
-      // Load session IDs
-      final sessionsData = prefs.getString('chat_sessions');
-      if (sessionsData != null) {
-        final Map<String, dynamic> data = jsonDecode(sessionsData);
-        _sessionIds = List<String>.from(data['sessionIds'] ?? []);
-      }
-
-      // Load current session ID
-      _currentSessionId = prefs.getString('current_session_id') ?? '';
-
-      // Load individual session messages
-      for (var id in _sessionIds) {
-        final messagesJson = prefs.getString('session_$id');
+      for (final id in sessionIds) {
+        final messagesJson = prefs.getStringList('$_sessionPrefix$id');
         if (messagesJson != null) {
-          final List<dynamic> messagesData = jsonDecode(messagesJson);
-          _sessionMessages[id] =
-              messagesData.map((msg) => Message.fromJson(msg)).toList();
+          _sessionMessages[id] = messagesJson.map((str) {
+            return Message.fromJson(jsonDecode(str));
+          }).toList();
         }
       }
-
-      // Eğer hiç session yoksa otomatik olarak yeni bir session oluştur
-      if (_sessionIds.isEmpty) {
-        _createNewSession();
-      } else {
-        // Set current messages
-        if (_currentSessionId.isNotEmpty) {
-          _messages = _sessionMessages[_currentSessionId] ?? [];
-        }
-      }
-
-      // Update chat counter based on number of sessions
-      _chatCounter = _sessionIds.length;
-      _openRouterService.setChatCounter(_chatCounter);
-
       notifyListeners();
     } catch (e) {
-      debugPrint(Languages.msgErrorLoadingSessions + e.toString());
+      debugPrint('Error loading chat sessions: $e');
     }
   }
 
-  // Save sessions to storage
-  Future<void> _saveSessions() async {
+  Future<void> _saveCurrentSession() async {
     try {
       final prefs = await SharedPreferences.getInstance();
+      final sessionIds = prefs.getStringList(_sessionsKey) ?? [];
 
-      // Save session IDs
-      final Map<String, dynamic> sessionsData = {
-        'sessionIds': _sessionIds,
-      };
-      await prefs.setString('chat_sessions', jsonEncode(sessionsData));
-
-      // Save current session ID
-      await prefs.setString('current_session_id', _currentSessionId);
-
-      // Save individual session messages
-      for (var id in _sessionIds) {
-        final messages = _sessionMessages[id] ?? [];
-        final messagesJson =
-            jsonEncode(messages.map((msg) => msg.toFullJson()).toList());
-        await prefs.setString('session_$id', messagesJson);
+      if (!sessionIds.contains(_currentSessionId)) {
+        sessionIds.insert(0, _currentSessionId);
+        await prefs.setStringList(_sessionsKey, sessionIds);
       }
-    } catch (e) {
-      debugPrint(Languages.msgErrorSavingSessions + e.toString());
-    }
-  }
 
-  // Create a new session
-  void createNewSession() {
-    _createNewSession();
-    notifyListeners();
-  }
+      final messagesJson =
+          _messages.map((msg) => jsonEncode(msg.toJson())).toList();
+      await prefs.setStringList(
+          '$_sessionPrefix$_currentSessionId', messagesJson);
 
-  // Helper method to create new session
-  void _createNewSession() {
-    const uuid = Uuid();
-    final sessionId = uuid.v4();
-    _sessionIds.add(sessionId);
-    _sessionMessages[sessionId] = [];
-    _currentSessionId = sessionId;
-    _messages = [];
-    _chatCounter++;
-    _openRouterService.setChatCounter(_chatCounter);
-    _saveSessions();
-  }
-
-  // Switch to a different session
-  void switchSession(String sessionId) {
-    if (_sessionIds.contains(sessionId)) {
-      _currentSessionId = sessionId;
-      _messages = _sessionMessages[sessionId] ?? [];
-      _saveSessions();
+      _sessionMessages[_currentSessionId] = List.from(_messages);
       notifyListeners();
-    }
-  }
-
-  // Delete a session
-  void deleteSession(String sessionId) async {
-    if (_sessionIds.contains(sessionId)) {
-      _sessionIds.remove(sessionId);
-      _sessionMessages.remove(sessionId);
-
-      // If current session was deleted, switch to another or create new one
-      if (_currentSessionId == sessionId) {
-        if (_sessionIds.isNotEmpty) {
-          _currentSessionId = _sessionIds.first;
-          _messages = _sessionMessages[_currentSessionId] ?? [];
-        } else {
-          _createNewSession();
-        }
-      }
-
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('session_$sessionId');
-      _saveSessions();
-      notifyListeners();
-    }
-  }
-
-  // Save selected bot ID to SharedPreferences
-  Future<void> _saveSelectedBotId(String? botId) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      if (botId != null) {
-        await prefs.setString('selected_bot_id', botId);
-      } else {
-        await prefs.remove('selected_bot_id');
-      }
     } catch (e) {
-      debugPrint('Error saving selected bot: $e');
+      debugPrint('Error saving chat session: $e');
     }
   }
 
-  // Load selected bot ID from SharedPreferences
-  Future<String?> loadSelectedBotId() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      return prefs.getString('selected_bot_id');
-    } catch (e) {
-      debugPrint('Error loading selected bot ID: $e');
-      return null;
-    }
-  }
-
-  // Set the selected bot
-  void selectBot(Bot bot) {
-    _selectedBot = bot;
-    _saveSelectedBotId(bot.id);
-    notifyListeners();
-  }
-
-  // Set selected bot directly (for restoring from storage)
-  void setSelectedBot(Bot? bot) {
-    _selectedBot = bot;
-    notifyListeners();
-  }
-
-  // Add a user message
   Future<void> sendMessage(String content, {File? imageFile}) async {
     if (content.isEmpty && imageFile == null) return;
     if (_selectedBot == null) {
@@ -233,172 +114,71 @@ class ChatProvider extends ChangeNotifier {
       return;
     }
 
-    // Clear any previous errors
     _error = null;
-
-    // Create a unique ID for the message
-    const uuid = Uuid();
-    String messageId = uuid.v4();
-    String? imageUrl;
-
-    try {
-      // Handle image upload if provided
-      if (imageFile != null) {
-        _isLoading = true;
-        notifyListeners();
-
-        try {
-          // Upload image and get base64 data URL
-          imageUrl = await _openRouterService.uploadImage(imageFile);
-          debugPrint(
-              'Image uploaded successfully: ${imageUrl?.substring(0, 50)}...');
-        } catch (uploadError) {
-          _error = uploadError.toString();
-          if (_error!.startsWith('Exception: ')) {
-            _error = _error!.substring('Exception: '.length);
-          }
-          _isLoading = false;
-          notifyListeners();
-          return;
-        }
-
-        if (imageUrl == null) {
-          _error = Languages.msgImageUploadFailed;
-          _isLoading = false;
-          notifyListeners();
-          return;
-        }
-      }
-
-      // Trim mesajı ve boş ise basit bir boşluk karakteri ekle
-      final trimmedContent = content.trim();
-
-      // Create and add user message - make sure content is not null even if empty
-      final userMessage = Message(
-        id: messageId,
-        role: MessageRole.user,
-        content: trimmedContent.isEmpty ? " " : trimmedContent,
-        timestamp: DateTime.now(),
-        imageUrl: imageUrl,
-        sessionId: _currentSessionId,
-      );
-
-      // İşlemi deferred yaparak UI thread'inin bloke olmasını önleyebiliriz
-      Future.microtask(() {
-        _messages.add(userMessage);
-        _sessionMessages[_currentSessionId] = _messages;
-        _saveSessions();
-        notifyListeners(); // İlk notifyListeners burada
-      }).then((_) {
-        // Generate AI response
-        return _generateResponse();
-      });
-    } catch (e) {
-      debugPrint(Languages.msgErrorSendingMessage + e.toString());
-      _error = Languages.msgErrorWhileSending;
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  // Generate AI response based on conversation history
-  Future<void> _generateResponse() async {
-    if (_selectedBot == null) return;
-
     _isLoading = true;
+
+    final userMessage = Message(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      role: MessageRole.user,
+      content: content,
+      timestamp: DateTime.now(),
+      imageUrl: imageFile?.path,
+    );
+
+    _messages.add(userMessage);
     notifyListeners();
 
     try {
-      const uuid = Uuid();
-      final responseId = uuid.v4();
-
-      // Create a temporary "thinking" message
-      final tempMessage = Message(
-        id: responseId,
-        role: MessageRole.assistant,
-        content: Languages.msgThinking,
-        timestamp: DateTime.now(),
-        sessionId: _currentSessionId,
-      );
-
-      _messages.add(tempMessage);
-      _sessionMessages[_currentSessionId] = _messages;
-      notifyListeners();
-
-      // Get response from OpenAI
-      final response = await _openRouterService.generateChatResponse(
-        messages: _messages,
+      final assistantMessage = await _openRouterService.sendMessage(
+        prompt: content,
         bot: _selectedBot!,
-        systemPrompt: _settingsProvider.systemPrompt,
+        history: _messages.sublist(0, _messages.length - 1),
+        imageUrl: imageFile?.path,
         temperature: _settingsProvider.temperature,
         maxTokens: _settingsProvider.maxTokens,
-        sessionId: _currentSessionId,
       );
 
-      // Remove the temporary message before adding the real response
-      _messages.removeLast();
-
-      if (response != null) {
-        // Add the actual response
-        _messages.add(response);
-        _sessionMessages[_currentSessionId] = _messages;
-        await _saveSessions();
-      } else {
-        _error = Languages.msgFailedToGenerateResponse;
-      }
+      _messages.add(assistantMessage);
+      await _saveCurrentSession();
     } catch (e) {
-      _error = Languages.msgErrorGeneratingResponse + e.toString();
-      debugPrint(Languages.msgErrorGeneratingResponse + e.toString());
+      _error = e.toString();
     } finally {
       _isLoading = false;
-      // notifyListeners bazen render sırasında çağrılınca soruna neden olabilir
-      // Bu yüzden karar ağacından sonraya atalım
-      Future.microtask(() {
-        notifyListeners();
-      });
+      notifyListeners();
     }
   }
 
-  // Clear chat history for current session
-  void clearChat() {
+  void startNewSession() {
+    _currentSessionId = const Uuid().v4();
     _messages = [];
-    _sessionMessages[_currentSessionId] = [];
-    _error = null;
-    _saveSessions();
     notifyListeners();
   }
 
-  // Belirli bir mesajı sil
-  // Verilen ID'ye sahip mesajı sohbetten kaldırır
-  void deleteMessage(String messageId) {
-    _messages.removeWhere((message) => message.id == messageId);
-    _sessionMessages[_currentSessionId] = _messages;
-    _saveSessions();
-    notifyListeners();
-  }
-
-  // Clear error message
-  void clearError() {
-    _error = null;
-    notifyListeners();
-  }
-
-  // Prepare a message to be edited before sending
-  // This will be used for suggestion chips in the empty chat state
-  void prepareMessage(String content) {
-    // We'll use this method to fill the input field with the content
-    // without actually sending the message
-    // The MessageInput widget will need to listen for this value
-
-    // Notify listeners that we have a prepared message
-    _preparedMessage = content;
-    notifyListeners();
-
-    // Reset the prepared message after a short delay
-    // This ensures that the MessageInput widget has time to pick it up
-    Future.delayed(const Duration(milliseconds: 300), () {
-      _preparedMessage = null;
+  void loadSession(String sessionId) {
+    if (_sessionMessages.containsKey(sessionId)) {
+      _currentSessionId = sessionId;
+      _messages = List.from(_sessionMessages[sessionId]!);
       notifyListeners();
-    });
+    }
+  }
+
+  Future<void> deleteSession(String sessionId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final sessionIds = prefs.getStringList(_sessionsKey) ?? [];
+      sessionIds.remove(sessionId);
+      await prefs.setStringList(_sessionsKey, sessionIds);
+      await prefs.remove('$_sessionPrefix$sessionId');
+
+      _sessionMessages.remove(sessionId);
+
+      if (_currentSessionId == sessionId) {
+        startNewSession();
+      } else {
+        notifyListeners();
+      }
+    } catch (e) {
+      debugPrint('Error deleting chat session: $e');
+    }
   }
 }
