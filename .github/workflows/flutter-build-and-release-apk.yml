@@ -47,21 +47,23 @@ jobs:
 
       - name: Create key.properties
         env:
-          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD }}
-          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
-          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS }}
+          KEYSTORE_STORE_PASSWORD: ${{ secrets.KEYSTORE_STORE_PASSWORD || secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD || secrets.ANDROID_KEYSTORE_PASSWORD }}
+          KEYSTORE_KEY_ALIAS: ${{ secrets.KEYSTORE_KEY_ALIAS || secrets.ANDROID_KEYSTORE_ALIAS }}
         run: |
           mkdir -p android
           echo "storePassword=$KEYSTORE_STORE_PASSWORD" > android/key.properties
           echo "keyPassword=$KEYSTORE_KEY_PASSWORD" >> android/key.properties
           echo "keyAlias=$KEYSTORE_KEY_ALIAS" >> android/key.properties
-          echo "storeFile=key.jks" >> android/key.properties
+          echo "storeFile=my-release-key.jks" >> android/key.properties
 
       - name: Decode Keystore
         env:
-          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 || secrets.ANDROID_KEYSTORE }}
         if: ${{ env.KEYSTORE_BASE64 != '' }}
         run: |
+          mkdir -p android/app
+          echo "$KEYSTORE_BASE64" | base64 --decode > android/app/my-release-key.jks
           echo "$KEYSTORE_BASE64" | base64 --decode > android/app/key.jks
 
       - name: Build APK (Release)
