@@ -13,94 +13,115 @@ class BotProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
 
-  // Getters
   List<Bot> get bots => _bots;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  bool get hasBots => _bots.isNotEmpty;
 
-  // Initialize with default bots
-  Future<void> initializeBots() async {
+  static const String _botsKey = 'saved_bots';
+
+  BotProvider() {
+    _loadBots();
+  }
+
+  // Load saved bots from SharedPreferences or use default bots
+  Future<void> _loadBots() async {
     _isLoading = true;
     notifyListeners();
 
     try {
-      // First, try to load bots from SharedPreferences
-      await _loadBotsFromPrefs();
+      final prefs = await SharedPreferences.getInstance();
+      final botsJson = prefs.getStringList(_botsKey);
 
-      // If no bots found, create defaults
-      if (_bots.isEmpty) {
-        _createDefaultBots();
+      if (botsJson != null && botsJson.isNotEmpty) {
+        _bots = botsJson.map((jsonStr) {
+          final Map<String, dynamic> json = jsonDecode(jsonStr);
+          return Bot.fromJson(json);
+        }).toList();
+      } else {
+        _bots = List.from(defaultBots);
+        await _saveBotsToPrefs();
       }
     } catch (e) {
-      _error = Languages.msgErrorInitializingBots + e.toString();
+      _error = '${Languages.msgErrorLoadingBots}: $e';
+      _bots = List.from(defaultBots);
     } finally {
       _isLoading = false;
       notifyListeners();
     }
   }
 
-  // Load bots from SharedPreferences
-  Future<void> _loadBotsFromPrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    final botsJson = prefs.getString(Languages.msgBotName);
-
-    if (botsJson != null) {
-      final List<dynamic> decodedList = jsonDecode(botsJson);
-      _bots = decodedList.map((item) => Bot.fromJson(item)).toList();
-    }
-  }
-
-  // Save bots to SharedPreferences
-  Future<void> _saveBots() async {
+  // Save current bots list to SharedPreferences
+  Future<void> _saveBotsToPrefs() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final botsJson = jsonEncode(_bots.map((bot) => bot.toJson()).toList());
-      await prefs.setString(Languages.msgBotName, botsJson);
+      final botsJson = _bots.map((bot) => jsonEncode(bot.toJson())).toList();
+      await prefs.setStringList(_botsKey, botsJson);
     } catch (e) {
-      _error = Languages.msgErrorSavingBots + e.toString();
+      _error = '${Languages.msgErrorSavingBots}: $e';
       notifyListeners();
     }
-  }
-
-  // Create default bot configurations
-  void _createDefaultBots() {
-    // Use the defaultBots list from default_settings_variables.dart
-    _bots = defaultBots;
-    _saveBots();
   }
 
   // Add a new bot
   Future<void> addBot(Bot bot) async {
     _bots.add(bot);
-    await _saveBots();
+    await _saveBotsToPrefs();
     notifyListeners();
   }
 
   // Update an existing bot
   Future<void> updateBot(Bot updatedBot) async {
-    final index = _bots.indexWhere((bot) => bot.id == updatedBot.id);
-
+    final index = _bots.indexWhere((b) => b.id == updatedBot.id);
     if (index != -1) {
       _bots[index] = updatedBot;
-      await _saveBots();
-      notifyListeners();
-    } else {
-      _error = Languages.msgBotNotFound;
+      await _saveBotsToPrefs();
       notifyListeners();
     }
   }
 
-  // Delete a bot
-  Future<void> deleteBot(String botId) async {
-    _bots.removeWhere((bot) => bot.id == botId);
-    await _saveBots();
+  // Apply pricing updates from API
+  Future<void> updateBotPrices(List<Bot> updatedBotsWithPricing) async {
+    final priceMap = {
+      for (var b in updatedBotsWithPricing)
+        b.model: {'prompt': b.promptPrice, 'completion': b.completionPrice}
+    };
+
+    _bots = _bots.map((bot) {
+      if (priceMap.containsKey(bot.model)) {
+        return bot.copyWith(
+          promptPrice: priceMap[bot.model]?['prompt'],
+          completionPrice: priceMap[bot.model]?['completion'],
+        );
+      }
+      return bot;
+    }).toList();
+
+    await _saveBotsToPrefs();
     notifyListeners();
   }
 
-  // Clear error message
-  void clearError() {
-    _error = null;
+  // Delete a bot
+  Future<void> deleteBot(String id) async {
+    _bots.removeWhere((b) => b.id == id);
+    await _saveBotsToPrefs();
     notifyListeners();
+  }
+
+  // Get bot by ID
+  Bot? getBotById(String id) {
+    try {
+      return _bots.firstWhere((b) => b.id == id);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  // Get bot by Model
+  Bot? getBotByModel(String model) {
+    try {
+      return _bots.firstWhere((b) => b.model == model);
+    } catch (_) {
+      return null;
+    }
   }
 }
