@@ -1,5 +1,5 @@
 // Default location: lib/providers/chat_provider.dart
-// Provider to manage chat state
+// Provider to manage chat state and markdown export
 
 import 'dart:convert';
 import 'dart:io';
@@ -57,6 +57,32 @@ class ChatProvider extends ChangeNotifier {
     if (cost == 0) return '';
     if (cost < 0.0001) return '<\$0.0001';
     return '\$${cost.toStringAsFixed(4)}';
+  }
+
+  /// Export current conversation session into Markdown text format
+  String exportChatToMarkdown() {
+    if (_messages.isEmpty) return '';
+
+    final sb = StringBuffer();
+    sb.writeln('# FlutterAI Chat History');
+    if (_selectedBot != null) {
+      sb.writeln('**Bot:** ${_selectedBot!.name} (`${_selectedBot!.model}`)');
+    }
+    sb.writeln('**Total Cost:** $formattedSessionCost ($currentSessionTotalTokens tokens)');
+    sb.writeln('**Date:** ${DateTime.now().toLocal().toString().split('.').first}');
+    sb.writeln('\n---\n');
+
+    for (final msg in _messages) {
+      final roleName = msg.role == MessageRole.user ? 'User' : 'Assistant';
+      sb.writeln('### $roleName');
+      sb.writeln(msg.content);
+      if (msg.formattedCost.isNotEmpty) {
+        sb.writeln('\n*(${msg.totalTokens} tokens • ${msg.formattedCost})*');
+      }
+      sb.writeln('\n---\n');
+    }
+
+    return sb.toString();
   }
 
   static const String _sessionsKey = 'chat_sessions_list';
