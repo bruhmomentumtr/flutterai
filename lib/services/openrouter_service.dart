@@ -44,6 +44,9 @@ class OpenRouterService {
     _isInitialized = true;
   }
 
+  // Alias for init
+  void initialize(String apiKey) => init(apiKey);
+
   // Get available bots/models with pricing from OpenRouter
   Future<List<Bot>> getAvailableBotsWithPricing() async {
     if (!_isInitialized || _apiKey == null || _apiKey!.isEmpty) {
