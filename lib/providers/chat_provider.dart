@@ -21,6 +21,7 @@ class ChatProvider extends ChangeNotifier {
   Bot? _selectedBot;
   bool _isLoading = false;
   String? _error;
+  String? _preparedMessage;
 
   List<Message> get messages => _messages;
   Bot? get selectedBot => _selectedBot;
@@ -28,6 +29,17 @@ class ChatProvider extends ChangeNotifier {
   String? get error => _error;
   String get currentSessionId => _currentSessionId;
   Map<String, List<Message>> get sessionMessages => _sessionMessages;
+  String? get preparedMessage => _preparedMessage;
+
+  void setPreparedMessage(String? msg) {
+    _preparedMessage = msg;
+    notifyListeners();
+  }
+
+  void clearPreparedMessage() {
+    _preparedMessage = null;
+    notifyListeners();
+  }
 
   /// Calculate total cost spent in the active chat session
   double get currentSessionTotalCost {
