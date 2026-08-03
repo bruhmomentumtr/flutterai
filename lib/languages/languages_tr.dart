@@ -34,6 +34,24 @@ class Languages {
   static const String errorInvalidApiKey = 'Geçersiz API anahtarı biçimi';
   static const String successApiKeySaved = 'API anahtarı başarıyla kaydedildi';
 
+  // bot_editor_dialog.dart
+  static const String titleCreateBot = 'Bot Oluştur';
+  static const String titleEditBot = 'Botu Düzenle';
+  static const String labelBotName = 'Bot Adı';
+  static const String hintBotName = 'Bot adını girin';
+  static const String errorBotName = 'Lütfen bir bot adı girin';
+  static const String labelModel = 'Model';
+  static const String labelSystemPrompt = 'Sistem Yönergesi (System Prompt)';
+  static const String hintSystemPrompt = 'Sistem yönergesini girin';
+  static const String errorSystemPrompt = 'Lütfen sistem yönergesi girin';
+  static const String labelTemperature = 'Sıcaklık (Temperature): ';
+  static const String labelTemperatureHelp = 'Daha yüksek değerler yaratıcı yanıtlar üretir.';
+  static const String labelMaxTokens = 'Maksimum Jeton (Max Tokens): ';
+  static const String labelIcon = 'Simge';
+  static const String buttonCancel = 'İptal';
+  static const String buttonCreate = 'Oluştur';
+  static const String buttonUpdate = 'Güncelle';
+
   // widgets/bot_selection.dart
   static const String labelSelectBot = 'Bot Seç';
 

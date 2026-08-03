@@ -2,22 +2,21 @@
 // Dialog for creating and editing bot configurations
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import '../models/bot.dart';
-import '../providers/settings_provider.dart';
 import '../languages/languages.dart';
-import '../settingsvariables/default_settings_variables.dart'
-    as default_settings_variables;
+import '../core/theme/app_spacing.dart';
 
 class BotEditorDialog extends StatefulWidget {
-  final Bot? bot; // null for creating a new bot
+  final Bot? bot;
   final List<String> availableModels;
+  final Function(Bot)? onSave;
 
   const BotEditorDialog({
     Key? key,
     this.bot,
-    required this.availableModels,
+    this.availableModels = const [],
+    this.onSave,
   }) : super(key: key);
 
   @override
@@ -26,51 +25,26 @@ class BotEditorDialog extends StatefulWidget {
 
 class _BotEditorDialogState extends State<BotEditorDialog> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
-  final _systemPromptController = TextEditingController();
-
-  String _selectedModel = default_settings_variables.nousablebot;
-  double _temperature = default_settings_variables.defaultTemperature;
-  int _maxTokens = default_settings_variables.defaultMaxTokens;
-  String _selectedIcon = 'chat';
-
-  final List<MapEntry<String, IconData>> _iconOptions = [
-    const MapEntry('chat', Icons.chat),
-    const MapEntry('smart_toy', Icons.smart_toy),
-    const MapEntry('edit', Icons.edit),
-    const MapEntry('science', Icons.science),
-    const MapEntry('school', Icons.school),
-    const MapEntry('code', Icons.code),
-    const MapEntry('android', Icons.android),
-  ];
+  late TextEditingController _nameController;
+  late TextEditingController _systemPromptController;
+  String? _selectedModel;
+  double _temperature = 0.7;
+  double _maxTokens = 2048;
+  String? _selectedIcon;
 
   @override
   void initState() {
     super.initState();
-
-    // If editing an existing bot, populate the form with bot data
-    if (widget.bot != null) {
-      _nameController.text = widget.bot!.name;
-      _selectedModel = widget.bot!.model;
-      _selectedIcon = widget.bot!.iconName;
-    }
-
-    // Get global settings
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final settings = Provider.of<SettingsProvider>(context, listen: false);
-      setState(() {
-        _systemPromptController.text = settings.systemPrompt;
-        _temperature = settings.temperature;
-        _maxTokens = settings.maxTokens;
-      });
-    });
-
-    // If no available models or selected model not in list, use default
-    if (widget.availableModels.isEmpty) {
-      _selectedModel = default_settings_variables.nousablebot;
-    } else if (!widget.availableModels.contains(_selectedModel)) {
-      _selectedModel = widget.availableModels.first;
-    }
+    _nameController = TextEditingController(text: widget.bot?.name ?? '');
+    _systemPromptController =
+        TextEditingController(text: widget.bot?.systemPrompt ?? '');
+    _selectedModel = widget.bot?.model ??
+        (widget.availableModels.isNotEmpty
+            ? widget.availableModels.first
+            : 'openai/gpt-4o-mini');
+    _temperature = widget.bot?.temperature ?? 0.7;
+    _maxTokens = (widget.bot?.maxTokens ?? 2048).toDouble();
+    _selectedIcon = widget.bot?.iconName;
   }
 
   @override
@@ -80,266 +54,107 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
     super.dispose();
   }
 
+  void _saveBot() {
+    if (_formKey.currentState?.validate() != true) return;
+
+    final savedBot = Bot(
+      id: widget.bot?.id ?? const Uuid().v4(),
+      name: _nameController.text.trim(),
+      model: _selectedModel ?? 'openai/gpt-4o-mini',
+      systemPrompt: _systemPromptController.text.trim(),
+      temperature: _temperature,
+      maxTokens: _maxTokens.toInt(),
+      iconName: _selectedIcon,
+      promptPrice: widget.bot?.promptPrice,
+      completionPrice: widget.bot?.completionPrice,
+    );
+
+    if (widget.onSave != null) {
+      widget.onSave!(savedBot);
+    }
+
+    Navigator.pop(context, savedBot);
+  }
+
   @override
   Widget build(BuildContext context) {
     final isNewBot = widget.bot == null;
     final title = isNewBot ? Languages.titleCreateBot : Languages.titleEditBot;
-    final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
-    return Dialog(
-      insetPadding: EdgeInsets.symmetric(
-          horizontal: screenWidth * 0.07, vertical: screenHeight * 0.08),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
+    return AlertDialog(
+      title: Text(title),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Dialog title
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleLarge,
+              TextFormField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  labelText: Languages.labelBotName,
+                  hintText: Languages.hintBotName,
+                ),
+                validator: (val) {
+                  if (val == null || val.trim().isEmpty) {
+                    return Languages.errorBotName;
+                  }
+                  return null;
+                },
               ),
-              const SizedBox(height: 16),
-
-              // Content with form
-              Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Bot name field
-                    TextFormField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: Languages.labelBotName,
-                        hintText: Languages.hintBotName,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Languages.errorBotName;
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-
-                    // Model selection with search
-                    Autocomplete<String>(
-                      initialValue: TextEditingValue(text: _selectedModel),
-                      optionsBuilder: (TextEditingValue textEditingValue) {
-                        if (textEditingValue.text.isEmpty) {
-                          return widget.availableModels;
-                        }
-                        return widget.availableModels.where((String model) {
-                          return model.toLowerCase().contains(
-                                textEditingValue.text.toLowerCase(),
-                              );
-                        });
-                      },
-                      onSelected: (String selection) {
-                        setState(() {
-                          _selectedModel = selection;
-                        });
-                      },
-                      fieldViewBuilder: (
-                        BuildContext context,
-                        TextEditingController textEditingController,
-                        FocusNode focusNode,
-                        VoidCallback onFieldSubmitted,
-                      ) {
-                        return TextFormField(
-                          controller: textEditingController,
-                          focusNode: focusNode,
-                          decoration: const InputDecoration(
-                            labelText: Languages.labelModel,
-                            hintText: 'Search models...',
-                            prefixIcon: Icon(Icons.search),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please select a model';
-                            }
-                            if (!widget.availableModels.contains(value)) {
-                              return 'Please select a valid model from the list';
-                            }
-                            return null;
-                          },
-                          onFieldSubmitted: (_) => onFieldSubmitted(),
-                        );
-                      },
-                      optionsViewBuilder: (
-                        BuildContext context,
-                        AutocompleteOnSelected<String> onSelected,
-                        Iterable<String> options,
-                      ) {
-                        return Align(
-                          alignment: Alignment.topLeft,
-                          child: Material(
-                            elevation: 4.0,
-                            borderRadius: BorderRadius.circular(8),
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(
-                                maxHeight: 200,
-                                maxWidth: 400,
-                              ),
-                              child: ListView.builder(
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                itemCount: options.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  final String option =
-                                      options.elementAt(index);
-                                  return ListTile(
-                                    dense: true,
-                                    title: Text(option),
-                                    onTap: () => onSelected(option),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 16.0),
-
-                    // System prompt field
-                    TextFormField(
-                      controller: _systemPromptController,
-                      decoration: const InputDecoration(
-                        labelText: Languages.labelSystemPrompt,
-                        hintText: Languages.hintSystemPrompt,
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return Languages.errorSystemPrompt;
-                        }
-                        return null;
-                      },
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: 16.0),
-
-                    // Temperature slider
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${Languages.labelTemperature}${_temperature.toStringAsFixed(1)}',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        Slider(
-                          value: _temperature,
-                          min: 0.0,
-                          max: 2.0,
-                          divisions: 20,
-                          label: _temperature.toStringAsFixed(1),
-                          onChanged: (value) {
-                            setState(() {
-                              _temperature = value;
-                            });
-                          },
-                        ),
-                        Text(
-                          Languages.labelTemperatureHelp,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16.0),
-
-                    // Max tokens slider
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          '${Languages.labelMaxTokens}$_maxTokens',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                        ),
-                        Slider(
-                          value: _maxTokens.toDouble(),
-                          min: 1024,
-                          max: 10240,
-                          divisions: 9,
-                          label: _maxTokens.toString(),
-                          onChanged: (value) {
-                            setState(() {
-                              _maxTokens = value.toInt();
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16.0),
-
-                    // Icon selection
-                    Text(
-                      Languages.labelIcon,
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 8.0),
-
-                    // Icon grid
-                    Wrap(
-                      spacing: 8.0,
-                      runSpacing: 8.0,
-                      children: _iconOptions.map((option) {
-                        final isSelected = _selectedIcon == option.key;
-                        return InkWell(
-                          onTap: () {
-                            setState(() {
-                              _selectedIcon = option.key;
-                            });
-                          },
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).colorScheme.surface,
-                              borderRadius: BorderRadius.circular(8.0),
-                              border: Border.all(
-                                color: isSelected
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(context).colorScheme.outline,
-                                width: isSelected ? 2.0 : 1.0,
-                              ),
-                            ),
-                            child: Icon(
-                              option.value,
-                              color: isSelected
-                                  ? Theme.of(context).colorScheme.onPrimary
-                                  : Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
+              const SizedBox(height: AppSpacing.md),
+              DropdownButtonFormField<String>(
+                value: widget.availableModels.contains(_selectedModel)
+                    ? _selectedModel
+                    : (widget.availableModels.isNotEmpty
+                        ? widget.availableModels.first
+                        : _selectedModel),
+                decoration: InputDecoration(
+                  labelText: Languages.labelModel,
+                ),
+                items: (widget.availableModels.isEmpty
+                        ? [_selectedModel ?? 'openai/gpt-4o-mini']
+                        : widget.availableModels)
+                    .map((m) => DropdownMenuItem(value: m, child: Text(m)))
+                    .toList(),
+                onChanged: (val) {
+                  setState(() => _selectedModel = val);
+                },
+              ),
+              const SizedBox(height: AppSpacing.md),
+              TextFormField(
+                controller: _systemPromptController,
+                maxLines: 3,
+                decoration: InputDecoration(
+                  labelText: Languages.labelSystemPrompt,
+                  hintText: Languages.hintSystemPrompt,
                 ),
               ),
-
-              // Button row
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              const SizedBox(height: AppSpacing.md),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text(Languages.buttonCancel),
+                  Text('${Languages.labelTemperature}${_temperature.toStringAsFixed(1)}'),
+                  Slider(
+                    value: _temperature,
+                    min: 0.0,
+                    max: 2.0,
+                    divisions: 20,
+                    onChanged: (val) => setState(() => _temperature = val),
                   ),
-                  const SizedBox(width: 8),
-                  FilledButton(
-                    onPressed: _saveBot,
-                    child: Text(isNewBot
-                        ? Languages.buttonCreate
-                        : Languages.buttonUpdate),
+                ],
+              ),
+              const SizedBox(height: AppSpacing.md),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${Languages.labelMaxTokens}${_maxTokens.toInt()}'),
+                  Slider(
+                    value: _maxTokens,
+                    min: 256,
+                    max: 8192,
+                    divisions: 31,
+                    onChanged: (val) => setState(() => _maxTokens = val),
                   ),
                 ],
               ),
@@ -347,41 +162,16 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
           ),
         ),
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(Languages.buttonCancel),
+        ),
+        ElevatedButton(
+          onPressed: _saveBot,
+          child: Text(isNewBot ? Languages.buttonCreate : Languages.buttonUpdate),
+        ),
+      ],
     );
-  }
-
-  void _saveBot() {
-    if (_formKey.currentState?.validate() != true) {
-      return;
-    }
-
-    // Save global settings
-    final settings = Provider.of<SettingsProvider>(context, listen: false);
-    settings.setSystemPrompt(_systemPromptController.text);
-    settings.setTemperature(_temperature);
-    settings.setMaxTokens(_maxTokens);
-
-    // Create or update bot
-    final Bot result;
-
-    if (widget.bot == null) {
-      // Creating a new bot
-      const uuid = Uuid();
-      result = Bot(
-        id: uuid.v4(),
-        name: _nameController.text,
-        model: _selectedModel,
-        iconName: _selectedIcon,
-      );
-    } else {
-      // Updating existing bot
-      result = widget.bot!.copyWith(
-        name: _nameController.text,
-        model: _selectedModel,
-        iconName: _selectedIcon,
-      );
-    }
-
-    Navigator.of(context).pop(result);
   }
 }

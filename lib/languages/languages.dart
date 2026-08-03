@@ -34,6 +34,24 @@ class Languages {
   static const String errorInvalidApiKey = 'Invalid API key format';
   static const String successApiKeySaved = 'API key saved successfully';
 
+  // bot_editor_dialog.dart
+  static const String titleCreateBot = 'Create Bot';
+  static const String titleEditBot = 'Edit Bot';
+  static const String labelBotName = 'Bot Name';
+  static const String hintBotName = 'Enter bot name';
+  static const String errorBotName = 'Please enter a bot name';
+  static const String labelModel = 'Model';
+  static const String labelSystemPrompt = 'System Prompt';
+  static const String hintSystemPrompt = 'Enter system instructions';
+  static const String errorSystemPrompt = 'Please enter a system prompt';
+  static const String labelTemperature = 'Temperature: ';
+  static const String labelTemperatureHelp = 'Higher values produce creative responses.';
+  static const String labelMaxTokens = 'Max Tokens: ';
+  static const String labelIcon = 'Icon';
+  static const String buttonCancel = 'Cancel';
+  static const String buttonCreate = 'Create';
+  static const String buttonUpdate = 'Update';
+
   // widgets/bot_selection.dart
   static const String labelSelectBot = 'Select Bot';
 
