@@ -6,11 +6,13 @@ import 'package:provider/provider.dart';
 
 import '../providers/chat_provider.dart';
 import '../providers/bot_provider.dart';
+import '../models/bot.dart';
 import '../services/openrouter_service.dart';
 import '../languages/languages.dart';
 import '../widgets/message_bubble.dart';
 import '../widgets/message_input.dart';
 import '../widgets/bot_selection.dart';
+import '../widgets/bot_editor_dialog.dart';
 import '../core/theme/app_spacing.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -35,6 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final openRouterService =
         Provider.of<OpenRouterService>(context, listen: false);
     final botProvider = Provider.of<BotProvider>(context, listen: false);
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
 
     if (openRouterService.isInitialized) {
       final botsWithPricing =
@@ -43,6 +46,31 @@ class _ChatScreenState extends State<ChatScreen> {
         await botProvider.updateBotPrices(botsWithPricing);
       }
     }
+
+    if (chatProvider.selectedBot == null && botProvider.bots.isNotEmpty) {
+      chatProvider.selectBot(botProvider.bots.first);
+    }
+  }
+
+  void _showBotEditorDialog(BuildContext context, {Bot? bot}) {
+    final botProvider = Provider.of<BotProvider>(context, listen: false);
+    final chatProvider = Provider.of<ChatProvider>(context, listen: false);
+
+    showDialog(
+      context: context,
+      builder: (context) => BotEditorDialog(
+        bot: bot,
+        availableModels: botProvider.bots.map((b) => b.model).toList(),
+        onSave: (savedBot) async {
+          if (bot == null) {
+            await botProvider.addBot(savedBot);
+          } else {
+            await botProvider.updateBot(savedBot);
+          }
+          chatProvider.selectBot(savedBot);
+        },
+      ),
+    );
   }
 
   void _scrollToBottom() {
@@ -59,6 +87,13 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget build(BuildContext context) {
     final chatProvider = Provider.of<ChatProvider>(context);
     final botProvider = Provider.of<BotProvider>(context);
+
+    // Ensure a default bot is selected if available
+    if (chatProvider.selectedBot == null && botProvider.bots.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        chatProvider.selectBot(botProvider.bots.first);
+      });
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
 
@@ -91,8 +126,8 @@ class _ChatScreenState extends State<ChatScreen> {
               bots: botProvider.bots,
               selectedBot: chatProvider.selectedBot,
               onSelectBot: (bot) => chatProvider.selectBot(bot),
-              onAddBot: () {},
-              onEditBot: (bot) {},
+              onAddBot: () => _showBotEditorDialog(context),
+              onEditBot: (bot) => _showBotEditorDialog(context, bot: bot),
             ),
           ),
           Expanded(
