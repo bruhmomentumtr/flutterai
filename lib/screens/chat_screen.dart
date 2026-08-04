@@ -13,6 +13,7 @@ import '../widgets/message_bubble.dart';
 import '../widgets/message_input.dart';
 import '../widgets/bot_selection.dart';
 import '../widgets/bot_editor_dialog.dart';
+import '../screens/session_list_screen.dart';
 import '../core/theme/app_spacing.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -112,6 +113,17 @@ class _ChatScreenState extends State<ChatScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: Languages.titleSessionList,
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const SessionListScreen(),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.add_comment_outlined),
             onPressed: () => chatProvider.startNewSession(),
