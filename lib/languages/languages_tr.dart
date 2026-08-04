@@ -121,6 +121,15 @@ class Languages {
   static const String textShowRawFormatDesc =
       'Markdown ve LaTeX işlemeyi devre dışı bırakır.';
 
+  // Reasoning effort (o1/o3, GPT-5, vb.)
+  static const String textReasoningEffort = 'Akıl Yürütme Çabası';
+  static const String textReasoningEffortDesc =
+      'Modelin yanıt vermeden önce ne kadar düşüneceğini belirler. Destekleyen modellerde geçerlidir (örn. o1, o3, GPT-5).';
+  static const String textReasoningNone = 'Yok';
+  static const String textReasoningLow = 'Düşük';
+  static const String textReasoningMedium = 'Orta';
+  static const String textReasoningHigh = 'Yüksek';
+
   // screens/network_error_screen.dart
   static const String textConnectionError = 'Bağlantı hatası';
   static const String textNoInternet = 'İnternet bağlantısı yok';

@@ -108,6 +108,7 @@ class OpenRouterService {
     String? imageUrl,
     double? temperature,
     int? maxTokens,
+    String? reasoningEffort,
   }) async {
     if (!_isInitialized || _apiKey == null) {
       throw Exception(Languages.errorApiKeyNotInitialized);
@@ -152,13 +153,15 @@ class OpenRouterService {
       });
     }
 
-    final requestBody = {
+    final requestBody = <String, dynamic>{
       'model': bot.model,
       'messages': messages,
       if (temperature != null || bot.temperature != null)
         'temperature': temperature ?? bot.temperature,
       if (maxTokens != null || bot.maxTokens != null)
         'max_tokens': maxTokens ?? bot.maxTokens,
+      if (reasoningEffort != null && reasoningEffort.isNotEmpty)
+        'reasoning': {'effort': reasoningEffort},
     };
 
     try {

@@ -117,6 +117,15 @@ class Languages {
   static const String textShowRawFormatDesc =
       'Disable markdown and LaTeX rendering.';
 
+  // Reasoning effort (o1/o3, GPT-5, etc.)
+  static const String textReasoningEffort = 'Reasoning Effort';
+  static const String textReasoningEffortDesc =
+      'How much the model should think before answering. Applied to supporting models (e.g. o1, o3, GPT-5).';
+  static const String textReasoningNone = 'None';
+  static const String textReasoningLow = 'Low';
+  static const String textReasoningMedium = 'Medium';
+  static const String textReasoningHigh = 'High';
+
   // screens/network_error_screen.dart
   static const String textConnectionError = 'Connection error';
   static const String textNoInternet = 'No internet connection';

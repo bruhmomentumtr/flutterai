@@ -179,6 +179,7 @@ class ChatProvider extends ChangeNotifier {
         imageUrl: imageFile?.path,
         temperature: _settingsProvider.temperature,
         maxTokens: _settingsProvider.maxTokens,
+        reasoningEffort: _settingsProvider.reasoningEffort,
       );
 
       _messages.add(assistantMessage);

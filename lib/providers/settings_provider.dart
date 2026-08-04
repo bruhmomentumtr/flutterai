@@ -14,6 +14,7 @@ const String _temperatureKey = 'temperature';
 const String _maxTokensKey = 'maxTokens';
 const String _systemPromptKey = 'systemPrompt';
 const String _useDynamicColorsKey = 'useDynamicColors';
+const String _reasoningEffortKey = 'reasoningEffort';
 
 class SettingsProvider extends ChangeNotifier {
   // Theme mode
@@ -30,6 +31,10 @@ class SettingsProvider extends ChangeNotifier {
   int _maxTokens = defaultMaxTokens;
   String _systemPrompt = defaultSystemPrompt;
 
+  // Reasoning effort for supporting models (o1/o3/GPT-5 etc.)
+  // Stored as string: 'none' | 'low' | 'medium' | 'high'
+  String _reasoningEffort = 'none';
+
   // Getters
   ThemeMode get themeMode => _themeMode;
   String get apiKey => _apiKey;
@@ -42,6 +47,16 @@ class SettingsProvider extends ChangeNotifier {
   double get temperature => _temperature;
   int get maxTokens => _maxTokens;
   String get systemPrompt => _systemPrompt;
+
+  // Reasoning effort getter. Returns null when 'none' so it can be omitted
+  // from API requests for models that don't support it.
+  String? get reasoningEffort {
+    if (_reasoningEffort == 'none' || _reasoningEffort.isEmpty) return null;
+    return _reasoningEffort;
+  }
+
+  /// Raw string value used for persistence (one of 'none', 'low', 'medium', 'high').
+  String get rawReasoningEffort => _reasoningEffort;
 
   // Load settings from SharedPreferences
   Future<void> loadSettings() async {
@@ -65,6 +80,9 @@ class SettingsProvider extends ChangeNotifier {
       _temperature = prefs.getDouble(_temperatureKey) ?? defaultTemperature;
       _maxTokens = prefs.getInt(_maxTokensKey) ?? defaultMaxTokens;
       _systemPrompt = prefs.getString(_systemPromptKey) ?? defaultSystemPrompt;
+
+      // Load reasoning effort
+      _reasoningEffort = prefs.getString(_reasoningEffortKey) ?? 'none';
 
       notifyListeners();
     } catch (e) {
@@ -94,6 +112,9 @@ class SettingsProvider extends ChangeNotifier {
       await prefs.setDouble(_temperatureKey, _temperature);
       await prefs.setInt(_maxTokensKey, _maxTokens);
       await prefs.setString(_systemPromptKey, _systemPrompt);
+
+      // Save reasoning effort
+      await prefs.setString(_reasoningEffortKey, _reasoningEffort);
     } catch (e) {
       debugPrint('${Languages.msgErrorSavingSettings} $e');
     }
@@ -144,6 +165,15 @@ class SettingsProvider extends ChangeNotifier {
   // Set system prompt
   Future<void> setSystemPrompt(String value) async {
     _systemPrompt = value;
+    await _saveSettings();
+    notifyListeners();
+  }
+
+  // Set reasoning effort (one of 'none', 'low', 'medium', 'high')
+  Future<void> setReasoningEffort(String value) async {
+    const allowed = {'none', 'low', 'medium', 'high'};
+    if (!allowed.contains(value)) return;
+    _reasoningEffort = value;
     await _saveSettings();
     notifyListeners();
   }

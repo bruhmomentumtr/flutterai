@@ -25,6 +25,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isApiKeyVisible = false;
   double _temperatureValue = 0.7;
 
+  // Reasoning effort levels: none < low < medium < high
+  static const List<String> _reasoningLevels = ['none', 'low', 'medium', 'high'];
+  String _reasoningEffort = 'none';
+  int _reasoningEffortIndex = 0;
+
+  String _reasoningLabel(String value) {
+    switch (value) {
+      case 'low':
+        return Languages.textReasoningLow;
+      case 'medium':
+        return Languages.textReasoningMedium;
+      case 'high':
+        return Languages.textReasoningHigh;
+      case 'none':
+      default:
+        return Languages.textReasoningNone;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -38,6 +57,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
         TextEditingController(text: settings.systemPrompt);
     _showRawFormat = settings.showRawFormat;
     _temperatureValue = settings.temperature;
+    _reasoningEffort = settings.rawReasoningEffort;
+    _reasoningEffortIndex = _reasoningLevels.indexOf(_reasoningEffort);
+    if (_reasoningEffortIndex < 0) _reasoningEffortIndex = 0;
   }
 
   @override
@@ -57,6 +79,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       settings.setTemperature(_temperatureValue);
       settings.setMaxTokens(int.parse(_maxTokensController.text));
       settings.setSystemPrompt(_systemPromptController.text);
+      settings.setReasoningEffort(_reasoningEffort);
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -98,6 +121,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       settings.setTemperature(defaultTemperature);
       settings.setMaxTokens(defaultMaxTokens);
       settings.setSystemPrompt(defaultSystemPrompt);
+      settings.setReasoningEffort('none');
       setState(() {
         _apiKeyController.text = '';
         _temperatureController.text = defaultTemperature.toString();
@@ -105,6 +129,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _maxTokensController.text = defaultMaxTokens.toString();
         _systemPromptController.text = defaultSystemPrompt;
         _showRawFormat = false;
+        _reasoningEffort = 'none';
+        _reasoningEffortIndex = 0;
       });
     }
   }
@@ -344,6 +370,62 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         }
                         return null;
                       },
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
+                  const Divider(height: 1),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.md,
+                      vertical: AppSpacing.sm,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                Languages.textReasoningEffort,
+                                style: theme.textTheme.titleSmall,
+                              ),
+                            ),
+                            Text(
+                              _reasoningLabel(_reasoningEffort),
+                              style: TextStyle(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: AppSpacing.xs),
+                        Slider(
+                          value: _reasoningEffortIndex.toDouble(),
+                          min: 0,
+                          max: 3,
+                          divisions: 3,
+                          label: _reasoningLabel(_reasoningEffort),
+                          onChanged: (value) {
+                            setState(() {
+                              _reasoningEffortIndex = value.round();
+                              _reasoningEffort = _reasoningLevels[
+                                  _reasoningEffortIndex];
+                            });
+                          },
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.xs),
+                          child: Text(
+                            Languages.textReasoningEffortDesc,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
