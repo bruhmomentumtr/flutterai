@@ -10,7 +10,7 @@ class AppColors {
   static const Color primaryLight = Color(0xFF6750A4);
   static const Color primaryDark = Color(0xFFD0BCFF);
   static const Color onPrimary = Color(0xFFFFFFFF);
-  static const Color primaryContainer = Color(0xEADDFF);
+  static const Color primaryContainer = Color(0xFFEADDFF);
   static const Color onPrimaryContainer = Color(0xFF21005D);
 
   static const Color secondary = Color(0xFF625B71);
@@ -44,4 +44,14 @@ class AppColors {
 
   static const Color error = Color(0xFFB3261E);
   static const Color onError = Color(0xFFFFFFFF);
+
+  /// Primary brand gradient used for hero surfaces (e.g. animated bubbles).
+  static const LinearGradient primaryGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      primary,
+      accent,
+    ],
+  );
 }

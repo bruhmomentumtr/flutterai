@@ -65,6 +65,11 @@ class Languages {
   static const String tooltipAddImage = 'Add Image';
   static const String hintTextMessage = 'Type a message...';
 
+  // widgets/markdown_latex_extension.dart
+  static const String latexErrorWidget = 'Cannot render LaTeX';
+  static const String latexErrorDebug = 'LaTeX render error';
+  static const String inlineLatexErrorDebug = 'Inline LaTeX render error';
+
   // screens/chat_screen.dart
   static const String textSelectBotToStart = 'Select a bot to start chatting';
   static const String textSelectBot = 'Select Bot';
@@ -74,4 +79,51 @@ class Languages {
   static const String textAddNewBot = 'Add New Bot';
   static const String textNoBotsConfigured = 'No bots configured yet';
   static const String errorRenderingLatex = 'Error rendering LaTeX';
+
+  // screens/settings_screen.dart
+  static const String textSettings = 'Settings';
+  static const String textSave = 'Save';
+  static const String textReset = 'Reset';
+  static const String textResetConfirm = 'Reset all settings to defaults?';
+  static const String textYes = 'Yes';
+  static const String textNo = 'No';
+  static const String textApiKey = 'API Key';
+  static const String textApiKeyHint = 'Enter your OpenRouter or OpenAI API key';
+  static const String textApiKeyError = 'API key cannot be empty';
+  static const String textTemperature = 'Temperature';
+  static const String textTemperatureDesc = 'Higher values produce creative responses.';
+  static const String textMaxTokens = 'Max Tokens';
+  static const String textMaxTokensDesc = 'Maximum tokens for the model response.';
+  static const String textSystemPrompt = 'System Prompt';
+  static const String textSystemPromptDesc = 'Instructions sent to the model before the conversation.';
+  static const String errorMaxTokensEmpty = 'Please enter max tokens';
+  static const String errorMaxTokensPositive = 'Max tokens must be a positive number';
+  static const String textShowRawFormat = 'Show raw format';
+  static const String textShowRawFormatDesc = 'Disable markdown and LaTeX rendering.';
+
+  // screens/network_error_screen.dart
+  static const String textConnectionError = 'Connection error';
+  static const String textNoInternet = 'No internet connection';
+  static const String textCheckConnection = 'Please check your network and try again.';
+  static const String textChecking = 'Checking...';
+  static const String textRetry = 'Retry';
+
+  // screens/session_list_screen.dart
+  static const String titleSessionList = 'Sessions';
+  static const String labelNoSessions = 'No sessions yet';
+  static const String labelNewSession = 'New session';
+  static const String labelSelectedSessions = 'selected';
+  static const String titleDeleteSession = 'Delete session';
+  static const String titleDeleteSessions = 'Delete sessions';
+  static const String confirmDeleteSession = 'Are you sure you want to delete this session?';
+  static const String confirmDeleteSessions = 'sessions will be deleted. Continue?';
+  static const String tooltipSelectAll = 'Select all';
+  static const String tooltipDeleteSelected = 'Delete selected';
+  static const String tooltipDeleteSessions = 'Delete sessions';
+  static const String labelDelete = 'Delete';
+  static const String labelCancel = 'Cancel';
+  static const String labelYesterday = 'Yesterday';
+
+  // bot_editor_dialog.dart
+  static const String errorSystemPromptRequired = 'Please enter a system prompt';
 }

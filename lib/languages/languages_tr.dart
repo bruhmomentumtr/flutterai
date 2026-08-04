@@ -65,6 +65,11 @@ class Languages {
   static const String tooltipAddImage = 'Görsel Ekle';
   static const String hintTextMessage = 'Bir mesaj yazın...';
 
+  // widgets/markdown_latex_extension.dart
+  static const String latexErrorWidget = 'LaTeX görüntülenemiyor';
+  static const String latexErrorDebug = 'LaTeX işleme hatası';
+  static const String inlineLatexErrorDebug = 'Satır içi LaTeX işleme hatası';
+
   // screens/chat_screen.dart
   static const String textSelectBotToStart = 'Sohbete başlamak için bir bot seçin';
   static const String textSelectBot = 'Bot Seç';
@@ -74,4 +79,51 @@ class Languages {
   static const String textAddNewBot = 'Yeni Bot Ekle';
   static const String textNoBotsConfigured = 'Henüz bot yapılandırılmadı';
   static const String errorRenderingLatex = 'LaTeX işlenirken hata oluştu';
+
+  // screens/settings_screen.dart
+  static const String textSettings = 'Ayarlar';
+  static const String textSave = 'Kaydet';
+  static const String textReset = 'Sıfırla';
+  static const String textResetConfirm = 'Tüm ayarlar varsayılana sıfırlansın mı?';
+  static const String textYes = 'Evet';
+  static const String textNo = 'Hayır';
+  static const String textApiKey = 'API Anahtarı';
+  static const String textApiKeyHint = 'OpenRouter veya OpenAI API anahtarınızı girin';
+  static const String textApiKeyError = 'API anahtarı boş olamaz';
+  static const String textTemperature = 'Sıcaklık';
+  static const String textTemperatureDesc = 'Daha yüksek değerler daha yaratıcı yanıtlar üretir.';
+  static const String textMaxTokens = 'Maks. Jeton';
+  static const String textMaxTokensDesc = 'Modelin yanıtı için üst jeton sınırı.';
+  static const String textSystemPrompt = 'Sistem Yönergesi';
+  static const String textSystemPromptDesc = 'Sohbetten önce modele gönderilen yönerge.';
+  static const String errorMaxTokensEmpty = 'Lütfen maks. jeton değerini girin';
+  static const String errorMaxTokensPositive = 'Maks. jeton pozitif bir sayı olmalı';
+  static const String textShowRawFormat = 'Ham biçimi göster';
+  static const String textShowRawFormatDesc = 'Markdown ve LaTeX işlemeyi devre dışı bırakır.';
+
+  // screens/network_error_screen.dart
+  static const String textConnectionError = 'Bağlantı hatası';
+  static const String textNoInternet = 'İnternet bağlantısı yok';
+  static const String textCheckConnection = 'Lütfen ağ bağlantınızı kontrol edip tekrar deneyin.';
+  static const String textChecking = 'Kontrol ediliyor...';
+  static const String textRetry = 'Tekrar Dene';
+
+  // screens/session_list_screen.dart
+  static const String titleSessionList = 'Sohbetler';
+  static const String labelNoSessions = 'Henüz sohbet yok';
+  static const String labelNewSession = 'Yeni sohbet';
+  static const String labelSelectedSessions = 'seçili';
+  static const String titleDeleteSession = 'Sohbeti sil';
+  static const String titleDeleteSessions = 'Sohbetleri sil';
+  static const String confirmDeleteSession = 'Bu sohbeti silmek istediğinize emin misiniz?';
+  static const String confirmDeleteSessions = 'sohbet silinecek. Devam edilsin mi?';
+  static const String tooltipSelectAll = 'Tümünü seç';
+  static const String tooltipDeleteSelected = 'Seçilenleri sil';
+  static const String tooltipDeleteSessions = 'Sohbetleri sil';
+  static const String labelDelete = 'Sil';
+  static const String labelCancel = 'İptal';
+  static const String labelYesterday = 'Dün';
+
+  // bot_editor_dialog.dart
+  static const String errorSystemPromptRequired = 'Lütfen sistem yönergesi girin';
 }

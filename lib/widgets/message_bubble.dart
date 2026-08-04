@@ -37,7 +37,7 @@ class MessageBubble extends StatelessWidget {
               borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
               border: !isUser
                   ? Border.all(
-                      color: Theme.of(context).dividerColor.withOpacity(0.1))
+                      color: Theme.of(context).dividerColor.withValues(alpha: 0.1))
                   : null,
             ),
             child: SelectableText(
@@ -67,7 +67,7 @@ class MessageBubble extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceVariant.withOpacity(0.5),
+                    color: AppColors.surfaceVariant.withValues(alpha: 0.5),
                     borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
                   ),
                   child: Text(

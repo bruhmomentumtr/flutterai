@@ -19,14 +19,14 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.backgroundLight,
 
       // AppBar
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: false,
         backgroundColor: AppColors.surfaceLight,
         foregroundColor: AppColors.textPrimaryLight,
         surfaceTintColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle.dark,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimaryLight,
@@ -60,7 +60,7 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
         contentPadding: AppSpacing.paddingMd,
-        hintStyle: TextStyle(color: AppColors.textSecondaryLight),
+        hintStyle: const TextStyle(color: AppColors.textSecondaryLight),
       ),
 
       // Elevated Button
@@ -111,10 +111,10 @@ class AppTheme {
       ),
 
       // Drawer
-      drawerTheme: DrawerThemeData(
+      drawerTheme: const DrawerThemeData(
         backgroundColor: AppColors.surfaceLight,
         surfaceTintColor: Colors.transparent,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(AppSpacing.radiusXl),
             bottomRight: Radius.circular(AppSpacing.radiusXl),
@@ -163,14 +163,14 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.backgroundDark,
 
       // AppBar
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         elevation: 0,
         centerTitle: false,
         backgroundColor: AppColors.surfaceDark,
         foregroundColor: AppColors.textPrimaryDark,
         surfaceTintColor: Colors.transparent,
         systemOverlayStyle: SystemUiOverlayStyle.light,
-        titleTextStyle: const TextStyle(
+        titleTextStyle: TextStyle(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimaryDark,
@@ -204,7 +204,7 @@ class AppTheme {
           borderSide: const BorderSide(color: AppColors.primaryLight, width: 2),
         ),
         contentPadding: AppSpacing.paddingMd,
-        hintStyle: TextStyle(color: AppColors.textSecondaryDark),
+        hintStyle: const TextStyle(color: AppColors.textSecondaryDark),
       ),
 
       // Elevated Button
@@ -255,10 +255,10 @@ class AppTheme {
       ),
 
       // Drawer
-      drawerTheme: DrawerThemeData(
+      drawerTheme: const DrawerThemeData(
         backgroundColor: AppColors.surfaceDark,
         surfaceTintColor: Colors.transparent,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topRight: Radius.circular(AppSpacing.radiusXl),
             bottomRight: Radius.circular(AppSpacing.radiusXl),

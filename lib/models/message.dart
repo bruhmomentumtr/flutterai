@@ -5,6 +5,8 @@ enum MessageRole { user, assistant, system }
 
 class Message {
   final String id;
+  final String? sessionId;
+  final String? title;
   final MessageRole role;
   final String content;
   final DateTime timestamp;
@@ -19,6 +21,8 @@ class Message {
     required this.role,
     required this.content,
     required this.timestamp,
+    this.sessionId,
+    this.title,
     this.imageUrl,
     this.thinkingContent,
     this.promptTokens,
@@ -40,6 +44,8 @@ class Message {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
+      'sessionId': sessionId,
+      'title': title,
       'role': role.toString().split('.').last,
       'content': content,
       'timestamp': timestamp.toIso8601String(),
@@ -55,6 +61,8 @@ class Message {
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
       id: json['id'] as String,
+      sessionId: json['sessionId'] as String?,
+      title: json['title'] as String?,
       role: MessageRole.values.firstWhere(
         (e) => e.toString().split('.').last == json['role'],
         orElse: () => MessageRole.user,
@@ -72,6 +80,8 @@ class Message {
   // Create a copy of Message with updated fields
   Message copyWith({
     String? id,
+    String? sessionId,
+    String? title,
     MessageRole? role,
     String? content,
     DateTime? timestamp,
@@ -83,6 +93,8 @@ class Message {
   }) {
     return Message(
       id: id ?? this.id,
+      sessionId: sessionId ?? this.sessionId,
+      title: title ?? this.title,
       role: role ?? this.role,
       content: content ?? this.content,
       timestamp: timestamp ?? this.timestamp,

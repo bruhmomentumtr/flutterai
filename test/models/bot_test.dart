@@ -27,7 +27,7 @@ void main() {
     });
 
     test('copyWith updates and clears nullable pricing fields', () {
-      final bot = Bot(
+      const bot = Bot(
         id: '1',
         name: 'Test Bot',
         model: 'openai/gpt-4o-mini',
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('formattedPricing returns formatted USD per 1M tokens', () {
-      final bot = Bot(
+      const bot = Bot(
         id: '1',
         name: 'Test Bot',
         model: 'openai/gpt-4o-mini',
@@ -61,7 +61,7 @@ void main() {
     });
 
     test('formattedPricing is null when no prices are available', () {
-      final bot = Bot(
+      const bot = Bot(
         id: '1',
         name: 'Test Bot',
         model: 'openai/gpt-4o-mini',

@@ -4,6 +4,7 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 import '../models/bot.dart';
 import '../settingsvariables/default_settings_variables.dart';
 import '../languages/languages.dart';
@@ -85,20 +86,56 @@ class BotProvider extends ChangeNotifier {
 
   // Apply pricing updates from API
   Future<void> updateBotPrices(List<Bot> updatedBotsWithPricing) async {
-    final priceMap = {
-      for (var b in updatedBotsWithPricing)
-        b.model: {'prompt': b.promptPrice, 'completion': b.completionPrice}
+    await _syncWithApiBots(updatedBotsWithPricing);
+  }
+
+  /// Sync the local bot list with the latest data fetched from the API.
+  ///
+  /// - For every existing bot whose `model` is also present in [apiBots],
+  ///   pricing is refreshed while user customizations (name, systemPrompt,
+  ///   temperature, maxTokens, iconName) are preserved.
+  /// - For every bot in [apiBots] that does not yet exist locally (matched
+  ///   by `model`), a new `Bot` is appended so the user can pick any model
+  ///   OpenRouter exposes.
+  Future<void> syncWithApiBots(List<Bot> apiBots) async {
+    await _syncWithApiBots(apiBots);
+  }
+
+  Future<void> _syncWithApiBots(List<Bot> apiBots) async {
+    if (apiBots.isEmpty) return;
+
+    final existingModels = _bots.map((b) => b.model).toSet();
+
+    final priceMap = <String, Map<String, double?>>{
+      for (var b in apiBots)
+        b.model: {'prompt': b.promptPrice, 'completion': b.completionPrice},
     };
 
+    // 1) Refresh pricing for bots the user already has.
     _bots = _bots.map((bot) {
-      if (priceMap.containsKey(bot.model)) {
-        return bot.copyWith(
-          promptPrice: priceMap[bot.model]?['prompt'],
-          completionPrice: priceMap[bot.model]?['completion'],
-        );
-      }
-      return bot;
+      final pricing = priceMap[bot.model];
+      if (pricing == null) return bot;
+      return bot.copyWith(
+        promptPrice: pricing['prompt'],
+        completionPrice: pricing['completion'],
+      );
     }).toList();
+
+    // 2) Add new models returned by the API (without touching user's
+    //    customized entries above).
+    for (final apiBot in apiBots) {
+      if (existingModels.contains(apiBot.model)) continue;
+
+      _bots.add(Bot(
+        id: apiBot.id.isNotEmpty ? apiBot.id : const Uuid().v4(),
+        name: apiBot.name.isNotEmpty ? apiBot.name : apiBot.model,
+        model: apiBot.model,
+        description: apiBot.description,
+        promptPrice: apiBot.promptPrice,
+        completionPrice: apiBot.completionPrice,
+        iconName: 'smart_toy',
+      ));
+    }
 
     await _saveBotsToPrefs();
     notifyListeners();

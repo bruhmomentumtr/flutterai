@@ -123,7 +123,7 @@ class _PulseLoadingIndicatorState extends State<PulseLoadingIndicator>
             gradient: AppColors.primaryGradient,
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.3 * (1 - _controller.value)),
+                color: color.withValues(alpha: 0.3 * (1 - _controller.value)),
                 blurRadius: 20 * _controller.value,
                 spreadRadius: 5 * _controller.value,
               ),
@@ -202,7 +202,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color:
-                      theme.colorScheme.onSurfaceVariant.withOpacity(opacity),
+                      theme.colorScheme.onSurfaceVariant.withValues(alpha: opacity),
                 ),
               );
             },

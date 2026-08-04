@@ -327,14 +327,14 @@ class _SessionListScreenState extends State<SessionListScreen> {
                 color: isActive
                     ? theme.colorScheme.primary
                     : (isSelected
-                        ? theme.colorScheme.primary.withOpacity(0.5)
-                        : theme.colorScheme.outline.withOpacity(0.1)),
+                        ? theme.colorScheme.primary.withValues(alpha: 0.5)
+                        : theme.colorScheme.outline.withValues(alpha: 0.1)),
                 width: isActive ? 2 : 1,
               ),
               boxShadow: isActive
                   ? [
                       BoxShadow(
-                        color: theme.colorScheme.primary.withOpacity(0.1),
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
                         blurRadius: 8,
                         offset: const Offset(0, 2),
                       ),

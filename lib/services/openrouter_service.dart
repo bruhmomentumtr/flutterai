@@ -1,8 +1,6 @@
 // Default location: lib/services/openrouter_service.dart
 // Service to handle OpenRouter API interactions
 
-import 'dart:convert';
-import 'dart:io';
 import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';

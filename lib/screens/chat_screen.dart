@@ -43,7 +43,7 @@ class _ChatScreenState extends State<ChatScreen> {
       final botsWithPricing =
           await openRouterService.getAvailableBotsWithPricing();
       if (botsWithPricing.isNotEmpty) {
-        await botProvider.updateBotPrices(botsWithPricing);
+        await botProvider.syncWithApiBots(botsWithPricing);
       }
     }
 
@@ -115,6 +115,11 @@ class _ChatScreenState extends State<ChatScreen> {
             icon: const Icon(Icons.add_comment_outlined),
             onPressed: () => chatProvider.startNewSession(),
             tooltip: 'Yeni Sohbet',
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () => _fetchModelsAndPricing(),
+            tooltip: 'Bot Listesini Yenile',
           ),
         ],
       ),

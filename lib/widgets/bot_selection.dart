@@ -148,7 +148,7 @@ class _BotSelectionState extends State<BotSelection> {
           color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           border: Border.all(
-            color: Theme.of(context).dividerColor.withOpacity(0.2),
+            color: Theme.of(context).dividerColor.withValues(alpha: 0.2),
           ),
         ),
         child: Row(

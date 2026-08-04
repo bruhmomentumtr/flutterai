@@ -91,7 +91,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: Languages.labelBotName,
                   hintText: Languages.hintBotName,
                 ),
@@ -104,12 +104,12 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
               ),
               const SizedBox(height: AppSpacing.md),
               DropdownButtonFormField<String>(
-                value: widget.availableModels.contains(_selectedModel)
+                initialValue: widget.availableModels.contains(_selectedModel)
                     ? _selectedModel
                     : (widget.availableModels.isNotEmpty
                         ? widget.availableModels.first
                         : _selectedModel),
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: Languages.labelModel,
                 ),
                 items: (widget.availableModels.isEmpty
@@ -125,7 +125,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
               TextFormField(
                 controller: _systemPromptController,
                 maxLines: 3,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: Languages.labelSystemPrompt,
                   hintText: Languages.hintSystemPrompt,
                 ),
@@ -165,7 +165,7 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: Text(Languages.buttonCancel),
+          child: const Text(Languages.buttonCancel),
         ),
         ElevatedButton(
           onPressed: _saveBot,

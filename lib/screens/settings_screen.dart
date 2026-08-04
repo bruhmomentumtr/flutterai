@@ -240,7 +240,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             settings.setThemeMode(modes.first);
                           },
                           showSelectedIcon: false,
-                          style: ButtonStyle(
+                          style: const ButtonStyle(
                             visualDensity: VisualDensity.compact,
                           ),
                         ),
@@ -440,11 +440,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         color: theme.colorScheme.surface,
         borderRadius: AppSpacing.borderRadiusLg,
         border: Border.all(
-          color: theme.colorScheme.outline.withOpacity(0.1),
+          color: theme.colorScheme.outline.withValues(alpha: 0.1),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),

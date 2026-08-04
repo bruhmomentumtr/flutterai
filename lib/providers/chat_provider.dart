@@ -29,6 +29,8 @@ class ChatProvider extends ChangeNotifier {
   String? get error => _error;
   String get currentSessionId => _currentSessionId;
   Map<String, List<Message>> get sessionMessages => _sessionMessages;
+  Map<String, List<Message>> get sessions => _sessionMessages;
+  List<String> get sessionIds => _sessionMessages.keys.toList();
   String? get preparedMessage => _preparedMessage;
 
   void setPreparedMessage(String? msg) {
@@ -157,6 +159,7 @@ class ChatProvider extends ChangeNotifier {
 
     final userMessage = Message(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
+      sessionId: _currentSessionId,
       role: MessageRole.user,
       content: content,
       timestamp: DateTime.now(),
@@ -192,6 +195,9 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Alias for [startNewSession] used by the welcome/session screens.
+  void createNewSession() => startNewSession();
+
   void loadSession(String sessionId) {
     if (_sessionMessages.containsKey(sessionId)) {
       _currentSessionId = sessionId;
@@ -199,6 +205,9 @@ class ChatProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  /// Alias for [loadSession] used by the welcome/session screens.
+  void switchSession(String sessionId) => loadSession(sessionId);
 
   Future<void> deleteSession(String sessionId) async {
     try {

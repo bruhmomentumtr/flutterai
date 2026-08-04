@@ -169,7 +169,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         Text(
           Languages.appSubtitle,
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                color: Colors.white.withOpacity(0.85),
+                color: Colors.white.withValues(alpha: 0.85),
               ),
           textAlign: TextAlign.center,
         ),
@@ -207,7 +207,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               Container(
                 padding: const EdgeInsets.all(AppSpacing.sm),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: AppSpacing.borderRadiusMd,
                 ),
                 child: const Icon(
@@ -234,16 +234,16 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               hintText: Languages.hintApiKey,
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+              hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
               filled: true,
-              fillColor: Colors.white.withOpacity(0.1),
+              fillColor: Colors.white.withValues(alpha: 0.1),
               border: OutlineInputBorder(
                 borderRadius: AppSpacing.borderRadiusMd,
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: AppSpacing.borderRadiusMd,
-                borderSide: BorderSide(color: Colors.white.withOpacity(0.2)),
+                borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: AppSpacing.borderRadiusMd,
@@ -290,7 +290,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
           Text(
             Languages.apiKeyInfo,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white.withOpacity(0.7),
+                  color: Colors.white.withValues(alpha: 0.7),
                 ),
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -309,18 +309,18 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
                 elevation: 0,
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
                     Languages.buttonContinue,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(width: AppSpacing.xs),
-                  const Icon(Icons.arrow_forward_rounded, size: 20),
+                  SizedBox(width: AppSpacing.xs),
+                  Icon(Icons.arrow_forward_rounded, size: 20),
                 ],
               ),
             ),
@@ -337,7 +337,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 );
               },
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white.withOpacity(0.7),
+                foregroundColor: Colors.white.withValues(alpha: 0.7),
               ),
               child: const Text(Languages.buttonSkip),
             ),
@@ -365,7 +365,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
             vertical: AppSpacing.sm,
           ),
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
+            color: Colors.white.withValues(alpha: 0.15),
             borderRadius: AppSpacing.borderRadiusMd,
           ),
           child: Row(
