@@ -75,6 +75,8 @@ class Languages {
   static const String msgImageNotLoaded = 'Görsel yüklenemedi';
   static const String tooltipAddImage = 'Görsel Ekle';
   static const String hintTextMessage = 'Bir mesaj yazın...';
+  static const String labelImageReady = 'Görsel gönderilmeye hazır';
+  static const String errorConvertImage = 'Seçilen görsel işlenemedi';
 
   // widgets/markdown_latex_extension.dart
   static const String latexErrorWidget = 'LaTeX görüntülenemiyor';

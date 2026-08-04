@@ -2,15 +2,18 @@
 // Extension to enable LaTeX rendering in Markdown
 
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:markdown/markdown.dart' as md;
 import '../languages/languages.dart';
 
 // LaTeX ve Markdown ile ilgili regex sabitleri
-final RegExp latexBlockPattern = RegExp(r'^\s*\[\s*latex\s*\]([\s\S]*?)\[\s*\/\s*latex\s*\]');
-final RegExp doubleDollarLatexBlockPattern = RegExp(r'^\s*\$\$([\s\S]*?)\$\$\s*$', multiLine: true);
-final RegExp inlineLatexPattern = RegExp(r'\$\$([\s\S]*?)\$\$', multiLine: true);
+final RegExp latexBlockPattern =
+    RegExp(r'^\s*\[\s*latex\s*\]([\s\S]*?)\[\s*\/\s*latex\s*\]');
+final RegExp doubleDollarLatexBlockPattern =
+    RegExp(r'^\s*\$\$([\s\S]*?)\$\$\s*$', multiLine: true);
+final RegExp inlineLatexPattern =
+    RegExp(r'\$\$([\s\S]*?)\$\$', multiLine: true);
 
 // Custom syntax for LaTeX blocks
 class LatexBlockSyntax extends md.BlockSyntax {
@@ -28,7 +31,7 @@ class LatexBlockSyntax extends md.BlockSyntax {
   md.Node parse(md.BlockParser parser) {
     final match = pattern.firstMatch(parser.current.content)!;
     final latexContent = match.group(1)?.trim() ?? '';
-    
+
     parser.advance();
     return md.Element('latex', [md.Text(latexContent)]);
   }
@@ -47,26 +50,26 @@ class DoubleDollarLatexBlockSyntax extends md.BlockSyntax {
     if (!parser.current.content.trim().startsWith(r'$$')) {
       return false;
     }
-    
+
     // Look ahead to find the closing $$ marker
     String fullText = parser.current.content;
     int lineCount = 1;
-    
+
     // If $$ is not closed on the same line, look ahead
     if (!fullText.trim().endsWith(r'$$')) {
       while (parser.peek(lineCount) != null) {
         String? nextLine = parser.peek(lineCount)?.content;
         if (nextLine == null) break;
-        
+
         fullText += '\n$nextLine';
         lineCount++;
-        
+
         if (nextLine.trim().endsWith(r'$$')) {
           break;
         }
       }
     }
-    
+
     return pattern.hasMatch(fullText);
   }
 
@@ -75,27 +78,27 @@ class DoubleDollarLatexBlockSyntax extends md.BlockSyntax {
     // Start with current line
     String fullText = parser.current.content;
     parser.advance();
-    
+
     // If $$ is not closed on the first line, collect lines until we find the closing marker
     if (!fullText.trim().endsWith(r'$$')) {
       while (!parser.isDone) {
         String nextLine = parser.current.content;
         fullText += '\n$nextLine';
-        
+
         if (nextLine.trim().endsWith(r'$$')) {
           parser.advance();
           break;
         }
-        
+
         parser.advance();
       }
     }
-    
+
     final match = pattern.firstMatch(fullText);
     if (match == null) {
       return md.Element('p', [md.Text(fullText)]);
     }
-    
+
     final latexContent = match.group(1)?.trim() ?? '';
     return md.Element('latex', [md.Text(latexContent)]);
   }
@@ -113,7 +116,7 @@ class LatexElementBuilder extends MarkdownElementBuilder {
     if (textContent.isEmpty) {
       return const SizedBox();
     }
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: SingleChildScrollView(
@@ -141,7 +144,7 @@ class LatexElementBuilder extends MarkdownElementBuilder {
       ),
     );
   }
-  
+
   @override
   bool isBlockElement() => true;
 }
@@ -154,13 +157,14 @@ class InlineLatexSyntax extends md.InlineSyntax {
   bool onMatch(md.InlineParser parser, Match match) {
     final latexContent = match.group(1) ?? '';
     // Trim whitespace but preserve line breaks inside the LaTeX content
-    final trimmedContent = latexContent.replaceAll(RegExp(r'^\s+|\s+$', multiLine: true), '');
-    
+    final trimmedContent =
+        latexContent.replaceAll(RegExp(r'^\s+|\s+$', multiLine: true), '');
+
     final element = md.Element('inlineLatex', [md.Text(trimmedContent)]);
-    
+
     // Make sure we're not in a nested situation that could cause the _inlines issue
     parser.addNode(element);
-    
+
     return true;
   }
 }
@@ -177,11 +181,11 @@ class InlineLatexElementBuilder extends MarkdownElementBuilder {
     if (textContent.isEmpty) {
       return const SizedBox();
     }
-    
+
     // Determine if this is a multi-line LaTeX expression by checking for newlines
     final bool isMultiLine = textContent.contains('\n');
     final mathStyle = isMultiLine ? MathStyle.display : MathStyle.text;
-    
+
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: ConstrainedBox(
@@ -196,21 +200,24 @@ class InlineLatexElementBuilder extends MarkdownElementBuilder {
             textStyle: textStyle,
             mathStyle: mathStyle,
             onErrorFallback: (error) {
-              debugPrint('\x1B[31m${Languages.inlineLatexErrorDebug} $error\x1B[0m');
+              debugPrint(
+                  '\x1B[31m${Languages.inlineLatexErrorDebug} $error\x1B[0m');
               return Builder(
                 builder: (context) => Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       '\x1B[31m${Languages.latexErrorWidget} ${error.message}\x1B[0m',
-                      style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                          fontSize: 12),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       // Display the original LaTeX code when there's an error
                       '\$\$$textContent\$\$',
                       style: TextStyle(
-                        fontFamily: 'monospace', 
+                        fontFamily: 'monospace',
                         fontSize: 12,
                         color: Theme.of(context).colorScheme.outline,
                       ),
@@ -239,8 +246,9 @@ extension MarkdownExtensions on MarkdownStyleSheet {
     );
     return document;
   }
-  
-  static Map<String, MarkdownElementBuilder> createLatexElementBuilders({TextStyle? style}) {
+
+  static Map<String, MarkdownElementBuilder> createLatexElementBuilders(
+      {TextStyle? style}) {
     return {
       'latex': LatexElementBuilder(textStyle: style),
       'inlineLatex': InlineLatexElementBuilder(textStyle: style),

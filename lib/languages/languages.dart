@@ -73,6 +73,9 @@ class Languages {
   static const String msgImageNotLoaded = 'Image could not be loaded';
   static const String tooltipAddImage = 'Add Image';
   static const String hintTextMessage = 'Type a message...';
+  static const String labelImageReady = 'Image ready to send';
+  static const String errorConvertImage =
+      'Selected image could not be processed';
 
   // widgets/markdown_latex_extension.dart
   static const String latexErrorWidget = 'Cannot render LaTeX';

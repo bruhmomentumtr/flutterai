@@ -12,6 +12,34 @@ import '../services/openrouter_service.dart';
 import '../providers/settings_provider.dart';
 import '../languages/languages.dart';
 
+/// Convert a local [File] to a base64 data URI suitable for OpenRouter's
+/// `image_url.url` field. Returns the underlying path unchanged when reading
+/// the file fails so the original behaviour is preserved as a fallback.
+Future<String?> _fileToBase64DataUri(File? file) async {
+  if (file == null) return null;
+  try {
+    final bytes = await file.readAsBytes();
+    if (bytes.isEmpty) return null;
+
+    // Infer MIME type from the extension. Defaults to image/jpeg which is the
+    // most common format returned by platform pickers.
+    final ext = file.path.split('.').last.toLowerCase();
+    final mime = switch (ext) {
+      'png' => 'image/png',
+      'gif' => 'image/gif',
+      'webp' => 'image/webp',
+      'bmp' => 'image/bmp',
+      'heic' || 'heif' => 'image/heic',
+      _ => 'image/jpeg',
+    };
+
+    return 'data:$mime;base64,${base64Encode(bytes)}';
+  } catch (e) {
+    debugPrint('Error converting image to base64: $e');
+    return null;
+  }
+}
+
 class ChatProvider extends ChangeNotifier {
   final OpenRouterService _openRouterService;
   final SettingsProvider _settingsProvider;
@@ -171,12 +199,16 @@ class ChatProvider extends ChangeNotifier {
     _messages.add(userMessage);
     notifyListeners();
 
+    // Convert the local file to a base64 data URI (OpenRouter only accepts
+    // HTTP(S) URLs or base64 data URIs in `image_url.url`, never local paths).
+    final imageDataUri = await _fileToBase64DataUri(imageFile);
+
     try {
       final assistantMessage = await _openRouterService.sendMessage(
         prompt: content,
         bot: _selectedBot!,
         history: _messages.sublist(0, _messages.length - 1),
-        imageUrl: imageFile?.path,
+        imageUrl: imageDataUri,
         temperature: _settingsProvider.temperature,
         maxTokens: _settingsProvider.maxTokens,
         reasoningEffort: _settingsProvider.reasoningEffort,

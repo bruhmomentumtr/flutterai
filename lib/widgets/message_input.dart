@@ -36,7 +36,14 @@ class _MessageInputState extends State<MessageInput> {
 
   Future<void> _pickImage(ImageSource source) async {
     try {
-      final XFile? pickedFile = await _picker.pickImage(source: source);
+      // Use a generous max size so the model receives enough detail. The file
+      // is converted to a base64 data URI before being sent.
+      final XFile? pickedFile = await _picker.pickImage(
+        source: source,
+        maxWidth: 2048,
+        maxHeight: 2048,
+        imageQuality: 90,
+      );
       if (pickedFile != null) {
         setState(() {
           _selectedImage = File(pickedFile.path);
@@ -44,6 +51,11 @@ class _MessageInputState extends State<MessageInput> {
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(Languages.msgErrorPickingImage)),
+        );
+      }
     }
   }
 
@@ -83,32 +95,90 @@ class _MessageInputState extends State<MessageInput> {
         children: [
           if (_selectedImage != null)
             Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.xs),
-              child: Stack(
-                alignment: Alignment.topRight,
+              padding: const EdgeInsets.only(
+                bottom: AppSpacing.sm,
+                left: AppSpacing.xs,
+                right: AppSpacing.xs,
+              ),
+              child: Row(
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-                    child: Image.file(
-                      _selectedImage!,
-                      height: 80,
-                      width: 80,
-                      fit: BoxFit.cover,
-                    ),
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        height: 96,
+                        width: 96,
+                        decoration: BoxDecoration(
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusMd),
+                          border: Border.all(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primary
+                                .withValues(alpha: 0.4),
+                            width: 2,
+                          ),
+                        ),
+                        child: ClipRRect(
+                          borderRadius:
+                              BorderRadius.circular(AppSpacing.radiusMd - 2),
+                          child: Image.file(
+                            _selectedImage!,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: -8,
+                        right: -8,
+                        child: Material(
+                          color: Theme.of(context).colorScheme.error,
+                          shape: const CircleBorder(),
+                          elevation: 2,
+                          child: InkWell(
+                            customBorder: const CircleBorder(),
+                            onTap: () => setState(() => _selectedImage = null),
+                            child: const Padding(
+                              padding: EdgeInsets.all(4),
+                              child: Icon(
+                                Icons.close,
+                                size: 16,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  GestureDetector(
-                    onTap: () => setState(() => _selectedImage = null),
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(
-                        color: Colors.black54,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        size: 16,
-                        color: Colors.white,
-                      ),
+                  const SizedBox(width: AppSpacing.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          Languages.labelImageReady,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          _selectedImage!.path
+                              .split(Platform.pathSeparator)
+                              .last,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color:
+                                Theme.of(context).colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -117,7 +187,14 @@ class _MessageInputState extends State<MessageInput> {
           Row(
             children: [
               IconButton(
-                icon: const Icon(Icons.add_photo_alternate_outlined),
+                icon: Icon(
+                  _selectedImage != null
+                      ? Icons.photo_library
+                      : Icons.add_photo_alternate_outlined,
+                  color: _selectedImage != null
+                      ? Theme.of(context).colorScheme.primary
+                      : null,
+                ),
                 tooltip: Languages.tooltipAddImage,
                 onPressed: widget.isLoading
                     ? null
