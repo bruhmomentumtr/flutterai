@@ -243,7 +243,8 @@ class _WelcomeScreenState extends State<WelcomeScreen>
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: AppSpacing.borderRadiusMd,
-                borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.2)),
+                borderSide:
+                    BorderSide(color: Colors.white.withValues(alpha: 0.2)),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: AppSpacing.borderRadiusMd,

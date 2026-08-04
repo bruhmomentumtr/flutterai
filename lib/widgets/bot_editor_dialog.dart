@@ -134,7 +134,8 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${Languages.labelTemperature}${_temperature.toStringAsFixed(1)}'),
+                  Text(
+                      '${Languages.labelTemperature}${_temperature.toStringAsFixed(1)}'),
                   Slider(
                     value: _temperature,
                     min: 0.0,
@@ -169,7 +170,8 @@ class _BotEditorDialogState extends State<BotEditorDialog> {
         ),
         ElevatedButton(
           onPressed: _saveBot,
-          child: Text(isNewBot ? Languages.buttonCreate : Languages.buttonUpdate),
+          child:
+              Text(isNewBot ? Languages.buttonCreate : Languages.buttonUpdate),
         ),
       ],
     );

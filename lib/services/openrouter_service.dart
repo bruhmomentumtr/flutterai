@@ -93,7 +93,11 @@ class OpenRouterService {
     if (bots.isNotEmpty) {
       return bots.map((b) => b.model).toList();
     }
-    return ['openai/gpt-4o-mini', 'openai/gpt-4o', 'anthropic/claude-3.5-sonnet'];
+    return [
+      'openai/gpt-4o-mini',
+      'openai/gpt-4o',
+      'anthropic/claude-3.5-sonnet'
+    ];
   }
 
   // Send message to OpenRouter API and return response Message

@@ -70,8 +70,10 @@ class ChatProvider extends ChangeNotifier {
     if (_selectedBot != null) {
       sb.writeln('**Bot:** ${_selectedBot!.name} (`${_selectedBot!.model}`)');
     }
-    sb.writeln('**Total Cost:** $formattedSessionCost ($currentSessionTotalTokens tokens)');
-    sb.writeln('**Date:** ${DateTime.now().toLocal().toString().split('.').first}');
+    sb.writeln(
+        '**Total Cost:** $formattedSessionCost ($currentSessionTotalTokens tokens)');
+    sb.writeln(
+        '**Date:** ${DateTime.now().toLocal().toString().split('.').first}');
     sb.writeln('\n---\n');
 
     for (final msg in _messages) {

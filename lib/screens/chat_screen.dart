@@ -106,7 +106,8 @@ class _ChatScreenState extends State<ChatScreen> {
             if (chatProvider.formattedSessionCost.isNotEmpty)
               Text(
                 'Yakılan: ${chatProvider.formattedSessionCost} (${chatProvider.currentSessionTotalTokens} tkn)',
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.normal),
+                style: const TextStyle(
+                    fontSize: 11, fontWeight: FontWeight.normal),
               ),
           ],
         ),
