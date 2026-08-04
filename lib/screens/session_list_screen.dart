@@ -132,84 +132,87 @@ class _SessionListScreenState extends State<SessionListScreen> {
               label: const Text('New Chat'),
             )
           : null,
-      body: Consumer<ChatProvider>(
-        builder: (context, chatProvider, child) {
-          final sessionIds = chatProvider.sessionIds;
-          final sessions = chatProvider.sessions;
-          final currentSessionId = chatProvider.currentSessionId;
+      body: SafeArea(
+        top: false,
+        child: Consumer<ChatProvider>(
+          builder: (context, chatProvider, child) {
+            final sessionIds = chatProvider.sessionIds;
+            final sessions = chatProvider.sessions;
+            final currentSessionId = chatProvider.currentSessionId;
 
-          if (sessionIds.isEmpty) {
-            return _buildEmptyState(theme);
-          }
+            if (sessionIds.isEmpty) {
+              return _buildEmptyState(theme);
+            }
 
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            itemCount: sessionIds.length,
-            itemBuilder: (context, index) {
-              final sessionId = sessionIds[index];
-              final messages = sessions[sessionId] ?? [];
-              final isSelected = _selectedSessions.contains(sessionId);
-              final isActive = sessionId == currentSessionId;
+            return ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md,
+                vertical: AppSpacing.sm,
+              ),
+              itemCount: sessionIds.length,
+              itemBuilder: (context, index) {
+                final sessionId = sessionIds[index];
+                final messages = sessions[sessionId] ?? [];
+                final isSelected = _selectedSessions.contains(sessionId);
+                final isActive = sessionId == currentSessionId;
 
-              String sessionTitle = Languages.labelNewSession;
-              String sessionPreview = '';
-              String formattedDate = '';
-              int messageCount = messages.length;
+                String sessionTitle = Languages.labelNewSession;
+                String sessionPreview = '';
+                String formattedDate = '';
+                int messageCount = messages.length;
 
-              if (messages.isNotEmpty) {
-                final botMsgWithTitle = messages.firstWhere(
-                  (msg) =>
-                      msg.role == MessageRole.assistant && msg.title != null,
-                  orElse: () => messages.first,
+                if (messages.isNotEmpty) {
+                  final botMsgWithTitle = messages.firstWhere(
+                    (msg) =>
+                        msg.role == MessageRole.assistant && msg.title != null,
+                    orElse: () => messages.first,
+                  );
+
+                  sessionTitle = botMsgWithTitle.title ?? 'Chat ${index + 1}';
+
+                  final lastMsg = messages.last;
+                  sessionPreview = lastMsg.content.length > 60
+                      ? '${lastMsg.content.substring(0, 60)}...'
+                      : lastMsg.content;
+
+                  formattedDate = _formatMessageDate(lastMsg.timestamp);
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.sm),
+                  child: _buildSessionCard(
+                    context: context,
+                    sessionId: sessionId,
+                    title: sessionTitle,
+                    preview: sessionPreview,
+                    date: formattedDate,
+                    messageCount: messageCount,
+                    isActive: isActive,
+                    isSelected: isSelected,
+                    isSelectionMode: _isSelectionMode,
+                    onTap: () {
+                      if (_isSelectionMode) {
+                        _toggleSessionSelection(sessionId);
+                      } else {
+                        chatProvider.switchSession(sessionId);
+                        Navigator.pop(context);
+                      }
+                    },
+                    onLongPress: () {
+                      if (!_isSelectionMode) {
+                        _toggleSelectionMode();
+                        _toggleSessionSelection(sessionId);
+                      }
+                    },
+                    onDelete: () {
+                      chatProvider.deleteSession(sessionId);
+                    },
+                  ),
                 );
-
-                sessionTitle = botMsgWithTitle.title ?? 'Chat ${index + 1}';
-
-                final lastMsg = messages.last;
-                sessionPreview = lastMsg.content.length > 60
-                    ? '${lastMsg.content.substring(0, 60)}...'
-                    : lastMsg.content;
-
-                formattedDate = _formatMessageDate(lastMsg.timestamp);
-              }
-
-              return Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.sm),
-                child: _buildSessionCard(
-                  context: context,
-                  sessionId: sessionId,
-                  title: sessionTitle,
-                  preview: sessionPreview,
-                  date: formattedDate,
-                  messageCount: messageCount,
-                  isActive: isActive,
-                  isSelected: isSelected,
-                  isSelectionMode: _isSelectionMode,
-                  onTap: () {
-                    if (_isSelectionMode) {
-                      _toggleSessionSelection(sessionId);
-                    } else {
-                      chatProvider.switchSession(sessionId);
-                      Navigator.pop(context);
-                    }
-                  },
-                  onLongPress: () {
-                    if (!_isSelectionMode) {
-                      _toggleSelectionMode();
-                      _toggleSessionSelection(sessionId);
-                    }
-                  },
-                  onDelete: () {
-                    chatProvider.deleteSession(sessionId);
-                  },
-                ),
-              );
-            },
-          );
-        },
+              },
+            );
+          },
+        ),
       ),
     );
   }

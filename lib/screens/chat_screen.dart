@@ -136,44 +136,47 @@ class _ChatScreenState extends State<ChatScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(AppSpacing.sm),
-            child: BotSelection(
-              bots: botProvider.bots,
-              selectedBot: chatProvider.selectedBot,
-              onSelectBot: (bot) => chatProvider.selectBot(bot),
-              onAddBot: () => _showBotEditorDialog(context),
-              onEditBot: (bot) => _showBotEditorDialog(context, bot: bot),
+      body: SafeArea(
+        top: false,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(AppSpacing.sm),
+              child: BotSelection(
+                bots: botProvider.bots,
+                selectedBot: chatProvider.selectedBot,
+                onSelectBot: (bot) => chatProvider.selectBot(bot),
+                onAddBot: () => _showBotEditorDialog(context),
+                onEditBot: (bot) => _showBotEditorDialog(context, bot: bot),
+              ),
             ),
-          ),
-          Expanded(
-            child: chatProvider.messages.isEmpty
-                ? Center(
-                    child: Text(
-                      Languages.textSendMessageToStart,
-                      style: TextStyle(
-                        color: Theme.of(context).textTheme.bodySmall?.color,
+            Expanded(
+              child: chatProvider.messages.isEmpty
+                  ? Center(
+                      child: Text(
+                        Languages.textSendMessageToStart,
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodySmall?.color,
+                        ),
                       ),
+                    )
+                  : ListView.builder(
+                      controller: _scrollController,
+                      itemCount: chatProvider.messages.length,
+                      itemBuilder: (context, index) {
+                        final message = chatProvider.messages[index];
+                        return MessageBubble(message: message);
+                      },
                     ),
-                  )
-                : ListView.builder(
-                    controller: _scrollController,
-                    itemCount: chatProvider.messages.length,
-                    itemBuilder: (context, index) {
-                      final message = chatProvider.messages[index];
-                      return MessageBubble(message: message);
-                    },
-                  ),
-          ),
-          MessageInput(
-            onSendMessage: (content, imageFile) {
-              chatProvider.sendMessage(content, imageFile: imageFile);
-            },
-            isLoading: chatProvider.isLoading,
-          ),
-        ],
+            ),
+            MessageInput(
+              onSendMessage: (content, imageFile) {
+                chatProvider.sendMessage(content, imageFile: imageFile);
+              },
+              isLoading: chatProvider.isLoading,
+            ),
+          ],
+        ),
       ),
     );
   }
