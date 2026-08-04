@@ -26,7 +26,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   double _temperatureValue = 0.7;
 
   // Reasoning effort levels: none < low < medium < high
-  static const List<String> _reasoningLevels = ['none', 'low', 'medium', 'high'];
+  static const List<String> _reasoningLevels = [
+    'none',
+    'low',
+    'medium',
+    'high'
+  ];
   String _reasoningEffort = 'none';
   int _reasoningEffortIndex = 0;
 
@@ -410,8 +415,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           onChanged: (value) {
                             setState(() {
                               _reasoningEffortIndex = value.round();
-                              _reasoningEffort = _reasoningLevels[
-                                  _reasoningEffortIndex];
+                              _reasoningEffort =
+                                  _reasoningLevels[_reasoningEffortIndex];
                             });
                           },
                         ),
