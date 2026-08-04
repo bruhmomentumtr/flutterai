@@ -11,6 +11,9 @@ class Message {
   final String content;
   final DateTime timestamp;
   final String? imageUrl;
+  // Base64 data URI for image preview rendering (persists across restarts).
+  // Optional so older stored sessions without images still deserialize cleanly.
+  final String? imageBase64;
   final String? thinkingContent;
   final int? promptTokens;
   final int? completionTokens;
@@ -24,6 +27,7 @@ class Message {
     this.sessionId,
     this.title,
     this.imageUrl,
+    this.imageBase64,
     this.thinkingContent,
     this.promptTokens,
     this.completionTokens,
@@ -50,6 +54,7 @@ class Message {
       'content': content,
       'timestamp': timestamp.toIso8601String(),
       'imageUrl': imageUrl,
+      'imageBase64': imageBase64,
       'thinkingContent': thinkingContent,
       'promptTokens': promptTokens,
       'completionTokens': completionTokens,
@@ -70,6 +75,7 @@ class Message {
       content: json['content'] as String,
       timestamp: DateTime.parse(json['timestamp'] as String),
       imageUrl: json['imageUrl'] as String?,
+      imageBase64: json['imageBase64'] as String?,
       thinkingContent: json['thinkingContent'] as String?,
       promptTokens: json['promptTokens'] as int?,
       completionTokens: json['completionTokens'] as int?,
@@ -86,6 +92,7 @@ class Message {
     String? content,
     DateTime? timestamp,
     String? imageUrl,
+    String? imageBase64,
     String? thinkingContent,
     int? promptTokens,
     int? completionTokens,
@@ -99,6 +106,7 @@ class Message {
       content: content ?? this.content,
       timestamp: timestamp ?? this.timestamp,
       imageUrl: imageUrl ?? this.imageUrl,
+      imageBase64: imageBase64 ?? this.imageBase64,
       thinkingContent: thinkingContent ?? this.thinkingContent,
       promptTokens: promptTokens ?? this.promptTokens,
       completionTokens: completionTokens ?? this.completionTokens,

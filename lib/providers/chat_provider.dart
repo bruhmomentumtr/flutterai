@@ -201,7 +201,15 @@ class ChatProvider extends ChangeNotifier {
 
     // Convert the local file to a base64 data URI (OpenRouter only accepts
     // HTTP(S) URLs or base64 data URIs in `image_url.url`, never local paths).
+    // The same data URI is also stored on the user message so the bubble can
+    // render the preview after sessions are reloaded from disk.
     final imageDataUri = await _fileToBase64DataUri(imageFile);
+
+    // Update the user message with the base64 data so it survives persistence.
+    if (imageDataUri != null && _messages.isNotEmpty) {
+      _messages[_messages.length - 1] =
+          _messages.last.copyWith(imageBase64: imageDataUri);
+    }
 
     try {
       final assistantMessage = await _openRouterService.sendMessage(

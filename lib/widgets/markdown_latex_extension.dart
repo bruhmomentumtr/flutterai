@@ -1,5 +1,11 @@
 // Default location: lib/widgets/markdown_latex_extension.dart
-// Extension to enable LaTeX rendering in Markdown
+// Extension to enable LaTeX rendering in Markdown.
+// Supports multiple math delimiters used by different AI models:
+//   - [latex]...[/latex]   (explicit block)
+//   - $$...$$              (display math, LaTeX style)
+//   - \[...\]              (display math, Claude/OpenAI style)
+//   - \(...\)              (inline math, Claude/OpenAI style)
+//   - $...$                (inline math, LaTeX style - skipped when ambiguous)
 
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
@@ -7,13 +13,33 @@ import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:markdown/markdown.dart' as md;
 import '../languages/languages.dart';
 
-// LaTeX ve Markdown ile ilgili regex sabitleri
+// ---------------- Block patterns ----------------
+
 final RegExp latexBlockPattern =
     RegExp(r'^\s*\[\s*latex\s*\]([\s\S]*?)\[\s*\/\s*latex\s*\]');
 final RegExp doubleDollarLatexBlockPattern =
     RegExp(r'^\s*\$\$([\s\S]*?)\$\$\s*$', multiLine: true);
-final RegExp inlineLatexPattern =
-    RegExp(r'\$\$([\s\S]*?)\$\$', multiLine: true);
+final RegExp bracketLatexBlockPattern =
+    RegExp(r'^\s*\\\[([\s\S]*?)\\\]\s*$', multiLine: true);
+
+// ---------------- Inline patterns ----------------
+
+// Matches \( ... \) - Claude/OpenAI inline math
+final RegExp parenInlineLatexPattern =
+    RegExp(r'\\\(([\s\S]+?)\\\)', multiLine: true);
+
+// Matches \[ ... \] - Claude/OpenAI display math (also used inline)
+final RegExp bracketInlineLatexPattern =
+    RegExp(r'\\\[([\s\S]+?)\\\]', multiLine: true);
+
+// Matches $...$ but only when:
+//   - preceded by start-of-line/whitespace/punctuation (not a digit)
+//   - not followed by another $ or digit (avoids $$ and $5.99)
+// This is intentionally conservative to avoid matching currency.
+final RegExp dollarInlineLatexPattern = RegExp(
+  r'(?<![A-Za-z0-9_\$])\$(?!\$)([^\$\n]+?)\$(?!\$)',
+  multiLine: true,
+);
 
 // Custom syntax for LaTeX blocks
 class LatexBlockSyntax extends md.BlockSyntax {
@@ -149,23 +175,92 @@ class LatexElementBuilder extends MarkdownElementBuilder {
   bool isBlockElement() => true;
 }
 
-// Custom syntax for inline LaTeX
+/// Block syntax for `\[ ... \]` (Claude/OpenAI display math).
+class BracketLatexBlockSyntax extends md.BlockSyntax {
+  @override
+  RegExp get pattern => bracketLatexBlockPattern;
+
+  const BracketLatexBlockSyntax();
+
+  @override
+  bool canParse(md.BlockParser parser) {
+    if (!parser.current.content.trim().startsWith(r'\[')) {
+      return false;
+    }
+    String fullText = parser.current.content;
+    int lineCount = 1;
+    if (!fullText.trim().endsWith(r'\]')) {
+      while (parser.peek(lineCount) != null) {
+        String? nextLine = parser.peek(lineCount)?.content;
+        if (nextLine == null) break;
+        fullText += '\n$nextLine';
+        lineCount++;
+        if (nextLine.trim().endsWith(r'\]')) break;
+      }
+    }
+    return pattern.hasMatch(fullText);
+  }
+
+  @override
+  md.Node parse(md.BlockParser parser) {
+    String fullText = parser.current.content;
+    parser.advance();
+    if (!fullText.trim().endsWith(r'\]')) {
+      while (!parser.isDone) {
+        String nextLine = parser.current.content;
+        fullText += '\n$nextLine';
+        if (nextLine.trim().endsWith(r'\]')) {
+          parser.advance();
+          break;
+        }
+        parser.advance();
+      }
+    }
+    final match = pattern.firstMatch(fullText);
+    if (match == null) {
+      return md.Element('p', [md.Text(fullText)]);
+    }
+    final latexContent = match.group(1)?.trim() ?? '';
+    return md.Element('latex', [md.Text(latexContent)]);
+  }
+}
+
+/// Combined inline syntax that recognises `\(...\)`, `\[...\]` and `$...$`.
+/// Order matters: \( and \[ are tried first so they don't conflict with the
+/// dollar-sign pattern.
 class InlineLatexSyntax extends md.InlineSyntax {
-  InlineLatexSyntax() : super(inlineLatexPattern.pattern);
+  InlineLatexSyntax()
+      // super.pattern accepts a single string; combine alternations.
+      : super(
+          '${parenInlineLatexPattern.pattern}|'
+          '${bracketInlineLatexPattern.pattern}|'
+          '${dollarInlineLatexPattern.pattern}',
+        );
 
   @override
   bool onMatch(md.InlineParser parser, Match match) {
-    final latexContent = match.group(1) ?? '';
-    // Trim whitespace but preserve line breaks inside the LaTeX content
-    final trimmedContent =
-        latexContent.replaceAll(RegExp(r'^\s+|\s+$', multiLine: true), '');
-
-    final element = md.Element('inlineLatex', [md.Text(trimmedContent)]);
-
-    // Make sure we're not in a nested situation that could cause the _inlines issue
-    parser.addNode(element);
-
-    return true;
+    // Determine which capture group matched.
+    if (match.group(1) != null) {
+      // \( ... \)
+      final element =
+          md.Element('inlineLatex', [md.Text(match.group(1)!.trim())]);
+      parser.addNode(element);
+      return true;
+    }
+    if (match.group(2) != null) {
+      // \[ ... \] - displayed math but inline context
+      final element = md.Element('latex', [md.Text(match.group(2)!.trim())]);
+      parser.addNode(element);
+      return true;
+    }
+    if (match.group(3) != null) {
+      // $ ... $
+      final element =
+          md.Element('inlineLatex', [md.Text(match.group(3)!.trim())]);
+      parser.addNode(element);
+      return true;
+    }
+    return false;
   }
 }
 
@@ -238,9 +333,10 @@ extension MarkdownExtensions on MarkdownStyleSheet {
   static md.Document createLatexParser() {
     final document = md.Document(
       extensionSet: md.ExtensionSet.gitHubFlavored,
-      blockSyntaxes: [
-        const LatexBlockSyntax(),
-        const DoubleDollarLatexBlockSyntax(),
+      blockSyntaxes: const [
+        LatexBlockSyntax(),
+        DoubleDollarLatexBlockSyntax(),
+        BracketLatexBlockSyntax(),
       ],
       inlineSyntaxes: [InlineLatexSyntax()],
     );
